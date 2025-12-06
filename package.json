@@ -1,0 +1,20 @@
+{
+  "name": "file-convert",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": "20.x"
+  },
+  "scripts": {
+    "dev": "cd apps/frontend && bun run dev",
+    "build": "cd apps/frontend && bun run build",
+    "preview": "cd apps/frontend && bun run preview",
+    "install:all": "bun install && cd apps/frontend && bun install",
+    "test": "cd apps/frontend && bun run test",
+    "test:e2e": "cd apps/frontend && bun run test:e2e"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

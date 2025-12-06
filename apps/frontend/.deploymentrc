@@ -1,0 +1,29 @@
+# Deployment Configuration
+# This file contains deployment settings and security configurations
+
+# Security Settings
+REMOVE_SOURCE_MAPS_IN_PROD=true
+ENABLE_BUILD_VERIFICATION=true
+AUDIT_LEVEL=moderate
+
+# Build Settings
+BUILD_TIMEOUT=300
+MAX_MEMORY=2048
+
+# File Exclusions (patterns to exclude from deployment)
+EXCLUDE_PATTERNS=*.log,*.tmp,.DS_Store,node_modules,*.test.ts,*.test.js,*.spec.ts,*.spec.js,.git,coverage,test-results,playwright-report
+
+# Deployment Environments
+STAGING_URL=https://staging.your-domain.com
+PRODUCTION_URL=https://your-domain.com
+
+# CDN and Asset Settings
+ENABLE_ASSET_OPTIMIZATION=true
+ASSET_MAX_SIZE=5242880
+
+# Security Headers (for reference - implement in hosting platform)
+# Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';
+# X-Content-Type-Options: nosniff
+# X-Frame-Options: DENY
+# X-XSS-Protection: 1; mode=block
+# Referrer-Policy: strict-origin-when-cross-origin

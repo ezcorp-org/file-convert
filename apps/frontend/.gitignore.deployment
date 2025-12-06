@@ -1,0 +1,53 @@
+# Deployment-specific gitignore
+# Add these rules to your main .gitignore file
+
+# Deployment artifacts
+deployment.tar.gz
+deployment-*.tar.gz
+*.deployment
+*.deploy
+
+# Deployment reports and logs
+deployment-checklist-results.json
+security-report.json
+deploy-*.log
+build-*.log
+
+# Environment files (production secrets)
+.env.production
+.env.staging
+.env.*.local
+
+# Deployment configurations (may contain secrets)
+deploy-config.json
+deployment-config.json
+.deployment-secrets
+
+# Build artifacts with potential sensitive data
+build-manifest.json
+asset-manifest.json
+
+# Temporary deployment files
+.deploy-temp/
+deploy-tmp/
+deployment-temp/
+
+# Platform-specific deployment files
+.netlify/
+.vercel/
+.output/
+dist/
+
+# CDN and asset upload directories
+cdn-upload/
+assets-upload/
+static-assets/
+
+# Backup files created during deployment
+*.backup
+*.bak
+backup-*/
+
+# Lock files (platform specific)
+deployment.lock
+deploy.lock

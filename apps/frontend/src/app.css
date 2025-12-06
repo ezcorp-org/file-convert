@@ -1,0 +1,64 @@
+/* Import Inter font - must come before @tailwind directives */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Tailwind CSS Directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom CSS Variables matching Brand Style Guide */
+:root {
+	/* Primary Colors */
+	--primary: #2563EB;
+	--primary-dark: #1D4FD8;
+	--accent: #7C3AED;
+	--accent-dark: #6D28D9;
+	
+	/* Neutral Colors */
+	--neutral-gray: #F9FAFB;
+	--dark-gray: #111827;
+	--secondary-gray: #6B7280;
+	--light-gray: #F3F4F6;
+	--border-gray: #E5E7EB;
+	
+	/* Semantic Colors */
+	--success: #10B981;
+	--error: #EF4444;
+	--warning: #ffc107;
+	--info: #17a2b8;
+	
+	/* Legacy color mappings for compatibility */
+	--white: #fff;
+	--gray-100: #F9FAFB;
+	--gray-200: #F3F4F6;
+	--gray-300: #E5E7EB;
+	--gray-400: #D1D5DB;
+	--gray-500: #9CA3AF;
+	--gray-600: #6B7280;
+	--gray-700: #4B5563;
+	--gray-800: #374151;
+	--gray-900: #111827;
+	
+	/* Layout */
+	--border-radius: 8px;
+	--transition-speed: 0.2s;
+}
+
+/* Base Styles */
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html, body {
+	height: 100%;
+	background: linear-gradient(135deg, #F9FAFB 0%, #FFFFFF 100%);
+	font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	color: #374151;
+}

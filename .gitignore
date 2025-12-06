@@ -1,0 +1,129 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+test-results/
+playwright-report/
+
+# Build outputs
+build/
+dist/
+.svelte-kit/
+.vercel/
+.netlify/
+.output/
+
+# Environment files - NEVER commit these
+.env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+!**/example.env
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+.parcel-cache/
+.turbo/
+.npm/
+.yarn/
+.pnpm-store/
+
+# Package manager files
+# package-lock.json  # Needed for Cloudflare Pages
+yarn.lock
+pnpm-lock.yaml
+
+# Bun
+# bun.lockb  # Needed for Cloudflare Pages
+.bun/
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+desktop.ini
+
+# Debug files
+*.stackdump
+core.*
+
+# Production builds
+*.production
+*.min.js
+*.min.css
+
+# WASM build artifacts
+*.wasm
+*.wasm.map
+pkg/
+wasm-pack.log
+
+# Backup files
+*.backup
+*.bak
+*.orig
+
+# Memory folder (project-specific)
+# Uncomment if you want to exclude memory folder from version control
+# memory/
+# BMAD (local only)
+
+# Security - sensitive files
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+credentials/
+.credentials
+.secrets
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+data/*.sql
+
+# Docker local data
+docker-data/
+postgres-data/
+redis-data/
+
+# Cloudflare
+.wrangler/
+.dev.vars
+.planning/intel/

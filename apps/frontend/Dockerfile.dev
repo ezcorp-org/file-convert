@@ -1,0 +1,17 @@
+# Development Dockerfile for Frontend with hot reload
+FROM oven/bun:1-alpine
+
+WORKDIR /app
+
+# Install dependencies for development
+RUN apk add --no-cache git
+
+# Copy package files
+COPY package.json ./
+RUN bun install
+
+# Expose port
+EXPOSE 5173
+
+# Keep container running
+CMD ["bun", "run", "dev", "--host", "0.0.0.0"]

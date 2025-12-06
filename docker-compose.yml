@@ -1,0 +1,19 @@
+# Docker Compose for Development Environment
+# Simple setup for frontend-only static app
+
+services:
+  # Frontend
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    container_name: file-convert-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./apps/frontend:/app
+      - /app/node_modules
+      - /app/.svelte-kit
+    command: bun run dev
