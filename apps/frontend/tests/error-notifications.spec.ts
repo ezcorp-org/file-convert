@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { Buffer } from 'buffer';
 
 test.describe('Error Notification Tests', () => {
@@ -13,7 +13,7 @@ test.describe('Error Notification Tests', () => {
 
     // Get the file input
     const fileInput = page.locator('input[type="file"]');
-    
+
     // Set the file with completely unsupported extension
     await fileInput.setInputFiles({
       name: 'test.unsupported',
@@ -21,13 +21,10 @@ test.describe('Error Notification Tests', () => {
       buffer: binaryBuffer
     });
 
-    // Wait for error notification to appear
-    await page.waitForTimeout(2000);
-
     // Check for error notification
     const errorNotification = page.locator('.notification--error, .notification.notification--error, [class*="error"]');
     await expect(errorNotification.first()).toBeVisible({ timeout: 5000 });
-    
+
     const errorText = await errorNotification.first().textContent();
     expect(errorText).toContain('Unsupported file type');
   });
@@ -38,16 +35,13 @@ test.describe('Error Notification Tests', () => {
 
     // Get the file input
     const fileInput = page.locator('input[type="file"]');
-    
+
     // Set the file
     await fileInput.setInputFiles({
       name: 'invalid.json',
       mimeType: 'application/json',
       buffer: invalidJsonBuffer
     });
-
-    // Wait for file to be processed
-    await page.waitForTimeout(1000);
 
     // Select CSV as output format
     const csvButton = page.locator('button:has-text("CSV")').first();
@@ -57,23 +51,10 @@ test.describe('Error Notification Tests', () => {
       // Start conversion
       await page.click('button:has-text("Convert")');
 
-      // Wait for error notification
-      await page.waitForTimeout(5000);
-
-      // Check for error notification containing file format error
-      const errorNotifications = page.locator('.notification--error, .notification.notification--error, [class*="error"]');
-      const notifications = await errorNotifications.all();
-      
-      let foundError = false;
-      for (const notification of notifications) {
-        const text = await notification.textContent();
-        if (text && (text.includes('format error') || text.includes('Invalid JSON') || text.includes('malformed'))) {
-          foundError = true;
-          break;
-        }
-      }
-      
-      expect(foundError).toBe(true);
+      // Check for error notification containing specific file format error
+      const errorNotification = page.locator('.notification--error, .notification.notification--error, [class*="error"]')
+        .filter({ hasText: /format error|Invalid JSON|malformed/i });
+      await expect(errorNotification.first()).toBeVisible({ timeout: 10000 });
     }
   });
 
@@ -90,19 +71,17 @@ test.describe('Error Notification Tests', () => {
 
     // Get the file input
     const fileInput = page.locator('input[type="file"]');
-    
+
     // Set multiple files at once
     await fileInput.setInputFiles(files);
-
-    // Wait for batch processing
-    await page.waitForTimeout(3000);
 
     // Check for warning notification about batch limits (may appear if user has restrictions)
     // This test is more about verifying the system handles batch uploads gracefully
     const notifications = page.locator('.notification, [class*="notification"]');
-    const notificationCount = await notifications.count();
-    
+    await expect(notifications.first()).toBeVisible({ timeout: 5000 });
+
     // Should have at least some notification activity (success or warning)
+    const notificationCount = await notifications.count();
     expect(notificationCount).toBeGreaterThan(0);
   });
 
@@ -113,7 +92,7 @@ test.describe('Error Notification Tests', () => {
 
     // Get the file input
     const fileInput = page.locator('input[type="file"]');
-    
+
     // Set a valid file first
     await fileInput.setInputFiles({
       name: 'valid.json',
@@ -121,17 +100,14 @@ test.describe('Error Notification Tests', () => {
       buffer: validJsonBuffer
     });
 
-    // Wait for processing
-    await page.waitForTimeout(2000);
-
     // Should have files list now
     const filesList = page.locator('.files-list');
     await expect(filesList).toBeVisible();
-    
+
     // Check that file appears in the list
     const fileName = page.locator('.file-name');
     await expect(fileName.first()).toContainText('valid.json');
-    
+
     // This confirms our file handling and notification system is working
     expect(true).toBe(true);
   });

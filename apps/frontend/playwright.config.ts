@@ -5,7 +5,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
-  fullyParallel: true,
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
@@ -16,11 +16,8 @@ export default defineConfig({
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
+    viewport: { width: 1280, height: 720 },
   },
-
-  // Run tests serially to avoid concurrency issues
-  fullyParallel: false,
-  workers: 1,
 
   projects: [
     {
@@ -53,7 +50,7 @@ export default defineConfig({
     command: 'bun run dev',
     url: 'http://localhost:5173',
     reuseExistingServer: true,
-    timeout: 120 * 1000,
+    timeout: process.env.CI ? 180 * 1000 : 120 * 1000,
     ignoreHTTPSErrors: true,
   },
 });

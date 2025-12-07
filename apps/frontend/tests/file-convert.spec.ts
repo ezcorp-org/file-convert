@@ -2,7 +2,7 @@
  * End-to-End Tests for File Conversion System
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.describe('File Conversion System', () => {
   test.beforeEach(async ({ page }) => {

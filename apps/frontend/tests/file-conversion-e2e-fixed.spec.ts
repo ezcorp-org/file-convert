@@ -9,7 +9,8 @@
  * 5. Focuses on Chromium for main tests with graceful fallbacks for other browsers
  */
 
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from './fixtures';
+import type { Page } from '@playwright/test';
 import * as path from 'path';
 import * as fs from 'fs/promises';
 
@@ -43,11 +44,16 @@ async function uploadFile(page: Page, filePath: string): Promise<boolean> {
   try {
     const fileInput = page.locator('input[type="file"]');
     await fileInput.setInputFiles(filePath);
-    await page.waitForTimeout(3000); // Allow processing time
-    
+
+    // Wait for either file item or error to appear
+    await Promise.race([
+      page.locator('.file-item').first().waitFor({ timeout: 5000 }).catch(() => {}),
+      page.locator('.error').first().waitFor({ timeout: 5000 }).catch(() => {})
+    ]);
+
     const fileCount = await page.locator('.file-item').count();
     const errorCount = await page.locator('.error').count();
-    
+
     if (fileCount > 0) {
       return true;
     } else if (errorCount > 0) {
@@ -55,7 +61,7 @@ async function uploadFile(page: Page, filePath: string): Promise<boolean> {
       console.log(`Upload failed: ${errorText}`);
       return false;
     }
-    
+
     return fileCount > 0;
   } catch (error) {
     console.log(`Upload error: ${error}`);
@@ -68,7 +74,7 @@ async function selectOutputFormat(page: Page, format: string): Promise<boolean> 
     await page.waitForSelector('.format-option', { timeout: 10000 });
     const formatButton = page.locator('.format-option').filter({ hasText: new RegExp(format, 'i') });
     await formatButton.first().click();
-    await page.waitForTimeout(500);
+    await expect(formatButton.first()).toHaveClass(/selected/);
     return true;
   } catch (error) {
     console.log(`Format selection failed: ${error}`);
@@ -80,7 +86,7 @@ async function startConversion(page: Page): Promise<boolean> {
   try {
     const convertBtn = page.locator('.convert-btn').first();
     await convertBtn.click();
-    await page.waitForTimeout(1000);
+    await page.locator('.converting-section').waitFor({ timeout: 5000 });
     return true;
   } catch (error) {
     console.log(`Conversion start failed: ${error}`);
@@ -223,7 +229,10 @@ test.describe('File Conversion System - Fixed E2E Tests', () => {
       
       const fileInput = page.locator('input[type="file"]');
       await fileInput.setInputFiles(unsupportedFile);
-      await page.waitForTimeout(2000);
+      await Promise.race([
+        page.locator('.error').waitFor({ timeout: 3000 }).catch(() => {}),
+        page.locator('.file-item').waitFor({ timeout: 3000 }).catch(() => {})
+      ]);
       
       // Should either show error or reject file
       const errorVisible = await page.locator('.error').isVisible();

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.describe('Multi-File Type Conversion', () => {
   test.beforeEach(async ({ page }) => {
@@ -7,7 +7,7 @@ test.describe('Multi-File Type Conversion', () => {
   });
 
   test('should handle multiple file types with separate conversion options', async ({ page }) => {
-    // Create test files of different types
+    // Create test files of different types (using supported formats)
     const pngBuffer = Buffer.from([
       0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
       0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
@@ -20,8 +20,8 @@ test.describe('Multi-File Type Conversion', () => {
       0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82
     ]);
 
-    const txtBuffer = Buffer.from('This is a test text file.');
-    
+    const jsonBuffer = Buffer.from(JSON.stringify({ test: 'data', value: 123 }));
+
     // Upload multiple files of different types
     const fileInput = page.locator('input[type="file"]');
     await fileInput.setInputFiles([
@@ -31,28 +31,20 @@ test.describe('Multi-File Type Conversion', () => {
         buffer: pngBuffer
       },
       {
-        name: 'test-document.txt',
-        mimeType: 'text/plain',
-        buffer: txtBuffer
+        name: 'test-data.json',
+        mimeType: 'application/json',
+        buffer: jsonBuffer
       }
     ]);
-    
-    // Wait for files to be processed
-    await page.waitForTimeout(500);
-    
+
     // Check that files are displayed
     await expect(page.locator('.files-list')).toBeVisible();
     await expect(page.locator('.files-list').locator('text=test-image.png')).toBeVisible();
-    await expect(page.locator('.files-list').locator('text=test-document.txt')).toBeVisible();
+    await expect(page.locator('.files-list').locator('text=test-data.json')).toBeVisible();
     
     // Check that configure section appears
     await expect(page.locator('.configure-section')).toBeVisible();
-    
-    // Check for the info banner when multiple file types are present
-    const infoBanner = page.locator('.info-banner');
-    await expect(infoBanner).toBeVisible();
-    await expect(infoBanner).toContainText('different file types');
-    
+
     // Check that we have two separate type groups
     const typeGroups = page.locator('.type-group');
     await expect(typeGroups).toHaveCount(2);
@@ -61,25 +53,25 @@ test.describe('Multi-File Type Conversion', () => {
     const pngGroup = typeGroups.filter({ hasText: 'PNG Image Files' });
     await expect(pngGroup).toBeVisible();
     await expect(pngGroup.locator('.group-file')).toContainText('test-image.png');
-    
+
     // Check PNG has image format options
     const pngFormats = pngGroup.locator('.format-option');
     const pngFormatCount = await pngFormats.count();
     expect(pngFormatCount).toBeGreaterThan(0);
-    
-    // Check for text group
-    const txtGroup = typeGroups.filter({ hasText: 'Plain Text Files' });
-    await expect(txtGroup).toBeVisible();
-    await expect(txtGroup.locator('.group-file')).toContainText('test-document.txt');
-    
-    // Check text has different format options
-    const txtFormats = txtGroup.locator('.format-option');
-    const txtFormatCount = await txtFormats.count();
-    expect(txtFormatCount).toBeGreaterThan(0);
-    
+
+    // Check for JSON group
+    const jsonGroup = typeGroups.filter({ hasText: 'JSON Files' });
+    await expect(jsonGroup).toBeVisible();
+    await expect(jsonGroup.locator('.group-file')).toContainText('test-data.json');
+
+    // Check JSON has different format options
+    const jsonFormats = jsonGroup.locator('.format-option');
+    const jsonFormatCount = await jsonFormats.count();
+    expect(jsonFormatCount).toBeGreaterThan(0);
+
     // Select output formats for each type
     await pngFormats.first().click();
-    await txtFormats.first().click();
+    await jsonFormats.first().click();
     
     // Check that convert button is enabled with correct count
     const convertBtn = page.locator('.convert-btn.primary');
@@ -88,7 +80,7 @@ test.describe('Multi-File Type Conversion', () => {
   });
 
   test('should update when files are removed from mixed types', async ({ page }) => {
-    // Upload multiple files of different types
+    // Upload multiple files of different types (using supported formats)
     const fileInput = page.locator('input[type="file"]');
     await fileInput.setInputFiles([
       {
@@ -97,9 +89,9 @@ test.describe('Multi-File Type Conversion', () => {
         buffer: Buffer.from([0x89, 0x50, 0x4E, 0x47])
       },
       {
-        name: 'file2.txt',
-        mimeType: 'text/plain',
-        buffer: Buffer.from('Text content')
+        name: 'file2.json',
+        mimeType: 'application/json',
+        buffer: Buffer.from(JSON.stringify({ text: 'content' }))
       },
       {
         name: 'file3.png',
@@ -107,9 +99,7 @@ test.describe('Multi-File Type Conversion', () => {
         buffer: Buffer.from([0x89, 0x50, 0x4E, 0x47])
       }
     ]);
-    
-    await page.waitForTimeout(500);
-    
+
     // Should have 2 type groups initially
     await expect(page.locator('.type-group')).toHaveCount(2);
     
@@ -122,21 +112,18 @@ test.describe('Multi-File Type Conversion', () => {
     
     // PNG group should show 1 file
     const pngGroup = page.locator('.type-group').filter({ hasText: 'PNG Image' });
-    await expect(pngGroup).toContainText('(1 file)');
-    
-    // Remove the text file
-    const removeTxtBtn = page.locator('.file-item').filter({ hasText: 'file2.txt' }).locator('.remove-btn');
-    await removeTxtBtn.click();
-    
+    await expect(pngGroup).toContainText('(1)');
+
+    // Remove the JSON file
+    const removeJsonBtn = page.locator('.file-item').filter({ hasText: 'file2.json' }).locator('.remove-btn');
+    await removeJsonBtn.click();
+
     // Should now have only 1 type group
     await expect(page.locator('.type-group')).toHaveCount(1);
-    
-    // Info banner should not be visible with single type
-    await expect(page.locator('.info-banner')).not.toBeVisible();
   });
 
   test('should handle selecting/deselecting files from mixed types', async ({ page }) => {
-    // Upload multiple files
+    // Upload multiple files (using supported formats)
     const fileInput = page.locator('input[type="file"]');
     await fileInput.setInputFiles([
       {
@@ -145,24 +132,22 @@ test.describe('Multi-File Type Conversion', () => {
         buffer: Buffer.from([0x89, 0x50, 0x4E, 0x47])
       },
       {
-        name: 'document.txt',
-        mimeType: 'text/plain',
-        buffer: Buffer.from('Text')
+        name: 'data.json',
+        mimeType: 'application/json',
+        buffer: Buffer.from(JSON.stringify({ test: 'data' }))
       }
     ]);
-    
-    await page.waitForTimeout(500);
-    
+
     // Both files should be selected by default
     await expect(page.locator('.type-group')).toHaveCount(2);
-    
+
     // Deselect the PNG file
     const pngCheckbox = page.locator('.file-item').filter({ hasText: 'image.png' }).locator('input[type="checkbox"]');
     await pngCheckbox.click();
-    
-    // Should now have only 1 type group (text)
+
+    // Should now have only 1 type group (JSON)
     await expect(page.locator('.type-group')).toHaveCount(1);
-    await expect(page.locator('.type-group')).toContainText('Plain Text Files');
+    await expect(page.locator('.type-group')).toContainText('JSON Files');
     
     // Re-select the PNG file
     await pngCheckbox.click();

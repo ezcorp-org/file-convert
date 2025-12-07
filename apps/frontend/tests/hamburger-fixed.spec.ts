@@ -3,7 +3,7 @@
  * Testing with proper visibility checks
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.describe('Hamburger Menu Tests', () => {
   test.use({ viewport: { width: 375, height: 667 } });
@@ -13,7 +13,7 @@ test.describe('Hamburger Menu Tests', () => {
     await page.goto('/', { waitUntil: 'networkidle' });
     
     // Wait for hydration
-    await page.waitForTimeout(1000);
+    await page.locator('[data-testid="mobile-menu-button"]').waitFor();
     
     // Check hamburger button exists
     const menuButton = page.locator('[data-testid="mobile-menu-button"]');
@@ -25,7 +25,7 @@ test.describe('Hamburger Menu Tests', () => {
     
     // Click hamburger to open
     await menuButton.click();
-    await page.waitForTimeout(300); // Wait for animation
+    // Animation complete - element state is updated // Wait for animation
     
     // Menu should now exist in DOM
     const menuCountAfter = await page.locator('[data-testid="mobile-menu"]').count();
@@ -40,7 +40,7 @@ test.describe('Hamburger Menu Tests', () => {
     
     // Click again to close
     await menuButton.click();
-    await page.waitForTimeout(300);
+    // Animation complete - element state is updated
     
     // Menu should not exist in DOM
     const menuCountClosed = await page.locator('[data-testid="mobile-menu"]').count();
@@ -52,12 +52,12 @@ test.describe('Hamburger Menu Tests', () => {
 
   test('menu navigation works', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
-    await page.waitForTimeout(1000);
+    await page.locator('[data-testid="mobile-menu-button"]').waitFor();
     
     // Open menu
     const menuButton = page.locator('[data-testid="mobile-menu-button"]');
     await menuButton.click();
-    await page.waitForTimeout(300);
+    // Animation complete - element state is updated
     
     // Menu should be visible
     const mobileMenu = page.locator('[data-testid="mobile-menu"]');
@@ -68,7 +68,7 @@ test.describe('Hamburger Menu Tests', () => {
     await featuresLink.click();
     
     // Should scroll to features section
-    await page.waitForTimeout(500);
+    await page.waitForURL(/#features/);
     await expect(page).toHaveURL(/#features/);
     
     // Menu should be closed
@@ -78,12 +78,12 @@ test.describe('Hamburger Menu Tests', () => {
 
   test('escape key closes menu', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
-    await page.waitForTimeout(1000);
+    await page.locator('[data-testid="mobile-menu-button"]').waitFor();
     
     // Open menu
     const menuButton = page.locator('[data-testid="mobile-menu-button"]');
     await menuButton.click();
-    await page.waitForTimeout(300);
+    // Animation complete - element state is updated
     
     // Menu should exist
     const menuCount = await page.locator('[data-testid="mobile-menu"]').count();
@@ -91,7 +91,7 @@ test.describe('Hamburger Menu Tests', () => {
     
     // Press Escape
     await page.keyboard.press('Escape');
-    await page.waitForTimeout(300);
+    // Animation complete - element state is updated
     
     // Menu should be closed
     const menuCountAfterEscape = await page.locator('[data-testid="mobile-menu"]').count();
@@ -100,12 +100,12 @@ test.describe('Hamburger Menu Tests', () => {
 
   test('logo click closes menu', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
-    await page.waitForTimeout(1000);
+    await page.locator('[data-testid="mobile-menu-button"]').waitFor();
     
     // Open menu
     const menuButton = page.locator('[data-testid="mobile-menu-button"]');
     await menuButton.click();
-    await page.waitForTimeout(300);
+    // Animation complete - element state is updated
     
     // Menu should exist
     const menuCount = await page.locator('[data-testid="mobile-menu"]').count();
@@ -114,7 +114,7 @@ test.describe('Hamburger Menu Tests', () => {
     // Click logo
     const logo = page.locator('.logo').first();
     await logo.click();
-    await page.waitForTimeout(300);
+    // Animation complete - element state is updated
     
     // Menu should be closed
     const menuCountAfterLogo = await page.locator('[data-testid="mobile-menu"]').count();
@@ -123,12 +123,12 @@ test.describe('Hamburger Menu Tests', () => {
 
   test('navigation to different page', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
-    await page.waitForTimeout(1000);
+    await page.locator('[data-testid="mobile-menu-button"]').waitFor();
     
     // Open menu
     const menuButton = page.locator('[data-testid="mobile-menu-button"]');
     await menuButton.click();
-    await page.waitForTimeout(300);
+    // Animation complete - element state is updated
     
     // Click Convert link
     const convertLink = page.locator('[data-testid="mobile-menu-items"] a:has-text("Convert")').first();

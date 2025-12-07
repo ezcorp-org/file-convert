@@ -9,7 +9,7 @@ Requirements for comprehensive testing and bug-fixing initiative. Each maps to r
 
 ### Test Infrastructure
 
-- [ ] **INFRA-01**: Audit existing Playwright E2E tests and determine what to keep/enhance
+- [x] **INFRA-01**: Audit existing Playwright E2E tests and determine what to keep/enhance
 - [ ] **INFRA-02**: Set up test fixture generation system for synthetic files (programmatic creation)
 - [ ] **INFRA-03**: Create fixture factory for images (PNG, JPEG, WebP, TIFF, BMP, GIF, ICO, PNM)
 - [ ] **INFRA-04**: Create fixture factory for audio files (WAV, FLAC, MP3, OGG, Opus)
@@ -17,8 +17,8 @@ Requirements for comprehensive testing and bug-fixing initiative. Each maps to r
 - [ ] **INFRA-06**: Create fixture factory for spreadsheets (XLSX, CSV, TSV, JSON, YAML, XML)
 - [ ] **INFRA-07**: Create fixture factory for archives (ZIP, 7Z, TAR, TGZ, TBZ2, TXZ)
 - [ ] **INFRA-08**: Set up real-world test file collection (curated samples for edge cases)
-- [ ] **INFRA-09**: Configure CI environment parity with local development (browser versions, resources)
-- [ ] **INFRA-10**: Implement dynamic timeout configuration based on file size and complexity
+- [x] **INFRA-09**: Configure CI environment parity with local development (browser versions, resources)
+- [x] **INFRA-10**: Implement dynamic timeout configuration based on file size and complexity
 
 ### Format Coverage Testing
 
@@ -153,7 +153,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | Phase 1 | Pending |
+| INFRA-01 | Phase 1 | Complete |
 | INFRA-02 | Phase 2 | Pending |
 | INFRA-03 | Phase 2 | Pending |
 | INFRA-04 | Phase 2 | Pending |
@@ -161,8 +161,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INFRA-06 | Phase 2 | Pending |
 | INFRA-07 | Phase 2 | Pending |
 | INFRA-08 | Phase 2 | Pending |
-| INFRA-09 | Phase 1 | Pending |
-| INFRA-10 | Phase 1 | Pending |
+| INFRA-09 | Phase 1 | Complete |
+| INFRA-10 | Phase 1 | Complete |
 | COVER-01 | Phase 3 | Pending |
 | COVER-02 | Phase 4 | Pending |
 | COVER-03 | Phase 4 | Pending |

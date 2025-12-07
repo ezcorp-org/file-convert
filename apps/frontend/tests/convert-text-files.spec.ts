@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { Buffer } from 'buffer';
 
 test.describe('Text File Conversion Tests', () => {
@@ -14,7 +14,7 @@ test.describe('Text File Conversion Tests', () => {
 
     // Get the file input
     const fileInput = page.locator('input[type="file"]');
-    
+
     // Set the file
     await fileInput.setInputFiles({
       name: 'test.txt',
@@ -22,16 +22,12 @@ test.describe('Text File Conversion Tests', () => {
       buffer: textBuffer
     });
 
-    // Wait for file to be processed
-    await page.waitForTimeout(2000);
-
     // Check for error notification or that file is not added (TXT is no longer supported)
     const errorNotifications = page.locator('.notification--error, .notification.notification--error, [class*="error"]');
-    const hasError = await errorNotifications.count() > 0;
-    const filesListEmpty = await page.locator('.files-list').count() === 0;
-    
+    const filesListEmpty = page.locator('.files-list');
+
     // Either error notification appears or file is rejected
-    expect(hasError || filesListEmpty).toBe(true);
+    await expect(errorNotifications.first().or(filesListEmpty)).toBeVisible();
   });
 
   test('should upload and convert CSV to JSON', async ({ page }) => {
@@ -41,7 +37,7 @@ test.describe('Text File Conversion Tests', () => {
 
     // Get the file input
     const fileInput = page.locator('input[type="file"]');
-    
+
     // Set the file
     await fileInput.setInputFiles({
       name: 'test.csv',
@@ -49,12 +45,9 @@ test.describe('Text File Conversion Tests', () => {
       buffer: csvBuffer
     });
 
-    // Wait for file to be processed
-    await page.waitForTimeout(1000);
-
     // Check if file was uploaded
-    const fileName = await page.locator('.file-name').first().textContent();
-    expect(fileName).toContain('test.csv');
+    const fileName = page.locator('.file-name').first();
+    await expect(fileName).toContainText('test.csv');
 
     // Select JSON as output format using button click
     await page.click('button:has-text("JSON")');
@@ -63,7 +56,7 @@ test.describe('Text File Conversion Tests', () => {
     await page.click('button:has-text("Convert")');
 
     // Wait for conversion to complete
-    await page.waitForSelector('.result-item.success', { timeout: 30000 });
+    await expect(page.locator('.result-item.success')).toBeVisible({ timeout: 30000 });
 
     // Check if download button exists
     const downloadButton = page.locator('button:has-text("Download")').first();
@@ -81,7 +74,7 @@ test.describe('Text File Conversion Tests', () => {
 
     // Get the file input
     const fileInput = page.locator('input[type="file"]');
-    
+
     // Set the file
     await fileInput.setInputFiles({
       name: 'test.json',
@@ -89,12 +82,9 @@ test.describe('Text File Conversion Tests', () => {
       buffer: jsonBuffer
     });
 
-    // Wait for file to be processed
-    await page.waitForTimeout(1000);
-
     // Check if file was uploaded
-    const fileName = await page.locator('.file-name').first().textContent();
-    expect(fileName).toContain('test.json');
+    const fileName = page.locator('.file-name').first();
+    await expect(fileName).toContainText('test.json');
 
     // Select YAML as output format using button click
     await page.click('button:has-text("YAML")');
@@ -103,7 +93,7 @@ test.describe('Text File Conversion Tests', () => {
     await page.click('button:has-text("Convert")');
 
     // Wait for conversion to complete
-    await page.waitForSelector('.result-item.success', { timeout: 30000 });
+    await expect(page.locator('.result-item.success')).toBeVisible({ timeout: 30000 });
 
     // Check if download button exists
     const downloadButton = page.locator('button:has-text("Download")').first();
@@ -121,7 +111,7 @@ test.describe('Text File Conversion Tests', () => {
 
     // Get the file input
     const fileInput = page.locator('input[type="file"]');
-    
+
     // Set the file
     await fileInput.setInputFiles({
       name: 'test.json',
@@ -129,12 +119,9 @@ test.describe('Text File Conversion Tests', () => {
       buffer: jsonBuffer
     });
 
-    // Wait for file to be processed
-    await page.waitForTimeout(1000);
-
     // Check if file was uploaded
-    const fileName = await page.locator('.file-name').first().textContent();
-    expect(fileName).toContain('test.json');
+    const fileName = page.locator('.file-name').first();
+    await expect(fileName).toContainText('test.json');
 
     // Select CSV as output format using button click
     await page.click('button:has-text("CSV")');
@@ -143,7 +130,7 @@ test.describe('Text File Conversion Tests', () => {
     await page.click('button:has-text("Convert")');
 
     // Wait for conversion to complete
-    await page.waitForSelector('.result-item.success', { timeout: 30000 });
+    await expect(page.locator('.result-item.success')).toBeVisible({ timeout: 30000 });
 
     // Check if download button exists
     const downloadButton = page.locator('button:has-text("Download")').first();
@@ -156,7 +143,7 @@ test.describe('Text File Conversion Tests', () => {
 
     // Get the file input
     const fileInput = page.locator('input[type="file"]');
-    
+
     // Set the file with unsupported extension
     await fileInput.setInputFiles({
       name: 'test.xyz',
@@ -164,13 +151,10 @@ test.describe('Text File Conversion Tests', () => {
       buffer: binaryBuffer
     });
 
-    // Wait for error to appear
-    await page.waitForTimeout(2000);
-
     // Check for error message or notification
     const errorNotification = page.locator('.notification--error, .notification.notification--error, [class*="error"]');
     await expect(errorNotification.first()).toBeVisible({ timeout: 5000 });
-    
+
     const errorText = await errorNotification.first().textContent();
     expect(errorText).toContain('Unsupported file type');
   });
