@@ -13,7 +13,7 @@ This roadmap transforms File Convert from a functional but inadequately tested a
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Test Infrastructure Foundation** - Core test utilities, CI/CD, worker lifecycle management
-- [ ] **Phase 2: Validation Library & Fixtures** - Multi-layer validators and fixture generators for all formats
+- [x] **Phase 2: Validation Library & Fixtures** - Multi-layer validators and fixture generators for all formats
 - [ ] **Phase 3: Upload/Download & Basic Coverage** - File handling flows and pilot conversion tests
 - [ ] **Phase 4: Comprehensive Format Coverage** - All conversion paths across 6 format categories
 - [ ] **Phase 5: Error Handling & Edge Cases** - Error scenarios, corrupted files, and edge case validation
@@ -52,10 +52,16 @@ Plans:
   3. Format-specific parsers can validate structural integrity (images parse, PDFs open, archives extract)
   4. Real-world test file collection includes edge cases (large files, complex metadata, unusual structures)
   5. Metadata extractors can verify EXIF, XMP, and audio tags are preserved through conversions
-**Plans**: TBD
+**Plans**: 7 plans
 
 Plans:
-- [ ] TBD during planning
+- [x] 02-01-PLAN.md — Magic byte validator library for all 30+ formats
+- [x] 02-02-PLAN.md — Image fixture factory (PNG, JPEG, WebP)
+- [x] 02-03-PLAN.md — Audio fixture factory (WAV)
+- [x] 02-04-PLAN.md — Document factory (PDF, TXT, HTML, MD)
+- [x] 02-04b-PLAN.md — Spreadsheet factory (XLSX, CSV, TSV, JSON, YAML, XML)
+- [x] 02-05-PLAN.md — Archive factory (ZIP, TAR, TGZ, TBZ2, TXZ) and structural validator
+- [x] 02-06-PLAN.md — Metadata validator and real-world test assets
 
 ### Phase 3: Upload/Download & Basic Coverage
 **Goal**: Validate core file upload/download workflows and prove testing approach with image conversions
@@ -135,7 +141,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Test Infrastructure Foundation | 7/7 | Complete | 2026-01-24 |
-| 2. Validation Library & Fixtures | 0/TBD | Not started | - |
+| 2. Validation Library & Fixtures | 7/7 | Complete | 2026-01-24 |
 | 3. Upload/Download & Basic Coverage | 0/TBD | Not started | - |
 | 4. Comprehensive Format Coverage | 0/TBD | Not started | - |
 | 5. Error Handling & Edge Cases | 0/TBD | Not started | - |

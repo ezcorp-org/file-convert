@@ -1,4 +1,4 @@
-import { TestInfo } from '@playwright/test';
+import type { TestInfo } from '@playwright/test';
 
 export type ComplexityLevel = 'simple' | 'medium' | 'complex';
 

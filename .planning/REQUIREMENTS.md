@@ -10,13 +10,13 @@ Requirements for comprehensive testing and bug-fixing initiative. Each maps to r
 ### Test Infrastructure
 
 - [x] **INFRA-01**: Audit existing Playwright E2E tests and determine what to keep/enhance
-- [ ] **INFRA-02**: Set up test fixture generation system for synthetic files (programmatic creation)
-- [ ] **INFRA-03**: Create fixture factory for images (PNG, JPEG, WebP, TIFF, BMP, GIF, ICO, PNM)
-- [ ] **INFRA-04**: Create fixture factory for audio files (WAV, FLAC, MP3, OGG, Opus)
-- [ ] **INFRA-05**: Create fixture factory for documents (PDF, DOCX, HTML, TXT, Markdown)
-- [ ] **INFRA-06**: Create fixture factory for spreadsheets (XLSX, CSV, TSV, JSON, YAML, XML)
-- [ ] **INFRA-07**: Create fixture factory for archives (ZIP, 7Z, TAR, TGZ, TBZ2, TXZ)
-- [ ] **INFRA-08**: Set up real-world test file collection (curated samples for edge cases)
+- [x] **INFRA-02**: Set up test fixture generation system for synthetic files (programmatic creation)
+- [x] **INFRA-03**: Create fixture factory for images (PNG, JPEG, WebP, TIFF, BMP, GIF, ICO, PNM)
+- [x] **INFRA-04**: Create fixture factory for audio files (WAV, FLAC, MP3, OGG, Opus)
+- [x] **INFRA-05**: Create fixture factory for documents (PDF, DOCX, HTML, TXT, Markdown)
+- [x] **INFRA-06**: Create fixture factory for spreadsheets (XLSX, CSV, TSV, JSON, YAML, XML)
+- [x] **INFRA-07**: Create fixture factory for archives (ZIP, 7Z, TAR, TGZ, TBZ2, TXZ)
+- [x] **INFRA-08**: Set up real-world test file collection (curated samples for edge cases)
 - [x] **INFRA-09**: Configure CI environment parity with local development (browser versions, resources)
 - [x] **INFRA-10**: Implement dynamic timeout configuration based on file size and complexity
 

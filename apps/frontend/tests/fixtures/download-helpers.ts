@@ -1,5 +1,6 @@
-import { Page, Download } from '@playwright/test';
+import type { Page, Download } from '@playwright/test';
 import { readFileSync, unlinkSync, existsSync } from 'fs';
+import { MagicByteValidator, type ValidationResult } from './validators';
 
 export class DownloadHelper {
 	private downloads: Download[] = [];
@@ -79,7 +80,33 @@ export class DownloadHelper {
 	}
 
 	/**
+	 * Validate file format using magic byte detection
+	 * @param buffer - File buffer
+	 * @param expectedFormat - Expected format (e.g., 'png', 'pdf')
+	 * @returns Validation result with detected format and confidence
+	 */
+	async validateFormat(buffer: Buffer, expectedFormat: string): Promise<ValidationResult> {
+		return MagicByteValidator.validate(buffer, expectedFormat);
+	}
+
+	/**
+	 * Download file and validate its format
+	 * @param triggerSelector - CSS selector for element that triggers download
+	 * @param expectedFormat - Expected file format
+	 * @returns Download metadata, buffer, and validation result
+	 */
+	async validateDownload(
+		triggerSelector: string,
+		expectedFormat: string
+	): Promise<{ filename: string; buffer: Buffer; validation: ValidationResult }> {
+		const { filename, buffer } = await this.downloadFile(triggerSelector);
+		const validation = await this.validateFormat(buffer, expectedFormat);
+		return { filename, buffer, validation };
+	}
+
+	/**
 	 * Validate MIME type from buffer content
+	 * @deprecated Use validateFormat() instead for comprehensive magic byte validation
 	 * @param buffer - File buffer
 	 * @param expectedType - Expected MIME type or file signature
 	 * @returns True if type matches

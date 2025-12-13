@@ -69,3 +69,29 @@ export type { TimeoutConfig, ComplexityLevel } from './timeout-config';
 // Export types for use in tests
 export type { FileData } from './file-helpers';
 export type { WorkerType } from './worker-lifecycle';
+
+// Export validators
+export * from './validators';
+
+/**
+ * Fixture factories generate test files programmatically.
+ * Use instead of committing binary files to git.
+ *
+ * Example:
+ * ```typescript
+ * import { test, ImageFactory, MagicByteValidator } from './fixtures';
+ *
+ * test('convert image', async ({ fileHelper }) => {
+ *   const pngBuffer = await ImageFactory.createPNG({ width: 200, height: 200 });
+ *
+ *   // Validate the generated file
+ *   const validation = await MagicByteValidator.validate(pngBuffer, 'png');
+ *   expect(validation.valid).toBe(true);
+ *
+ *   const fileData = fileHelper.createFileData(pngBuffer, 'test.png', 'image/png');
+ *   await fileHelper.uploadFile(fileData);
+ * });
+ * ```
+ */
+export * from './factories';
+export type { ImageFixtureOptions } from './factories';
