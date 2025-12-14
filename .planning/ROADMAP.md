@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Test Infrastructure Foundation** - Core test utilities, CI/CD, worker lifecycle management
 - [x] **Phase 2: Validation Library & Fixtures** - Multi-layer validators and fixture generators for all formats
-- [ ] **Phase 3: Upload/Download & Basic Coverage** - File handling flows and pilot conversion tests
+- [x] **Phase 3: Upload/Download & Basic Coverage** - File handling flows and pilot conversion tests
 - [ ] **Phase 4: Comprehensive Format Coverage** - All conversion paths across 6 format categories
 - [ ] **Phase 5: Error Handling & Edge Cases** - Error scenarios, corrupted files, and edge case validation
 - [ ] **Phase 6: Performance & Bug Fixes** - Performance benchmarking and resolution of known bugs
@@ -74,10 +74,15 @@ Plans:
   4. All image conversion paths (PNG, JPEG, WebP, TIFF, BMP, GIF, ICO, PNM) are validated
   5. Batch conversion with multiple images processes correctly without errors
   6. Tests run successfully on Chromium (full suite), Firefox, and WebKit (smoke tests)
-**Plans**: TBD
+**Plans**: 6 plans
 
 Plans:
-- [ ] TBD during planning
+- [x] 03-01-PLAN.md — Upload validation tests (MIME types, drag-drop, file sizes)
+- [x] 03-02-PLAN.md — Download validation tests (extension, format, size)
+- [x] 03-03-PLAN.md — Common image conversions (PNG, JPEG, WebP, TIFF)
+- [x] 03-04-PLAN.md — Additional image conversions (GIF, BMP, ICO)
+- [x] 03-05-PLAN.md — Batch conversion tests (multiple files)
+- [x] 03-06-PLAN.md — Cross-browser smoke tests (Firefox, WebKit)
 
 ### Phase 4: Comprehensive Format Coverage
 **Goal**: Extend proven testing approach to all 6 format categories with advanced validation
@@ -142,7 +147,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 |-------|----------------|--------|-----------|
 | 1. Test Infrastructure Foundation | 7/7 | Complete | 2026-01-24 |
 | 2. Validation Library & Fixtures | 7/7 | Complete | 2026-01-24 |
-| 3. Upload/Download & Basic Coverage | 0/TBD | Not started | - |
+| 3. Upload/Download & Basic Coverage | 0/6 | Ready | - |
 | 4. Comprehensive Format Coverage | 0/TBD | Not started | - |
 | 5. Error Handling & Edge Cases | 0/TBD | Not started | - |
 | 6. Performance & Bug Fixes | 0/TBD | Not started | - |

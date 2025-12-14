@@ -20,20 +20,24 @@ export default defineConfig({
   },
 
   projects: [
+    // Primary: Full test suite on Chromium
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
+    // Secondary: Smoke tests only on Firefox
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
-      testMatch: ['**/basic-*.spec.ts', '**/ui-*.spec.ts'], // Run only basic tests on Firefox
+      testMatch: /.*smoke.*\.spec\.ts/, // Only run smoke tests on Firefox
     },
+    // Secondary: Smoke tests only on WebKit
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
-      testMatch: ['**/basic-*.spec.ts'], // Run only basic tests on WebKit
+      testMatch: /.*smoke.*\.spec\.ts/, // Only run smoke tests on WebKit
     },
+    // Mobile browsers (placeholder for future mobile-specific tests)
     {
       name: 'Mobile Chrome',
       use: { ...devices['Pixel 5'] },

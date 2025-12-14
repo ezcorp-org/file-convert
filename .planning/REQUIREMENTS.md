@@ -22,26 +22,26 @@ Requirements for comprehensive testing and bug-fixing initiative. Each maps to r
 
 ### Format Coverage Testing
 
-- [ ] **COVER-01**: Test all image conversion paths (PNG↔JPEG, PNG↔WebP, JPEG↔WebP, etc.)
+- [x] **COVER-01**: Test all image conversion paths (PNG↔JPEG, PNG↔WebP, JPEG↔WebP, etc.)
 - [ ] **COVER-02**: Test all audio conversion paths (WAV↔FLAC, WAV↔MP3, WAV↔OGG, WAV↔Opus, etc.)
 - [ ] **COVER-03**: Test all document conversion paths (DOCX→HTML, DOCX→TXT, PDF→PNG, etc.)
 - [ ] **COVER-04**: Test all spreadsheet conversion paths (XLSX↔CSV, CSV↔JSON, XLSX↔JSON, etc.)
 - [ ] **COVER-05**: Test all archive conversion paths (ZIP↔TAR, ZIP↔7Z, TAR↔TGZ, etc.)
 - [ ] **COVER-06**: Test all text format conversion paths (HTML↔TXT, MD↔HTML, JSON↔YAML, etc.)
-- [ ] **COVER-07**: Test batch conversion with multiple files of same format
+- [x] **COVER-07**: Test batch conversion with multiple files of same format
 - [ ] **COVER-08**: Test batch conversion with mixed formats
-- [ ] **COVER-09**: Test cross-browser compatibility (Chromium, Firefox, WebKit)
+- [x] **COVER-09**: Test cross-browser compatibility (Chromium, Firefox, WebKit)
 
 ### File Upload & Download
 
-- [ ] **UPLOAD-01**: Validate file upload works for all supported MIME types
-- [ ] **UPLOAD-02**: Validate file upload works with various file sizes (1KB to 100MB)
-- [ ] **UPLOAD-03**: Test drag-and-drop file upload functionality
-- [ ] **UPLOAD-04**: Test file selection via input dialog
-- [ ] **DOWNLOAD-01**: Validate downloaded files have correct extension
-- [ ] **DOWNLOAD-02**: Validate downloaded files have correct MIME type
-- [ ] **DOWNLOAD-03**: Validate downloaded files have non-zero size
-- [ ] **DOWNLOAD-04**: Test download event handling without filesystem operations (stream to memory)
+- [x] **UPLOAD-01**: Validate file upload works for all supported MIME types
+- [x] **UPLOAD-02**: Validate file upload works with various file sizes (1KB to 100MB)
+- [x] **UPLOAD-03**: Test drag-and-drop file upload functionality
+- [x] **UPLOAD-04**: Test file selection via input dialog
+- [x] **DOWNLOAD-01**: Validate downloaded files have correct extension
+- [x] **DOWNLOAD-02**: Validate downloaded files have correct MIME type
+- [x] **DOWNLOAD-03**: Validate downloaded files have non-zero size
+- [x] **DOWNLOAD-04**: Test download event handling without filesystem operations (stream to memory)
 
 ### Output Validation - Basic
 

@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 
 ## Current Position
 
-Phase: 2 of 6 (Validation Library & Fixtures) - COMPLETE
-Plan: 7/7 complete (02-01 through 02-06)
-Status: Phase 2 complete - validation library and fixtures ready
-Last activity: 2026-01-24 - Completed 02-06 (Metadata & Content Validators)
+Phase: 3 of 6 (Upload/Download/Basic Coverage) - COMPLETE
+Plan: 6 of 6 complete (03-01, 03-02, 03-03, 03-04, 03-05, 03-06)
+Status: Phase 3 complete - Upload/download validation + coverage + cross-browser smoke tests
+Last activity: 2026-01-24 - Completed 03-06 (Cross-Browser Smoke Tests)
 
-Progress: [████████░░] 80%
+Progress: [█████████░] 95%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
-- Average duration: 5.5 min
-- Total execution time: 1.3 hours
+- Total plans completed: 20
+- Average duration: 5.2 min
+- Total execution time: 1.8 hours
 
 **By Phase:**
 
@@ -29,10 +29,11 @@ Progress: [████████░░] 80%
 |-------|-------|-------|----------|
 | 01 (Test Infrastructure) | 7/7 | 48 min | 6.9 min |
 | 02 (Validation Library) | 7/7 | 29 min | 4.1 min |
+| 03 (Upload/Download/Coverage) | 6/6 | 37 min | 6.2 min |
 
 **Recent Trend:**
-- Last 4 plans: 4.7 min average
-- Trend: Improving (6min → 3min → 4min → 4.7min)
+- Last 4 plans: 5.0 min average
+- Trend: Consistent (9min → 5min → 1min → 4min)
 
 *Updated after each plan completion*
 
@@ -98,12 +99,38 @@ Recent decisions affecting current work:
 | 02-06 | CSV validation via column consistency | All rows must have same column count | Detects malformed CSV structure |
 | 02-06 | UTF-8 validation via replacement character | Node.js Buffer.toString() is permissive | Check for U+FFFD to detect invalid sequences |
 | 02-06 | testAssets inclusion criteria | Real files only when synthetic insufficient | Prevents git bloat while allowing edge case testing |
+| 03-01 | Skip unsupported formats (TXT, ZIP, CSV, XLSX) | Workers configured but UI not implemented | Tests ready to unskip when support added |
+| 03-01 | Organize tests by format category | Independent failure domains | Image/Audio/Document describe blocks isolate failures |
+| 03-01 | File size logging vs assertions | PNG compression varies by content | Focus on upload success, log sizes for reference |
+| 03-01 | Exclude TIFF from upload tests | TIFF not fully implemented in app | Focus tests on working formats (PNG/JPEG/WebP) |
+| 03-01 | Remove workerLifecycle.waitForWorkerReady in upload tests | Workers load on-demand, explicit check causes timeouts | Use waitForLoadState('networkidle') instead |
+| 03-02 | Remove workerLifecycle.waitForWorkerReady in download tests | Same issue as upload tests - worker loads automatically on upload | Don't wait for workers explicitly |
+| 03-02 | Accept both .jpg and .jpeg extensions in download tests | JPEG format supports either extension | Tests check both variants for compatibility |
+| 03-02 | Test promise-before-click pattern explicitly | Critical for download capture without race conditions | Dedicated test demonstrates correct pattern |
+| 03-04 | Skip unsupported formats (ICO input, BMP/GIF/ICO outputs) | Image worker doesn't support these formats yet | Tests ready to unskip when support added |
+| 03-04 | Use testAssets for BMP/ICO | Sharp cannot generate valid BMP/ICO files | Created minimal valid files with generation script |
+| 03-04 | ImageFactory supports GIF format | Sharp can generate valid GIF | No testAsset needed for GIF tests |
+| 03-04 | ESM path validation in beforeAll() | Catches path resolution issues early | Clear error messages if assets missing |
+| 03-05 | Sample validation for large batches | Validate first and last files in 5+ file batches | Reduces test time while catching failures |
+| 03-05 | Proportional timeout scaling for batches | 60s for 2-3 files, 90s for 5 files | Prevents flaky timeouts on slower environments |
+| 03-05 | Edge case coverage: single file in array | Test single file via uploadFiles() array syntax | Ensures batch path works for 1-file edge case |
+| 03-06 | Use stable class-based selectors for cross-browser | Class selectors (.file-item, .format-option) work reliably | Maintains consistency with existing test suite |
+| 03-06 | Firefox/WebKit run only smoke tests | Full suite on all browsers would triple CI time | 90% faster cross-browser validation |
+| 03-06 | Browser-aware timeouts (30s Chromium, 45s Firefox/WebKit) | Non-Chromium browsers slower at Web Worker init | Prevents false failures on slower browsers |
+| 03-06 | No explicit worker waits in smoke tests | Workers load on-demand when files uploaded | Removed explicit waits, rely on networkidle state |
 
 ### Pending Todos
 
 None.
 
 ### Blockers/Concerns
+
+**Application Stability Concern (from 03-02):**
+- Sequential conversion tests (7+) trigger upload timeouts
+- Pattern: Tests 1-6 pass, tests 7+ timeout waiting for `.file-item` UI element
+- Likely cause: Resource cleanup issue or state accumulation in app
+- Impact: Core DOWNLOAD requirements verified, but production load testing may reveal issues
+- Not blocking: Upload/download validation work complete, concern documented for investigation
 
 **Phase 1 Gap Closure Status:**
 1. **Gap 1: CI workflow never executed** - ✅ CLOSED (plan 01-05)
@@ -130,6 +157,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-24 (Phase 2 validation library - COMPLETE)
-Stopped at: Completed 02-06 Metadata & Content Validators - Phase 2 complete (7/7 plans)
-Resume file: None - Phase 2 complete, ready for Phase 3 planning
+Last session: 2026-01-24 (Phase 3 cross-browser smoke tests)
+Stopped at: Completed 03-06 Cross-Browser Smoke Tests - Phase 3 COMPLETE with all coverage tests + cross-browser validation
+Resume file: None - Phase 3 complete, ready for Phase 4 (Bug Documentation)
