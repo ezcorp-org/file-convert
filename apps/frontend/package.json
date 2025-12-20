@@ -67,6 +67,7 @@
     "sheetjs": "https://cdn.sheetjs.com/xlsx-latest/xlsx-latest.tgz",
     "sirv": "^3.0.2",
     "sirv-cli": "^3.0.1",
+    "ssim.js": "^3.5.0",
     "undici": "^7.15.0",
     "uuid": "^13.0.0",
     "web-vitals": "^5.1.0",

@@ -54,13 +54,19 @@
 	
 	async function loadXLSX() {
 		if (XLSX) return XLSX;
-		
+
 		try {
 			// Try to load SheetJS from CDN
 			const response = await fetch('https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js');
 			const scriptText = await response.text();
 			eval(scriptText);
 			XLSX = self.XLSX;
+
+			// Validate XLSX was actually loaded
+			if (!XLSX || typeof XLSX.read !== 'function') {
+				throw new Error('SheetJS library did not load correctly');
+			}
+
 			console.log('SheetJS loaded successfully');
 			return XLSX;
 		} catch (error) {

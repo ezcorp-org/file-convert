@@ -257,9 +257,7 @@ class AudioConverter {
 	async encodeMP3FromData(audioData, options = {}, jobId) {
 		try {
 			// Load lamejs dynamically
-			await this.loadLameEncoder();
-
-			const lamejs = self.lamejs || window.lamejs;
+			const lamejs = await this.loadLameEncoder();
 			if (!lamejs) {
 				throw new Error('LAME encoder not available');
 			}

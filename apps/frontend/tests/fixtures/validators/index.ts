@@ -13,3 +13,6 @@ export type { ImageMetadata, AudioMetadata, MetadataValidationResult } from './m
 
 export { ContentValidator } from './content';
 export type { ContentValidationResult } from './content';
+
+export { SSIMValidator, compareImages } from './ssim';
+export type { SSIMResult } from './ssim';
