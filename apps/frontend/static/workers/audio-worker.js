@@ -70,15 +70,66 @@ class AudioConverter {
 	constructor() {
 		this.audioContext = null;
 		this.lameEncoder = null;
+		this.flacEncoder = null;
+		this.vorbisEncoder = null;
+		this.opusEncoder = null;
 	}
 
 	async loadLameEncoder() {
 		if (!this.lameEncoder) {
-			// Dynamically import lamejs for MP3 encoding
-			const lameModule = await import('https://unpkg.com/lamejs@1.2.1/lame.min.js');
-			this.lameEncoder = lameModule.default || lameModule;
+			// lamejs is not an ES module, it assigns to global scope
+			// We need to load it via script injection pattern
+			if (typeof self.lamejs === 'undefined') {
+				try {
+					// Fetch the lamejs library
+					const response = await fetch('https://unpkg.com/lamejs@1.2.1/lame.all.js');
+					if (!response.ok) {
+						throw new Error(`CDN fetch failed: ${response.status} ${response.statusText}`);
+					}
+					const code = await response.text();
+					// Execute in global scope - lamejs assigns to self.lamejs
+					eval(code);
+					// Verify lamejs was actually loaded
+					if (typeof self.lamejs === 'undefined') {
+						throw new Error('lamejs library did not initialize properly after eval');
+					}
+					console.log('AudioWorker: lamejs loaded successfully');
+				} catch (error) {
+					console.error('AudioWorker: Failed to load lamejs:', error);
+					throw new Error('Failed to load MP3 encoder library');
+				}
+			}
+			this.lameEncoder = self.lamejs;
 		}
 		return this.lameEncoder;
+	}
+
+	async loadFLACEncoder() {
+		if (!this.flacEncoder) {
+			// libflac.js is also a global script
+			if (typeof self.Flac === 'undefined') {
+				try {
+					// Fetch the libflac.js library
+					const response = await fetch('https://cdn.jsdelivr.net/npm/libflacjs@5.4.0/dist/libflac.min.js');
+					if (!response.ok) {
+						throw new Error(`CDN fetch failed: ${response.status} ${response.statusText}`);
+					}
+					const code = await response.text();
+					// Execute in global scope - libflac assigns to self.Flac
+					eval(code);
+					// Verify Flac was actually loaded
+					if (typeof self.Flac === 'undefined') {
+						throw new Error('libflac.js library did not initialize properly after eval');
+					}
+					console.log('AudioWorker: libflac.js loaded successfully');
+				} catch (error) {
+					console.error('AudioWorker: Failed to load libflac.js:', error);
+					throw new Error('Failed to load FLAC encoder library');
+				}
+			}
+			this.flacEncoder = self.Flac;
+		}
+		return this.flacEncoder;
 	}
 
 	async convert(job) {
@@ -106,11 +157,37 @@ class AudioConverter {
 					outputBlob = await this.encodeMP3FromData(audioData, job.options, job.id);
 					mimeType = 'audio/mpeg';
 					break;
-				case 'ogg':
 				case 'flac':
+					outputBlob = await this.encodeFLACFromData(audioData, job.options, job.id);
+					mimeType = 'audio/flac';
+					break;
+				case 'ogg':
+					// OGG Vorbis encoding not implemented - browser-compatible encoders unavailable
+					// Options investigated:
+					// - vorbis-encoder-js: No longer maintained, incompatible with modern browsers
+					// - libvorbis.js: Requires Emscripten build, no CDN-ready version
+					// - MediaRecorder API: Only works with live audio streams, not pre-recorded data
+					//
+					// Technical blocker: OGG Vorbis encoding requires WASM-compiled libvorbis,
+					// which would need to be self-hosted (110KB+ file) or built from source.
+					//
+					// Recommended approach for future: Bundle libvorbis WASM build in project
+					console.warn('OGG Vorbis encoding not implemented - no browser-compatible encoder available');
+					outputBlob = await this.encodeWAVFromData(audioData);
+					mimeType = 'audio/wav';
+					break;
 				case 'opus':
-					// For formats that need advanced encoding, fall back to WAV
-					console.warn(`${job.toFormat.toUpperCase()} encoding not fully supported, converting to WAV`);
+					// Opus encoding not implemented - browser-compatible encoders unavailable
+					// Options investigated:
+					// - opus-encoder: Not designed for browser use, Node.js only
+					// - libopus.js: Requires Emscripten build, no CDN-ready version
+					// - MediaRecorder API: Only works with live audio streams, not pre-recorded data
+					//
+					// Technical blocker: Opus encoding requires WASM-compiled libopus,
+					// which would need to be self-hosted (90KB+ file) or built from source.
+					//
+					// Recommended approach for future: Bundle libopus WASM build in project
+					console.warn('Opus encoding not implemented - no browser-compatible encoder available');
 					outputBlob = await this.encodeWAVFromData(audioData);
 					mimeType = 'audio/wav';
 					break;
@@ -317,6 +394,104 @@ class AudioConverter {
 
 		} catch (error) {
 			console.error('MP3 encoding failed:', error);
+			throw error;
+		}
+	}
+
+	async encodeFLACFromData(audioData, options = {}, jobId) {
+		try {
+			// Load libflac.js dynamically
+			const Flac = await this.loadFLACEncoder();
+			if (!Flac) {
+				throw new Error('FLAC encoder not available');
+			}
+
+			const channels = audioData.numberOfChannels;
+			const sampleRate = audioData.sampleRate;
+			const bitsPerSample = audioData.bitsPerSample || 16;
+			const compressionLevel = parseInt(options.compressionLevel) || 5; // 0-8, 5 is default
+
+			// Initialize FLAC encoder
+			const flacEncoder = Flac.create_libflac_encoder(sampleRate, channels, bitsPerSample, compressionLevel, 0, false);
+
+			if (flacEncoder === 0) {
+				throw new Error('Failed to initialize FLAC encoder');
+			}
+
+			// Prepare output buffer
+			const flacData = [];
+
+			// Set up write callback to capture encoded data
+			const status_encoder = Flac.init_encoder_stream(
+				flacEncoder,
+				function(buffer, bytes, samples, current_frame) {
+					// Callback receives encoded FLAC frames
+					const chunk = new Uint8Array(buffer);
+					flacData.push(chunk.slice(0, bytes));
+				},
+				null, // metadata callback
+				null  // client data
+			);
+
+			if (status_encoder !== 0) {
+				throw new Error('Failed to initialize FLAC encoder stream');
+			}
+
+			// Convert interleaved Int16Array to planar Int32Array (FLAC expects 32-bit samples)
+			const samples = audioData.samples;
+			const samplesPerChannel = Math.floor(samples.length / channels);
+			const planarSamples = [];
+
+			for (let ch = 0; ch < channels; ch++) {
+				const channelData = new Int32Array(samplesPerChannel);
+				for (let i = 0; i < samplesPerChannel; i++) {
+					// Extract channel samples and convert to 32-bit
+					channelData[i] = samples[i * channels + ch];
+				}
+				planarSamples.push(channelData);
+			}
+
+			// Encode in chunks
+			const blockSize = 4096;
+			for (let i = 0; i < samplesPerChannel; i += blockSize) {
+				const chunkSize = Math.min(blockSize, samplesPerChannel - i);
+				const buffer = new Int32Array(chunkSize * channels);
+
+				// Interleave samples for this chunk
+				for (let ch = 0; ch < channels; ch++) {
+					for (let j = 0; j < chunkSize; j++) {
+						buffer[j * channels + ch] = planarSamples[ch][i + j];
+					}
+				}
+
+				// Encode chunk
+				const encodeResult = Flac.FLAC__stream_encoder_process_interleaved(flacEncoder, buffer, chunkSize);
+
+				if (!encodeResult) {
+					throw new Error('FLAC encoding failed during process');
+				}
+
+				// Update progress
+				if (jobId) {
+					const progress = 50 + Math.floor((i / samplesPerChannel) * 40);
+					self.postMessage({
+						type: 'progress',
+						id: jobId,
+						progress,
+						message: 'Encoding FLAC...'
+					});
+				}
+			}
+
+			// Finalize encoding
+			Flac.FLAC__stream_encoder_finish(flacEncoder);
+			Flac.FLAC__stream_encoder_delete(flacEncoder);
+
+			// Create blob from FLAC data
+			return new Blob(flacData, { type: 'audio/flac' });
+
+		} catch (error) {
+			console.error('FLAC encoding failed:', error);
 			throw error;
 		}
 	}

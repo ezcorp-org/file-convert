@@ -1,4 +1,10 @@
 import { test, expect, ImageFactory, AudioFactory, MetadataValidator } from '../../fixtures';
+import { readFileSync, existsSync } from 'fs';
+import { resolve } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
+const EXIF_TEST_ASSET = resolve(__dirname, '../../testAssets/images/sample-with-exif.jpg');
 
 /**
  * Metadata Preservation Tests (ADV-05, ADV-06, ADV-07)
@@ -9,6 +15,13 @@ import { test, expect, ImageFactory, AudioFactory, MetadataValidator } from '../
  * - ADV-06: Image metadata preservation (JPEG to PNG)
  * - ADV-07: Image metadata preservation (PNG to JPEG)
  */
+
+test.beforeAll(() => {
+	if (!existsSync(EXIF_TEST_ASSET)) {
+		throw new Error(`EXIF test asset not found at ${EXIF_TEST_ASSET}. Run 04-11 plan first.`);
+	}
+	console.log(`EXIF test asset found at ${EXIF_TEST_ASSET}`);
+});
 
 // Helper to get correct extension for file
 function getExtension(format: string): string {
@@ -36,26 +49,16 @@ function getFormatUIText(format: string): RegExp {
 
 test.describe('Image Metadata Preservation', () => {
 	test('extracts metadata from images with EXIF', async () => {
-		// Create JPEG with EXIF metadata using ImageFactory
-		const jpegWithExif = await ImageFactory.createWithMetadata({
-			width: 200,
-			height: 150,
-			format: 'jpeg',
-			quality: 90,
-			exif: {
-				Make: 'Test Camera',
-				Model: 'Test Model 1000',
-				Orientation: '1'
-			}
-		});
+		// Use real EXIF test asset created in plan 04-11
+		const jpegWithExif = readFileSync(EXIF_TEST_ASSET);
 
 		// Extract metadata
 		const metadata = await MetadataValidator.extractImageMetadata(jpegWithExif);
 
-		// Verify EXIF data is present
+		// Verify EXIF data is present (values from 04-11-SUMMARY)
 		expect(metadata.hasExif).toBe(true);
-		expect(metadata.make).toBe('Test Camera');
-		expect(metadata.model).toBe('Test Model 1000');
+		expect(metadata.make).toBe('Test Camera Manufacturer');
+		expect(metadata.model).toBe('Test Camera Model 2000');
 
 		console.log('Extracted metadata:', {
 			hasExif: metadata.hasExif,
@@ -90,18 +93,8 @@ test.describe('Image Metadata Preservation', () => {
 		fileHelper,
 		downloadHelper
 	}) => {
-		// Create JPEG with EXIF metadata
-		const jpegBuffer = await ImageFactory.createWithMetadata({
-			width: 200,
-			height: 150,
-			format: 'jpeg',
-			quality: 90,
-			exif: {
-				Make: 'Test Camera',
-				Model: 'ADV-06 Test',
-				Orientation: '1'
-			}
-		});
+		// Use real EXIF test asset
+		const jpegBuffer = readFileSync(EXIF_TEST_ASSET);
 
 		// Extract source metadata
 		const sourceMeta = await MetadataValidator.extractImageMetadata(jpegBuffer);
@@ -112,7 +105,7 @@ test.describe('Image Metadata Preservation', () => {
 		});
 
 		expect(sourceMeta.hasExif).toBe(true);
-		expect(sourceMeta.make).toBe('Test Camera');
+		expect(sourceMeta.make).toBe('Test Camera Manufacturer');
 
 		// Navigate and upload
 		await page.goto('/convert');
@@ -246,18 +239,8 @@ test.describe('Image Metadata Preservation', () => {
 	}) => {
 		// Test JPEG -> WebP instead of JPEG -> JPEG
 		// (App doesn't support same-format conversion)
-		const jpegBuffer = await ImageFactory.createWithMetadata({
-			width: 300,
-			height: 200,
-			format: 'jpeg',
-			quality: 95,
-			exif: {
-				Make: 'Metadata Test',
-				Model: 'Preservation 2000',
-				Orientation: '1',
-				Software: 'Test Suite v1.0'
-			}
-		});
+		// Use real EXIF test asset
+		const jpegBuffer = readFileSync(EXIF_TEST_ASSET);
 
 		// Extract source metadata
 		const sourceMeta = await MetadataValidator.extractImageMetadata(jpegBuffer);
@@ -471,15 +454,8 @@ test.describe('Metadata Validation Edge Cases', () => {
 	});
 
 	test('validates metadata preservation expectations', async () => {
-		// Create source and destination images
-		const jpegWithExif = await ImageFactory.createWithMetadata({
-			width: 100,
-			height: 100,
-			format: 'jpeg',
-			exif: {
-				Make: 'Test'
-			}
-		});
+		// Use real EXIF test asset
+		const jpegWithExif = readFileSync(EXIF_TEST_ASSET);
 
 		const pngWithoutExif = await ImageFactory.createPNG({
 			width: 100,

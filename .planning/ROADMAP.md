@@ -98,17 +98,21 @@ Plans:
   7. Visual fidelity validation shows image conversions maintain quality (SSIM >0.95)
   8. Audio quality validation confirms lossless conversions are truly lossless
   9. Metadata preservation validation confirms critical fields persist through conversions
-**Plans**: 8 plans
+**Plans**: 12 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — SSIM utility and advanced image visual fidelity validation
-- [ ] 04-02-PLAN.md — Audio conversions (WAV, FLAC, MP3, OGG, Opus)
-- [ ] 04-03-PLAN.md — Document conversions (DOCX, HTML, TXT, PDF, Markdown)
-- [ ] 04-04-PLAN.md — Spreadsheet conversions (XLSX, CSV, TSV, JSON, YAML, XML)
-- [ ] 04-05-PLAN.md — Archive conversions (ZIP, 7Z, TAR, TGZ, TBZ2, TXZ)
-- [ ] 04-06-PLAN.md — Text format conversions (HTML, TXT, MD, JSON, YAML)
-- [ ] 04-07-PLAN.md — Metadata preservation validation (EXIF, ID3)
-- [ ] 04-08-PLAN.md — Mixed format batch conversion
+- [x] 04-01-PLAN.md — SSIM utility and advanced image visual fidelity validation
+- [x] 04-02-PLAN.md — Audio conversions (WAV, FLAC, MP3, OGG, Opus)
+- [x] 04-03-PLAN.md — Document conversions (DOCX, HTML, TXT, PDF, Markdown)
+- [x] 04-04-PLAN.md — Spreadsheet conversions (XLSX, CSV, TSV, JSON, YAML, XML)
+- [x] 04-05-PLAN.md — Archive conversions (ZIP, 7Z, TAR, TGZ, TBZ2, TXZ)
+- [x] 04-06-PLAN.md — Text format conversions (HTML, TXT, MD, JSON, YAML)
+- [x] 04-07-PLAN.md — Metadata preservation validation (EXIF, ID3)
+- [x] 04-08-PLAN.md — Mixed format batch conversion
+- [x] 04-09-PLAN.md — Audio encoding implementation (MP3, FLAC, OGG, Opus) [gap closure]
+- [x] 04-10-PLAN.md — TXT output format for text conversions [gap closure]
+- [x] 04-11-PLAN.md — EXIF-rich metadata test fixtures [gap closure]
+- [ ] 04-12-PLAN.md — Activate tests for implemented infrastructure [gap closure]
 
 ### Phase 5: Error Handling & Edge Cases
 **Goal**: Ensure application handles invalid input gracefully and recovers from worker failures
@@ -155,6 +159,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 1. Test Infrastructure Foundation | 7/7 | Complete | 2026-01-24 |
 | 2. Validation Library & Fixtures | 7/7 | Complete | 2026-01-24 |
 | 3. Upload/Download & Basic Coverage | 6/6 | Complete | 2026-01-24 |
-| 4. Comprehensive Format Coverage | 0/8 | Ready | - |
+| 4. Comprehensive Format Coverage | 12/12 | Gaps Found | - |
 | 5. Error Handling & Edge Cases | 0/TBD | Not started | - |
 | 6. Performance & Bug Fixes | 0/TBD | Not started | - |

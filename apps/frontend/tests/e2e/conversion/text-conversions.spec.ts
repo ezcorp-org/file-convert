@@ -20,8 +20,8 @@ const TEXT_CONVERSIONS = [
 	{ from: 'csv', to: 'json', mimeType: 'text/csv' },
 	{ from: 'json', to: 'csv', mimeType: 'application/json' },
 	// Text extraction conversions
-	{ from: 'html', to: 'txt', mimeType: 'text/html', skip: true }, // TODO: TXT not available in UI as output format
-	{ from: 'md', to: 'txt', mimeType: 'text/markdown', skip: true }, // TODO: TXT not available in UI as output format
+	{ from: 'html', to: 'txt', mimeType: 'text/html' },
+	{ from: 'md', to: 'txt', mimeType: 'text/markdown' },
 	{ from: 'md', to: 'html', mimeType: 'text/markdown' },
 	{ from: 'html', to: 'md', mimeType: 'text/html' }
 ];
@@ -66,7 +66,7 @@ function getTextUIText(format: string): RegExp {
 		xml: /XML/i,
 		csv: /CSV/i,
 		html: /HTML/i,
-		txt: /TXT|Text/i,
+		txt: /TXT|Plain Text/i,
 		md: /Markdown|MD/i
 	};
 	return uiText[format] || new RegExp(format, 'i');

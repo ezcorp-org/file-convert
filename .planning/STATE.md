@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 
 ## Current Position
 
-Phase: 4 of 6 (Comprehensive Format Coverage) - IN PROGRESS
-Plan: 4 of 6 complete (04-01, 04-02, 04-07, 04-08)
-Status: Mixed batch conversion tests complete, discovered format selection limitation
-Last activity: 2026-01-24 - Completed 04-08 (Mixed Format Batch Conversion Tests)
+Phase: 4 of 6 (Comprehensive Format Coverage) - GAPS FOUND
+Plan: 12 of 12 complete (all plans executed)
+Status: Verification found gaps - audio encoding CDN loading blocked, document workers not integrated
+Last activity: 2026-01-24 - Phase 4 execution complete, verification score 4/9
 
-Progress: [█████████░] 97%
+Progress: [█████████░] 98%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 23
-- Average duration: 5.0 min
-- Total execution time: 2.0 hours
+- Total plans completed: 27
+- Average duration: 4.9 min
+- Total execution time: 2.2 hours
 
 **By Phase:**
 
@@ -30,11 +30,11 @@ Progress: [█████████░] 97%
 | 01 (Test Infrastructure) | 7/7 | 48 min | 6.9 min |
 | 02 (Validation Library) | 7/7 | 29 min | 4.1 min |
 | 03 (Upload/Download/Coverage) | 6/6 | 37 min | 6.2 min |
-| 04 (Comprehensive Coverage) | 4/6 | 29 min | 7.3 min |
+| 04 (Comprehensive Coverage) | 8/8 | 47 min | 5.9 min |
 
 **Recent Trend:**
-- Last 4 plans: 5.8 min average
-- Trend: Consistent (1min → 4min → 9min → 12min → 3min → 5min)
+- Last 4 plans: 4.5 min average
+- Trend: Stable (3min → 5min → 3min → 3min → 4min → 8min)
 
 *Updated after each plan completion*
 
@@ -122,6 +122,8 @@ Recent decisions affecting current work:
 | 04-01 | Use ssim.js for SSIM calculation | Established library with proper Wang et al. 2004 implementation | Provides accurate structural similarity measurement |
 | 04-04 | Skip XLSX conversions in tests | SheetJS CDN load blocked in test environment | Tests focus on native conversions (CSV/JSON/TSV) |
 | 04-04 | Validate data integrity via content checks | Format validation alone doesn't catch data corruption | Tests verify actual values (Alice, Bob, Charlie) preserved |
+| 04-10 | Use regex-based HTML parsing instead of DOMParser | DOMParser not available in Web Worker context | Web Workers require DOM-free parsing approach |
+| 04-10 | Add TXT as bidirectional format | Enable both text extraction (HTML/MD->TXT) and basic formatting (TXT->HTML/MD) | Provides flexibility for text conversion paths |
 | 04-04 | Round-trip testing pattern for conversions | Conversions may lose data in subtle ways | CSV→TSV→CSV validates both directions maintain integrity |
 | 04-05 | Removed TAR <-> TGZ from conversion matrix | Worker only supports conversions TO or FROM ZIP | Conversion matrix reduced to 4 paths involving ZIP |
 | 04-05 | Simplified format selection patterns | Match image test patterns for consistency | Changed from complex regex to simple `/TAR Archive/i` |
@@ -152,6 +154,13 @@ Recent decisions affecting current work:
 | 04-08 | Use .first() selector for format options in mixed batches | Multiple file types create multiple format selector groups | Avoids strict mode violations in Playwright |
 | 04-08 | Log detected formats when validation is flexible | Provides data for debugging mixed-batch limitation | Documents which files fail to convert correctly |
 | 04-07 | Document metadata stripping behavior | App currently strips EXIF in all conversions | Tests use 'partial' expectation, document actual state |
+| 04-09 | Use script injection for non-ES-module encoders | lamejs and libflac.js are UMD/global scripts, not ES modules | Fetch + eval pattern loads encoders into Web Worker global scope |
+| 04-09 | Convert Int16 to Int32 for FLAC encoder | libflac.js expects 32-bit samples, AudioFactory produces Int16 | Convert during encoding without changing test fixtures |
+| 04-09 | Document technical blockers with investigation details | Tests skipped with generic "not implemented" lack context | 10+ line comments list investigated options and why each failed |
+| 04-11 | Use sharp library for EXIF generation | Already in dependencies, supports withMetadata() for controlled EXIF injection | Generated test images give controlled, predictable EXIF for reliable test assertions |
+| 04-11 | Generate colorful gradient pattern | Visual verification that image is valid and visually interesting | RGB gradients enable visual confirmation of test asset quality |
+| 04-11 | Include comprehensive EXIF fields | Enables thorough validation of metadata preservation through conversions | 8 fields including Make, Model, DateTime, Software, Artist, Copyright |
+| 04-09 | Use CDN for encoder libraries | Faster implementation, no build changes, reduces bundle size | Works immediately without package.json or build config changes |
 
 ### Pending Todos
 
@@ -174,6 +183,41 @@ None.
 - Impact: Users expecting uniform conversion will get mixed results in batch downloads
 - Documentation: Tests accept any valid image format for affected files, log actual formats
 - Next steps: Document as bug for Phase 5 (Bug Documentation) to prioritize fixing
+
+**Audio Encoding Status (updated 04-12):**
+- MP3 encoding: ⚠️ IMPLEMENTED but BLOCKED in tests
+  - Implementation: Script injection pattern for lamejs via CDN (04-09)
+  - Blocker: CDN fetch fails in Playwright worker context despite being accessible from host
+  - Impact: Cannot verify MP3 encoding functionality via E2E tests
+  - Next steps: Architectural decision needed (bundle vs CDN vs mock)
+- FLAC encoding: ⚠️ IMPLEMENTED but BLOCKED in tests
+  - Implementation: libflac.js for lossless compression via CDN (04-09)
+  - Blocker: CDN fetch fails in Playwright worker context
+  - Impact: Cannot verify FLAC encoding or lossless round-trip (ADV-12)
+  - Next steps: Same as MP3 - architectural decision needed
+- OGG Vorbis encoding: ⚠️ BLOCKED - No browser-compatible encoder available
+  - Investigated: vorbis-encoder-js (unmaintained), libvorbis.js (no CDN), MediaRecorder (streams only)
+  - Blocker: Requires WASM-compiled libvorbis (~110KB bundle)
+  - Current: Falls back to WAV output
+- Opus encoding: ⚠️ BLOCKED - No browser-compatible encoder available
+  - Investigated: opus-encoder (Node.js only), libopus.js (no CDN), MediaRecorder (streams only)
+  - Blocker: Requires WASM-compiled libopus (~90KB bundle)
+  - Current: Falls back to WAV output
+
+**Test Activation Status (from 04-12):**
+- Text conversions: ✅ ACTIVE and PASSING
+  - HTML->TXT: ✅ PASSING (infrastructure from 04-10 confirmed functional)
+  - MD->TXT: ✅ PASSING
+  - Overall: 11/14 tests active (3 skipped for XML server stability)
+- Metadata preservation: ✅ ACTIVE and PASSING
+  - Real EXIF asset (sample-with-exif.jpg): ✅ PASSING
+  - JPEG->PNG metadata: ✅ PASSING
+  - JPEG->WebP metadata: ✅ PASSING
+  - Overall: 8/10 tests active (2 audio metadata tests skipped)
+- Audio conversions: ⚠️ BLOCKED by CDN loading issue
+  - Worker CDN error handling: ✅ IMPROVED (better diagnostics)
+  - MP3/FLAC tests: ⚠️ SKIPPED (documented with investigation)
+  - Requires: Architectural decision on CDN vs bundled dependencies
 
 **Phase 1 Gap Closure Status:**
 1. **Gap 1: CI workflow never executed** - ✅ CLOSED (plan 01-05)
@@ -200,6 +244,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-24 (Phase 4 mixed batch conversion tests)
-Stopped at: Completed 04-08 Mixed Format Batch Conversion Tests - Discovered format selection limitation in mixed batches
-Resume file: None - Wave 2 complete (04-03 to 04-08), continue with remaining Phase 4 plans
+Last session: 2026-01-24 (Phase 4 gap closure - test activation)
+Stopped at: Completed 04-12 Test Activation - Text/metadata tests passing, audio blocked by CDN
+Resume file: None - Phase 4 complete (8/8 plans), ready for verification re-run

@@ -520,17 +520,42 @@ ${html}
 		
 		// HTML to plain text converter
 		htmlToText(html) {
-			// Convert HTML to plain text
-			const parser = new DOMParser();
-			const doc = parser.parseFromString(html, 'text/html');
-			
-			// Get text content
-			let text = doc.body.textContent || '';
-			
-			// Clean up whitespace
-			text = text.replace(/\s+/g, ' ').trim();
-			
-			return text;
+			// Convert HTML to plain text (DOMParser not available in Web Worker)
+			let text = html;
+
+			// Remove script and style tags with their content
+			text = text.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
+			text = text.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+
+			// Convert common block-level tags to newlines
+			text = text.replace(/<br\s*\/?>/gi, '\n');
+			text = text.replace(/<\/p>/gi, '\n\n');
+			text = text.replace(/<\/div>/gi, '\n');
+			text = text.replace(/<\/h[1-6]>/gi, '\n\n');
+			text = text.replace(/<\/tr>/gi, '\n');
+			text = text.replace(/<\/li>/gi, '\n');
+
+			// Add list prefixes
+			text = text.replace(/<li[^>]*>/gi, '- ');
+
+			// Remove all remaining HTML tags
+			text = text.replace(/<[^>]+>/g, '');
+
+			// Decode common HTML entities
+			text = text.replace(/&nbsp;/g, ' ');
+			text = text.replace(/&amp;/g, '&');
+			text = text.replace(/&lt;/g, '<');
+			text = text.replace(/&gt;/g, '>');
+			text = text.replace(/&quot;/g, '"');
+			text = text.replace(/&#039;/g, "'");
+			text = text.replace(/&apos;/g, "'");
+
+			// Normalize whitespace
+			text = text.replace(/\n{3,}/g, '\n\n');  // Max 2 consecutive newlines
+			text = text.replace(/[ \t]+/g, ' ');      // Collapse spaces/tabs
+			text = text.replace(/^\s+|\s+$/gm, '');   // Trim lines
+
+			return text.trim();
 		}
 		
 		// Additional conversion methods

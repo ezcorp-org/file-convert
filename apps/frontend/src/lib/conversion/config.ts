@@ -189,7 +189,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     category: 'text',
     icon: '📋',
     maxSize: 10 * 1024 * 1024,
-    supportedOutputs: ['html', 'pdf'],
+    supportedOutputs: ['html', 'pdf', 'txt'],
     workerType: 'text'
   },
   html: {
@@ -200,7 +200,18 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     category: 'text',
     icon: '🌐',
     maxSize: 10 * 1024 * 1024,
-    supportedOutputs: ['pdf', 'md'],
+    supportedOutputs: ['pdf', 'md', 'txt'],
+    workerType: 'text'
+  },
+  txt: {
+    id: 'txt',
+    name: 'Plain Text',
+    extensions: ['txt'],
+    mimeTypes: ['text/plain'],
+    category: 'text',
+    icon: '📝',
+    maxSize: 10 * 1024 * 1024,
+    supportedOutputs: ['html', 'md'],
     workerType: 'text'
   },
   json: {
