@@ -84,6 +84,9 @@ core.*
 *.production
 *.min.js
 *.min.css
+# Exception for bundled encoder libraries (needed for audio conversions)
+!apps/frontend/static/lib/lamejs.min.js
+!apps/frontend/static/lib/libflac.min.js
 
 # WASM build artifacts
 *.wasm

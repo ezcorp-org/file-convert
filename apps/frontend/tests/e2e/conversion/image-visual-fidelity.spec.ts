@@ -3,8 +3,12 @@ import { test, expect, ImageFactory, SSIMValidator } from '../../fixtures';
 /**
  * Visual Fidelity Validation Tests
  *
- * These tests use SSIM (Structural Similarity Index) to verify that image conversions
- * maintain visual quality. SSIM scores range from 0 (completely different) to 1 (identical).
+ * Uses gradient images (not solid colors) to exercise SSIM algorithm properly.
+ * Solid colors produce perfect 1.0 SSIM even after lossy compression because
+ * there's no structural information to degrade. Gradients have structure that
+ * lossy formats compress, producing realistic SSIM scores.
+ *
+ * SSIM scores range from 0 (completely different) to 1 (identical).
  *
  * Thresholds (from RESEARCH.md ADV-08, ADV-09, ADV-10):
  * - Lossless conversions (PNG->PNG, WebP lossless): SSIM >0.99
@@ -33,12 +37,14 @@ test.describe('Visual Fidelity Validation', () => {
 		fileHelper,
 		downloadHelper
 	}) => {
-		// Generate source PNG with gradient for SSIM variance
-		const sourceBuffer = await ImageFactory.create({
+		// Generate source PNG with diagonal gradient for meaningful SSIM testing
+		const sourceBuffer = await ImageFactory.createGradient({
 			format: 'png',
 			width: 100,
 			height: 100,
-			background: { r: 255, g: 128, b: 0 }
+			gradientType: 'diagonal',
+			startColor: { r: 255, g: 128, b: 0 }, // Orange
+			endColor: { r: 0, g: 128, b: 255 } // Blue
 		});
 
 		const fileData = fileHelper.createFileData(sourceBuffer, 'test.png', 'image/png');
@@ -81,12 +87,14 @@ test.describe('Visual Fidelity Validation', () => {
 		fileHelper,
 		downloadHelper
 	}) => {
-		// Generate source JPEG
-		const sourceBuffer = await ImageFactory.create({
+		// Generate source JPEG with horizontal gradient for meaningful SSIM testing
+		const sourceBuffer = await ImageFactory.createGradient({
 			format: 'jpeg',
 			width: 100,
 			height: 100,
-			background: { r: 0, g: 128, b: 255 }
+			gradientType: 'horizontal',
+			startColor: { r: 0, g: 128, b: 255 }, // Blue
+			endColor: { r: 128, g: 255, b: 128 } // Green
 		});
 
 		const fileData = fileHelper.createFileData(sourceBuffer, 'test.jpg', 'image/jpeg');
@@ -129,12 +137,14 @@ test.describe('Visual Fidelity Validation', () => {
 		fileHelper,
 		downloadHelper
 	}) => {
-		// Generate source WebP
-		const sourceBuffer = await ImageFactory.create({
+		// Generate source WebP with vertical gradient for meaningful SSIM testing
+		const sourceBuffer = await ImageFactory.createGradient({
 			format: 'webp',
 			width: 100,
 			height: 100,
-			background: { r: 128, g: 255, b: 128 }
+			gradientType: 'vertical',
+			startColor: { r: 128, g: 255, b: 128 }, // Green
+			endColor: { r: 255, g: 128, b: 255 } // Pink
 		});
 
 		const fileData = fileHelper.createFileData(sourceBuffer, 'test.webp', 'image/webp');
@@ -177,12 +187,14 @@ test.describe('Visual Fidelity Validation', () => {
 		fileHelper,
 		downloadHelper
 	}) => {
-		// Generate original PNG
-		const originalBuffer = await ImageFactory.create({
+		// Generate original PNG with diagonal gradient for meaningful SSIM testing
+		const originalBuffer = await ImageFactory.createGradient({
 			format: 'png',
 			width: 100,
 			height: 100,
-			background: { r: 200, g: 100, b: 50 }
+			gradientType: 'diagonal',
+			startColor: { r: 200, g: 100, b: 50 },
+			endColor: { r: 50, g: 100, b: 200 }
 		});
 
 		// Step 1: PNG to WebP

@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Test Infrastructure Foundation** - Core test utilities, CI/CD, worker lifecycle management
 - [x] **Phase 2: Validation Library & Fixtures** - Multi-layer validators and fixture generators for all formats
 - [x] **Phase 3: Upload/Download & Basic Coverage** - File handling flows and pilot conversion tests
-- [ ] **Phase 4: Comprehensive Format Coverage** - All conversion paths across 6 format categories
+- [x] **Phase 4: Comprehensive Format Coverage** - All conversion paths across 6 format categories
 - [ ] **Phase 5: Error Handling & Edge Cases** - Error scenarios, corrupted files, and edge case validation
 - [ ] **Phase 6: Performance & Bug Fixes** - Performance benchmarking and resolution of known bugs
 
@@ -98,7 +98,7 @@ Plans:
   7. Visual fidelity validation shows image conversions maintain quality (SSIM >0.95)
   8. Audio quality validation confirms lossless conversions are truly lossless
   9. Metadata preservation validation confirms critical fields persist through conversions
-**Plans**: 12 plans
+**Plans**: 14 plans
 
 Plans:
 - [x] 04-01-PLAN.md — SSIM utility and advanced image visual fidelity validation
@@ -112,7 +112,12 @@ Plans:
 - [x] 04-09-PLAN.md — Audio encoding implementation (MP3, FLAC, OGG, Opus) [gap closure]
 - [x] 04-10-PLAN.md — TXT output format for text conversions [gap closure]
 - [x] 04-11-PLAN.md — EXIF-rich metadata test fixtures [gap closure]
-- [ ] 04-12-PLAN.md — Activate tests for implemented infrastructure [gap closure]
+- [x] 04-12-PLAN.md — Activate tests for implemented infrastructure [gap closure]
+- [x] 04-13-PLAN.md — Bundle audio encoder libraries locally [gap closure]
+- [x] 04-14-PLAN.md — SSIM tests with gradient images [gap closure]
+
+**Deferred to Phase 5/6:**
+- Document worker UI integration (COVER-03) - Requires APPLICATION code changes, not test infrastructure. Document workers exist but UI doesn't expose PDF/DOCX conversion options. This is out of scope for a testing milestone.
 
 ### Phase 5: Error Handling & Edge Cases
 **Goal**: Ensure application handles invalid input gracefully and recovers from worker failures
@@ -159,6 +164,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 1. Test Infrastructure Foundation | 7/7 | Complete | 2026-01-24 |
 | 2. Validation Library & Fixtures | 7/7 | Complete | 2026-01-24 |
 | 3. Upload/Download & Basic Coverage | 6/6 | Complete | 2026-01-24 |
-| 4. Comprehensive Format Coverage | 12/12 | Gaps Found | - |
+| 4. Comprehensive Format Coverage | 14/14 | Complete | 2026-01-24 |
 | 5. Error Handling & Edge Cases | 0/TBD | Not started | - |
 | 6. Performance & Bug Fixes | 0/TBD | Not started | - |

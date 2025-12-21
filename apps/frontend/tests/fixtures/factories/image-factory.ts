@@ -9,6 +9,16 @@ export interface ImageFixtureOptions {
 	withText?: string; // optional text overlay for visual identification
 }
 
+export interface GradientOptions {
+	width?: number;
+	height?: number;
+	format?: 'png' | 'jpeg' | 'webp';
+	quality?: number;
+	gradientType?: 'horizontal' | 'vertical' | 'diagonal';
+	startColor?: { r: number; g: number; b: number };
+	endColor?: { r: number; g: number; b: number };
+}
+
 /**
  * Factory for generating synthetic test images
  * Uses sharp library for efficient, valid image generation
@@ -117,6 +127,74 @@ export class ImageFactory {
 			wide: await this.create({ width: 1000, height: 100 }),
 			tall: await this.create({ width: 100, height: 1000 })
 		};
+	}
+
+	/**
+	 * Create an image with a gradient pattern for more realistic SSIM testing.
+	 * Gradients exercise SSIM better than solid colors because they have
+	 * structural variation that lossy compression can degrade.
+	 *
+	 * @param options - Image configuration options
+	 * @returns Buffer containing the generated gradient image
+	 */
+	static async createGradient(options: GradientOptions = {}): Promise<Buffer> {
+		const {
+			width = 100,
+			height = 100,
+			format = 'png',
+			quality = 90,
+			gradientType = 'diagonal',
+			startColor = { r: 255, g: 0, b: 0 }, // Red
+			endColor = { r: 0, g: 0, b: 255 } // Blue
+		} = options;
+
+		// Create raw pixel data for gradient
+		const channels = 3;
+		const pixels = Buffer.alloc(width * height * channels);
+
+		for (let y = 0; y < height; y++) {
+			for (let x = 0; x < width; x++) {
+				let t: number;
+				switch (gradientType) {
+					case 'horizontal':
+						t = x / (width - 1);
+						break;
+					case 'vertical':
+						t = y / (height - 1);
+						break;
+					case 'diagonal':
+					default:
+						t = (x + y) / (width + height - 2);
+						break;
+				}
+
+				const idx = (y * width + x) * channels;
+				pixels[idx] = Math.round(startColor.r + t * (endColor.r - startColor.r)); // R
+				pixels[idx + 1] = Math.round(startColor.g + t * (endColor.g - startColor.g)); // G
+				pixels[idx + 2] = Math.round(startColor.b + t * (endColor.b - startColor.b)); // B
+			}
+		}
+
+		// Create image from raw pixels
+		const image = sharp(pixels, {
+			raw: {
+				width,
+				height,
+				channels
+			}
+		});
+
+		// Convert to requested format
+		switch (format) {
+			case 'png':
+				return image.png().toBuffer();
+			case 'jpeg':
+				return image.jpeg({ quality }).toBuffer();
+			case 'webp':
+				return image.webp({ quality }).toBuffer();
+			default:
+				return image.png().toBuffer();
+		}
 	}
 
 	/**

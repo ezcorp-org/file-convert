@@ -77,23 +77,27 @@ class AudioConverter {
 
 	async loadLameEncoder() {
 		if (!this.lameEncoder) {
-			// lamejs is not an ES module, it assigns to global scope
-			// We need to load it via script injection pattern
+			// Libraries bundled locally to avoid CDN fetch issues in test environments
+			// lamejs: /lib/lamejs.min.js (~530KB)
+			// lamejs is not an ES module - it defines a function and calls it
+			// The function assigns Mp3Encoder to itself: lamejs.Mp3Encoder = Mp3Encoder
 			if (typeof self.lamejs === 'undefined') {
 				try {
-					// Fetch the lamejs library
-					const response = await fetch('https://unpkg.com/lamejs@1.2.1/lame.all.js');
+					// Fetch the lamejs library from local static files
+					const response = await fetch('/lib/lamejs.min.js');
 					if (!response.ok) {
-						throw new Error(`CDN fetch failed: ${response.status} ${response.statusText}`);
+						throw new Error(`Local fetch failed: ${response.status} ${response.statusText}`);
 					}
 					const code = await response.text();
-					// Execute in global scope - lamejs assigns to self.lamejs
-					eval(code);
+					// Use Function constructor to execute in global scope
+					// This makes 'lamejs' available as a global after execution
+					const fn = new Function(code + '\nreturn lamejs;');
+					self.lamejs = fn();
 					// Verify lamejs was actually loaded
-					if (typeof self.lamejs === 'undefined') {
-						throw new Error('lamejs library did not initialize properly after eval');
+					if (typeof self.lamejs === 'undefined' || typeof self.lamejs.Mp3Encoder === 'undefined') {
+						throw new Error('lamejs library did not initialize properly');
 					}
-					console.log('AudioWorker: lamejs loaded successfully');
+					console.log('AudioWorker: lamejs loaded successfully from local bundle');
 				} catch (error) {
 					console.error('AudioWorker: Failed to load lamejs:', error);
 					throw new Error('Failed to load MP3 encoder library');
@@ -106,22 +110,26 @@ class AudioConverter {
 
 	async loadFLACEncoder() {
 		if (!this.flacEncoder) {
-			// libflac.js is also a global script
+			// Libraries bundled locally to avoid CDN fetch issues in test environments
+			// libflac: /lib/libflac.min.js (~390KB)
+			// libflac.js uses UMD pattern and assigns to root.Flac where root=self
 			if (typeof self.Flac === 'undefined') {
 				try {
-					// Fetch the libflac.js library
-					const response = await fetch('https://cdn.jsdelivr.net/npm/libflacjs@5.4.0/dist/libflac.min.js');
+					// Fetch the libflac.js library from local static files
+					const response = await fetch('/lib/libflac.min.js');
 					if (!response.ok) {
-						throw new Error(`CDN fetch failed: ${response.status} ${response.statusText}`);
+						throw new Error(`Local fetch failed: ${response.status} ${response.statusText}`);
 					}
 					const code = await response.text();
-					// Execute in global scope - libflac assigns to self.Flac
-					eval(code);
+					// Execute using Function constructor with self bound as root
+					// libflac's UMD wrapper uses 'self' as root, so we execute in that context
+					const fn = new Function(code);
+					fn.call(self);
 					// Verify Flac was actually loaded
 					if (typeof self.Flac === 'undefined') {
-						throw new Error('libflac.js library did not initialize properly after eval');
+						throw new Error('libflac.js library did not initialize properly');
 					}
-					console.log('AudioWorker: libflac.js loaded successfully');
+					console.log('AudioWorker: libflac.js loaded successfully from local bundle');
 				} catch (error) {
 					console.error('AudioWorker: Failed to load libflac.js:', error);
 					throw new Error('Failed to load FLAC encoder library');
