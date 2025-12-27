@@ -331,25 +331,20 @@ export class ConversionManager {
 
       const worker = await this.getOrCreateWorker(workerType);
 
-      // Set up message handler
+      // Helper to clean up the message handler - prevents memory leaks
+      const cleanupHandler = () => {
+        worker.removeEventListener('message', messageHandler);
+      };
+
+      // Set up message handler - stored as reference for cleanup
       const messageHandler = (event: MessageEvent) => {
         // Log all messages for debugging
         console.log(`Worker message for ${id}:`, event.data.type, event.data);
 
-        // Handle both Comlink responses and progress updates
-        // For progress messages, check the id in the data
-        // For Comlink messages, the id is at the root level
-        const messageId = event.data.id;
-
-        // Skip messages not for this conversion (but be careful with undefined ids)
-        if (messageId && messageId !== id) {
-          console.log(`Skipping message for different conversion: ${messageId} !== ${id}`);
-          return;
-        }
-
-        // If there's no messageId, check if it's a progress message for our conversion
-        if (!messageId && event.data.type === 'progress' && event.data.id !== id) {
-          console.log(`Skipping progress message for different conversion: ${event.data.id} !== ${id}`);
+        // Single authoritative ID check - skip messages not for this conversion
+        const msgId = event.data.id;
+        if (msgId && msgId !== id) {
+          console.log(`Skipping message for different conversion: ${msgId} !== ${id}`);
           return;
         }
 
@@ -357,7 +352,7 @@ export class ConversionManager {
 
         switch (event.data.type) {
           case 'progress':
-            // Progress updates from worker
+            // Progress updates from worker - don't cleanup, more messages expected
             this.updateState(id, {
               progress: event.data.progress,
               message: event.data.message
@@ -365,9 +360,8 @@ export class ConversionManager {
             break;
 
           case 'RESULT':
-            // Comlink success response
-            worker.removeEventListener('message', messageHandler);
-            // The result from Comlink contains the actual conversion result
+            // Comlink success response - terminal, cleanup handler
+            cleanupHandler();
             if (event.data.result) {
               this.handleConversionComplete(id, event.data.result);
             } else {
@@ -376,21 +370,21 @@ export class ConversionManager {
             break;
 
           case 'ERROR':
-            // Comlink error response
-            worker.removeEventListener('message', messageHandler);
+            // Comlink error response - terminal, cleanup handler
+            cleanupHandler();
             const errorMessage = event.data.error?.message || event.data.error || 'Unknown error occurred';
             this.handleConversionError(id, new Error(errorMessage));
             break;
 
           case 'complete':
-            // Legacy format support
-            worker.removeEventListener('message', messageHandler);
+            // Legacy format support - terminal, cleanup handler
+            cleanupHandler();
             this.handleConversionComplete(id, event.data.result);
             break;
 
           case 'error':
-            // Legacy format support
-            worker.removeEventListener('message', messageHandler);
+            // Legacy format support - terminal, cleanup handler
+            cleanupHandler();
             this.handleConversionError(id, new Error(event.data.error));
             break;
         }
@@ -398,31 +392,37 @@ export class ConversionManager {
 
       worker.addEventListener('message', messageHandler);
 
-      // Create conversion job with the (possibly decoded) file
-      // If audio was decoded in main thread, fileToConvert will be WAV
-      const job: ConversionJob = {
-        id,
-        file: fileToConvert, // Use the decoded WAV file for audio conversions
-        fromFormat: sourceConfig.category === 'audio' && sourceConfig.id !== 'wav' ? 'wav' : sourceConfig.id, // Worker receives WAV if we decoded
-        toFormat: targetFormat,
-        options: options || {}
-      };
+      try {
+        // Create conversion job with the (possibly decoded) file
+        // If audio was decoded in main thread, fileToConvert will be WAV
+        const job: ConversionJob = {
+          id,
+          file: fileToConvert, // Use the decoded WAV file for audio conversions
+          fromFormat: sourceConfig.category === 'audio' && sourceConfig.id !== 'wav' ? 'wav' : sourceConfig.id, // Worker receives WAV if we decoded
+          toFormat: targetFormat,
+          options: options || {}
+        };
 
-      // Send to worker using Comlink format
-      console.log(`Sending conversion job ${id} to worker ${workerType}`, job);
-      console.log(`Worker state: worker exists=${!!worker}, listeners=${this.listeners.has(id)}`);
-      console.log(`Original file: ${file.name}, File to convert: ${fileToConvert.name}, fromFormat: ${job.fromFormat}`);
+        // Send to worker using Comlink format
+        console.log(`Sending conversion job ${id} to worker ${workerType}`, job);
+        console.log(`Worker state: worker exists=${!!worker}, listeners=${this.listeners.has(id)}`);
+        console.log(`Original file: ${file.name}, File to convert: ${fileToConvert.name}, fromFormat: ${job.fromFormat}`);
 
-      worker.postMessage({
-        id,
-        type: 'CALL',
-        method: 'convert',
-        args: [job]
-      });
+        worker.postMessage({
+          id,
+          type: 'CALL',
+          method: 'convert',
+          args: [job]
+        });
 
-      console.log(`Message sent to worker ${workerType} for job ${id}`);
+        console.log(`Message sent to worker ${workerType} for job ${id}`);
 
-      // Request is already tracked in activeConversions; no need to re-queue here
+        // Request is already tracked in activeConversions; no need to re-queue here
+      } catch (innerError) {
+        // Exception during job creation or postMessage - cleanup handler and rethrow
+        cleanupHandler();
+        throw innerError;
+      }
 
     } catch (error) {
       this.handleConversionError(id, error as Error);
@@ -441,11 +441,11 @@ export class ConversionManager {
       endTime: Date.now()
     });
 
-    // Update local conversion count
-    const currentConversions = parseInt(localStorage.getItem('lifetime_conversions') || '0');
+    // Update session conversion count (uses sessionStorage for privacy - resets when browser closes)
+    const currentConversions = parseInt(sessionStorage.getItem('session_conversions') || '0');
     const newConversions = currentConversions + 1;
-    localStorage.setItem('lifetime_conversions', newConversions.toString());
-    localStorage.setItem('last_conversion_date', new Date().toISOString());
+    sessionStorage.setItem('session_conversions', newConversions.toString());
+    sessionStorage.setItem('last_conversion_date', new Date().toISOString());
 
     // Remove from queue and processing set
     this.queue = this.queue.filter(r => r.id !== id);

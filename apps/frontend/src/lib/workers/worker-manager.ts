@@ -1,6 +1,11 @@
 import * as Comlink from 'comlink';
 import { OptimizedConverter, MemoryMonitor } from '../converters/optimized-converter.js';
 
+// Worker initialization configuration
+const INIT_TIMEOUT = 10000;  // Increased from 5000 - PDF.js is 2-3MB
+const RETRY_DELAYS = [500, 1000, 2000];  // Exponential backoff delays
+const MAX_RETRIES = 3;
+
 export interface ConversionJob {
 	id: string;
 	file: File;
@@ -46,16 +51,17 @@ class WorkerManager {
 
 	private async getOrCreateWorker(type: string): Promise<Comlink.Remote<WorkerApi>> {
 		if (!this.workerApis.has(type)) {
-			let retries = 3;
 			let lastError: any;
 
-			while (retries > 0) {
+			for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
 				try {
-					console.log(`Attempting to create ${type} worker (${4 - retries}/3)`);
+					console.log(`Attempting to create ${type} worker (${attempt + 1}/${MAX_RETRIES})`);
 
-					// Add a small delay between retries
-					if (retries < 3) {
-						await new Promise(resolve => setTimeout(resolve, 500));
+					// Apply exponential backoff delay between retries
+					if (attempt > 0) {
+						const delay = RETRY_DELAYS[attempt - 1] || RETRY_DELAYS[RETRY_DELAYS.length - 1];
+						console.log(`Worker init retry ${attempt}/${MAX_RETRIES} for ${type}, waiting ${delay}ms`);
+						await new Promise(resolve => setTimeout(resolve, delay));
 					}
 
 					// Different workers need different loading strategies
@@ -69,9 +75,9 @@ class WorkerManager {
 					}
 					const worker = new Worker(this.getWorkerPath(type), workerOptions);
 
-					// Test the worker is responsive
+					// Test the worker is responsive with increased timeout for large libraries (PDF.js)
 					await new Promise((resolve, reject) => {
-						const timeout = setTimeout(() => reject(new Error('Worker initialization timeout')), 5000);
+						const timeout = setTimeout(() => reject(new Error('Worker initialization timeout')), INIT_TIMEOUT);
 						worker.addEventListener('error', (e) => {
 							clearTimeout(timeout);
 							reject(e);
@@ -91,14 +97,13 @@ class WorkerManager {
 					this.workers.set(type, worker);
 					this.workerApis.set(type, api);
 					console.log(`Successfully created ${type} worker`);
-					break;
+					return api;
 				} catch (error) {
 					lastError = error;
-					console.error(`Failed to create ${type} worker (attempt ${4 - retries}/3):`, error);
-					retries--;
+					console.error(`Failed to create ${type} worker (attempt ${attempt + 1}/${MAX_RETRIES}):`, error);
 
 					// Try fallback workers on last attempt
-					if (retries === 0) {
+					if (attempt === MAX_RETRIES - 1) {
 						if (type === 'document') {
 							try {
 								console.log('Trying fallback PDF simple worker');
@@ -111,7 +116,7 @@ class WorkerManager {
 								console.error('Fallback worker also failed:', fallbackError);
 							}
 						}
-						throw lastError;
+						throw lastError || new Error(`Failed to initialize ${type} worker after ${MAX_RETRIES} attempts`);
 					}
 				}
 			}

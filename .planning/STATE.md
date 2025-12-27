@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-23)
 
 **Core value:** Every supported file conversion works correctly and produces valid, accurate output files that can be opened and used without errors
-**Current focus:** Phase 5 verified complete - ready to plan Phase 6
+**Current focus:** Phase 6 - Performance & Bug Fixes
 
 ## Current Position
 
-Phase: 5 of 6 (Error Handling & Edge Cases) - COMPLETE
-Plan: 5 of 5 complete
-Status: Phase verified complete (7/7 must-haves)
-Last activity: 2026-01-24 - Phase 5 complete, ready for Phase 6
+Phase: 6 of 6 (Performance & Bug Fixes) - IN PROGRESS
+Plan: 3 of 8 complete
+Status: Plan 06-03 complete (text format validation)
+Last activity: 2026-01-25 - Completed 06-03-PLAN.md
 
-Progress: [████████░░] 83% (35/42 plans complete)
+Progress: [█████████░] 88% (38/43 plans complete)
 
 ## Performance Metrics
 
@@ -32,10 +32,11 @@ Progress: [████████░░] 83% (35/42 plans complete)
 | 03 (Upload/Download/Coverage) | 6/6 | 37 min | 6.2 min |
 | 04 (Comprehensive Coverage) | 14/14 | 62 min | 4.4 min |
 | 05 (Error Handling) | 5/5 | 32 min | 6.4 min |
+| 06 (Performance & Bug Fixes) | 3/8 | 12 min | 4.0 min |
 
 **Recent Trend:**
-- Last 5 plans: 6.4 min average
-- Trend: Stable (11min → 3min → 4min → 7min → 7min)
+- Last 5 plans: 4.8 min average
+- Trend: Stable (7min → 7min → 4min → 4min → 4min)
 
 *Updated after each plan completion*
 
@@ -174,6 +175,13 @@ Recent decisions affecting current work:
 | 05-03 | Recovery test pattern: navigate to fresh page | Clears state reliably between failed/valid conversions | Ensures clean state for recovery test |
 | 05-04 | Test downloads OR errors instead of requiring downloads | App may clear files after batch errors | Flexible assertion validates batch processed |
 | 05-04 | Manual download validation for multi-button scenarios | downloadHelper.validateDownload() uses strict mode | Handle multiple download buttons gracefully |
+| 06-02 | 10s timeout for worker init (was 5s) | PDF.js is 2-3MB, 5s insufficient on slow connections | More reliable worker initialization |
+| 06-02 | Exponential backoff delays: [500ms, 1000ms, 2000ms] | Progressive delays better than fixed intervals | Network resilience without excessive waits |
+| 06-02 | sessionStorage for conversion stats | Privacy-first - stats reset when browser closes | No data persists on shared devices |
+| 06-03 | JSON.parse for JSON validation | Authoritative parser catches all syntax errors | Reliable JSON format detection |
+| 06-03 | Column count consistency for CSV/TSV | Simple but effective structure validation | Catches malformed tabular data |
+| 06-03 | YAML accepts JSON as superset | Per YAML specification, valid JSON is valid YAML | No false negatives for JSON in YAML |
+| 06-03 | Plain text formats check non-empty only | TXT/MD/HTML/XML have no strict structure | Prevents false negatives on valid files |
 
 ### Pending Todos
 
@@ -339,8 +347,20 @@ None.
 - Verification score: 7/7 must-haves verified
 - Key gaps documented: size validation, zero-byte validation, extension spoofing detection
 
+**Text Format Validation Status (from 06-03):**
+- BUG-05 (text format spoofing) addressed with parser-level validation
+- validateTextFormat() exported from file-validation.ts
+- Integrated into validateFileType() at null-signature point
+- Formats covered:
+  - JSON: JSON.parse validation
+  - CSV: column count consistency with quoted field handling
+  - TSV: column count consistency
+  - YAML: structure pattern validation (key-value, lists)
+  - TXT/MD/HTML/XML: non-empty check
+- Unit tests: 46 passing in tests/unit/validation/text-format-validation.test.ts
+
 ## Session Continuity
 
-Last session: 2026-01-24 (Phase 5 complete)
-Stopped at: Phase 5 verified complete, ready for Phase 6
-Resume file: None - Phase 5 complete (5/5 plans), ready for Phase 6 planning
+Last session: 2026-01-25 (Phase 6 in progress)
+Stopped at: Completed 06-03-PLAN.md (text format validation)
+Resume file: .planning/phases/06-performance-bug-fixes/06-04-PLAN.md

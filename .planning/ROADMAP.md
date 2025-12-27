@@ -146,17 +146,25 @@ Plans:
 **Requirements**: PERF-01, PERF-02, PERF-03, PERF-04, PERF-05, PERF-06, PERF-07, BUG-01, BUG-02, BUG-03, BUG-04, BUG-05, BUG-06, BUG-07, BUG-08
 **Success Criteria** (what must be TRUE):
   1. Performance benchmarks exist for all conversion types with documented baseline times
-  2. Tests detect performance regressions (conversions >20% slower than baseline)
-  3. Large files (50MB images, 100MB audio, 200MB archives) convert successfully without memory errors
+  2. Tests detect performance regressions (conversions >50% slower than baseline)
+  3. Large files (10MB images, 25MB audio, 50MB archives) convert successfully without memory errors
   4. Progress indicators update correctly during long-running conversions
   5. All known bugs from CONCERNS.md are fixed with targeted regression tests
   6. Worker message handler memory leak is resolved
   7. PDF worker initialization timeout issues are eliminated
-  8. Full test suite runs with zero failures across all browsers
-**Plans**: TBD
+  8. Audio decoding no longer blocks UI thread
+  9. Full test suite runs with documented skip count and no regressions
+**Plans**: 8 plans
 
 Plans:
-- [ ] TBD during planning
+- [ ] 06-01-PLAN.md — Fix memory leak and message handler issues (BUG-01, BUG-02)
+- [ ] 06-02-PLAN.md — Fix worker timeout and localStorage privacy (BUG-03, BUG-06)
+- [ ] 06-03-PLAN.md — Add text format validation for spoofing detection (BUG-05)
+- [ ] 06-04-PLAN.md — Create benchmark infrastructure with baselines
+- [ ] 06-05-PLAN.md — Large file and progress indicator tests
+- [ ] 06-06-PLAN.md — Enable skipped tests and verify suite stability
+- [ ] 06-07-PLAN.md — Calibrate benchmarks and verify worker init timing
+- [ ] 06-08-PLAN.md — Move audio decoding to worker thread (BUG-04)
 
 ## Progress
 
@@ -170,4 +178,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 3. Upload/Download & Basic Coverage | 6/6 | Complete | 2026-01-24 |
 | 4. Comprehensive Format Coverage | 14/14 | Complete | 2026-01-24 |
 | 5. Error Handling & Edge Cases | 5/5 | Complete | 2026-01-24 |
-| 6. Performance & Bug Fixes | 0/TBD | Not started | - |
+| 6. Performance & Bug Fixes | 0/8 | Planned | - |

@@ -207,8 +207,24 @@ export async function validateFileType(file: File): Promise<FileValidationResult
 				detectedType: await detectFileType(file)
 			};
 		}
+
+		// For text formats without magic bytes (signature check returns null),
+		// use parser-level validation instead
+		if (hasValidSignature === null) {
+			const textFormats = ['json', 'csv', 'tsv', 'yaml', 'yml', 'txt', 'md', 'html', 'xml'];
+			if (textFormats.includes(extension)) {
+				const isValidText = await validateTextFormat(file, extension);
+				if (!isValidText) {
+					return {
+						isValid: false,
+						reason: `File content is not valid ${extension.toUpperCase()} format`,
+						isSupportedFormat: true
+					};
+				}
+			}
+		}
 	}
-	
+
 	return {
 		isValid: true,
 		isSupportedFormat: true
@@ -341,6 +357,119 @@ export function generateAcceptAttribute(category?: string): string {
 	const allFormats = formats.filter(f => !category || f.category === category);
 	const extensions = allFormats.flatMap(f => f.extensions.map(ext => `.${ext}`));
 	const mimeTypes = allFormats.flatMap(f => f.mimeTypes);
-	
+
 	return [...new Set([...extensions, ...mimeTypes])].join(',');
+}
+
+// ============================================================================
+// Text Format Validation (Parser-level validation for formats without magic bytes)
+// ============================================================================
+
+/**
+ * Validates text content as JSON
+ * @returns true if valid JSON, false otherwise
+ */
+function validateJSON(content: string): boolean {
+	if (!content.trim()) return false;
+	try {
+		JSON.parse(content);
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+/**
+ * Validates text content as CSV
+ * Basic check: consistent column count across rows
+ */
+function validateCSV(content: string): boolean {
+	const trimmed = content.trim();
+	if (trimmed.length === 0) return false;
+
+	const lines = trimmed.split('\n');
+
+	// Handle quoted fields containing commas
+	const countColumns = (line: string): number => {
+		let count = 1;
+		let inQuotes = false;
+		for (const char of line) {
+			if (char === '"') inQuotes = !inQuotes;
+			if (char === ',' && !inQuotes) count++;
+		}
+		return count;
+	};
+
+	const expectedColumns = countColumns(lines[0]);
+	return lines.every(line => countColumns(line) === expectedColumns);
+}
+
+/**
+ * Validates text content as TSV
+ * Basic check: consistent column count across rows
+ */
+function validateTSV(content: string): boolean {
+	const trimmed = content.trim();
+	if (trimmed.length === 0) return false;
+
+	// Split by newline, but preserve line content (don't trim individual lines)
+	// This is important for TSV where trailing tabs indicate empty columns
+	const lines = trimmed.split('\n').map(line => line.replace(/\r$/, ''));
+
+	// Count tabs + 1 = number of columns
+	const countColumns = (line: string): number => {
+		return line.split('\t').length;
+	};
+
+	const expectedColumns = countColumns(lines[0]);
+	return lines.every(line => countColumns(line) === expectedColumns);
+}
+
+/**
+ * Validates text content as YAML
+ * Basic check: no obvious JSON-only syntax, proper YAML structure
+ */
+function validateYAML(content: string): boolean {
+	const trimmed = content.trim();
+	if (trimmed.length === 0) return false;
+
+	// YAML is permissive - check for YAML-specific features
+	// Check for YAML-specific features: colons with spaces for key-value, dashes for lists
+	const hasYAMLStructure = /^[\w-]+:\s|^-\s/m.test(trimmed);
+	const looksLikeJSON = /^[\[{]/.test(trimmed) && /[\]}]$/.test(trimmed);
+
+	// If it has YAML structure, it's valid YAML
+	// If it looks like JSON, it's technically valid YAML (YAML is a superset of JSON)
+	// Only reject if it's clearly neither
+	return hasYAMLStructure || looksLikeJSON || /^[\w-]+:/.test(trimmed);
+}
+
+/**
+ * Validates text file content based on expected format
+ * Used for formats without magic bytes (JSON, CSV, TSV, YAML, etc.)
+ */
+export async function validateTextFormat(file: File, format: string): Promise<boolean> {
+	// Read file content as text
+	const content = await file.text();
+
+	switch (format.toLowerCase()) {
+		case 'json':
+			return validateJSON(content);
+		case 'csv':
+			return validateCSV(content);
+		case 'tsv':
+			return validateTSV(content);
+		case 'yaml':
+		case 'yml':
+			return validateYAML(content);
+		case 'txt':
+		case 'md':
+		case 'html':
+		case 'xml':
+			// These formats don't have strict structure requirements
+			// Just check that there's content
+			return content.length > 0;
+		default:
+			return true; // Unknown formats pass by default
+	}
 }
