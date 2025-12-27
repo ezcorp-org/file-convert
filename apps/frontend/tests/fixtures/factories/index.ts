@@ -19,3 +19,6 @@ export type { SpreadsheetFixtureOptions } from './spreadsheet-factory';
 
 export { ArchiveFactory } from './archive-factory';
 export type { ArchiveFixtureOptions, ArchiveEntry } from './archive-factory';
+
+export { CorruptedFileFactory } from './corrupted-file-factory';
+export type { OversizedFileMetadata, SpoofedExtensionFile } from './corrupted-file-factory';

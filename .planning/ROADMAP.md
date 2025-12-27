@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Validation Library & Fixtures** - Multi-layer validators and fixture generators for all formats
 - [x] **Phase 3: Upload/Download & Basic Coverage** - File handling flows and pilot conversion tests
 - [x] **Phase 4: Comprehensive Format Coverage** - All conversion paths across 6 format categories
-- [ ] **Phase 5: Error Handling & Edge Cases** - Error scenarios, corrupted files, and edge case validation
+- [x] **Phase 5: Error Handling & Edge Cases** - Error scenarios, corrupted files, and edge case validation
 - [ ] **Phase 6: Performance & Bug Fixes** - Performance benchmarking and resolution of known bugs
 
 ## Phase Details
@@ -131,10 +131,14 @@ Plans:
   5. Web Worker crashes are recovered from without freezing the UI
   6. Multiple simultaneous conversion failures don't stop queue processing
   7. Success and failure UI indicators display correctly for all scenarios
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] TBD during planning
+- [x] 05-01-PLAN.md — File validation errors (unsupported, corrupted, size limit, zero-byte)
+- [x] 05-02-PLAN.md — Extension spoofing detection
+- [x] 05-03-PLAN.md — Worker crash recovery
+- [x] 05-04-PLAN.md — Batch failure handling
+- [x] 05-05-PLAN.md — UI feedback states (success, failure, progress)
 
 ### Phase 6: Performance & Bug Fixes
 **Goal**: Establish performance baselines, fix known bugs, and achieve zero test failures
@@ -165,5 +169,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 2. Validation Library & Fixtures | 7/7 | Complete | 2026-01-24 |
 | 3. Upload/Download & Basic Coverage | 6/6 | Complete | 2026-01-24 |
 | 4. Comprehensive Format Coverage | 14/14 | Complete | 2026-01-24 |
-| 5. Error Handling & Edge Cases | 0/TBD | Not started | - |
+| 5. Error Handling & Edge Cases | 5/5 | Complete | 2026-01-24 |
 | 6. Performance & Bug Fixes | 0/TBD | Not started | - |
