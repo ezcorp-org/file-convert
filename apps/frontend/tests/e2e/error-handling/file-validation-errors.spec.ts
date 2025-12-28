@@ -5,6 +5,9 @@ import { Buffer } from 'buffer';
 /**
  * E2E tests for file validation error handling
  *
+ * Test Run Date: 2026-01-25
+ * Test Results: 10 passing, 8 skipped
+ *
  * Tests cover:
  * - ERROR-01: Unsupported file formats rejected with clear messages
  * - ERROR-02: Corrupted files (bad headers, truncated) detected and rejected
@@ -16,24 +19,35 @@ import { Buffer } from 'buffer';
  *
  * ## Current Status
  *
- * **ERROR-01 (Unsupported Formats):** WORKING - App correctly rejects unsupported extensions
+ * **ERROR-01 (Unsupported Formats):** WORKING (4/4 tests passing)
+ * - App correctly rejects unsupported extensions (.xyz, .abc, .exe)
+ * - Files not added to conversion queue
  *
- * **ERROR-02 (Corrupted Files):** PARTIAL
- * - Bad header files (random bytes) are rejected via magic byte validation
- * - Spoofed extensions (JPEG content with PNG extension) trigger validation error
- * - KNOWN ISSUE: Validation may not catch all corruption patterns
+ * **ERROR-02 (Corrupted Files):** PARTIAL (2 passing, 3 skipped)
+ * - Truncated files (valid magic bytes but incomplete) are ACCEPTED at upload
+ * - Bad header files (random bytes with supported extension) are ACCEPTED at upload
+ * - Both may fail during conversion, which is handled gracefully
+ * - SKIPPED: Magic byte validation exists in file-validation.ts but
+ *   FileUploader.svelte does not call validateFileType() during upload
  *
- * **ERROR-03 (Size Limits):** NOT IMPLEMENTED
- * - KNOWN BUG: Oversized files are currently accepted at upload time
- * - Size validation exists in config.ts but is not enforced in FileUploader.svelte
- * - Tests skipped pending implementation of size validation at upload
+ * **ERROR-03 (Size Limits):** NOT ENFORCED (1 doc test, 2 skipped)
+ * - BLOCKER: FileUploader.svelte calls detectFileType() not validateFile()
+ * - Size limits defined in config.ts are not enforced at upload
  *
- * **ERROR-04 (Zero-byte Files):** NOT IMPLEMENTED
- * - KNOWN BUG: Empty files are currently accepted at upload time
- * - Tests skipped pending implementation of zero-byte validation
+ * **ERROR-04 (Zero-byte Files):** NOT VALIDATED (1 doc test, 3 skipped)
+ * - BLOCKER: No file.size === 0 check in processFiles()
+ * - Empty files are accepted at upload time
  *
- * These tests document expected behavior. Skipped tests indicate bugs
- * to be fixed in Phase 5 error handling implementation.
+ * **Error Message Quality:** WORKING (2/2 tests passing)
+ * - Messages are user-friendly, no technical jargon
+ * - Notifications are visible and properly sized
+ *
+ * ## Note on BUG-05 Fix (Plan 06-03)
+ *
+ * The BUG-05 fix added text format validation (JSON/CSV/TSV/YAML) via
+ * validateTextFormat() in file-validation.ts. This does NOT affect the
+ * binary file validation tests skipped here. Those tests remain blocked
+ * until FileUploader.svelte integrates validateFileType().
  */
 test.describe('File Validation Errors', () => {
 	test.beforeEach(async ({ page }) => {
@@ -144,16 +158,16 @@ test.describe('File Validation Errors', () => {
 		 */
 		test.skip('rejects PNG extension with JPEG magic bytes', async ({ page }) => {
 			/**
-			 * SKIPPED: Spoofed extension validation is partial.
+			 * SKIPPED: Binary spoofing detection not in upload flow
+			 * Blocker: FileUploader.svelte doesn't call validateFileType()
 			 *
-			 * The app validates magic bytes but currently allows files through
-			 * if the magic byte check passes for ANY supported format, even if
-			 * it doesn't match the extension.
+			 * validateFileSignature() in file-validation.ts can detect this mismatch,
+			 * but the upload flow doesn't call it.
 			 *
 			 * Expected behavior: Show warning "File appears to be JPEG, not PNG"
-			 * Current behavior: File is accepted (extension validation is lenient)
+			 * Current behavior: File is accepted based on extension only
 			 *
-			 * Enable when stricter extension vs content validation is implemented.
+			 * Unskip when: FileUploader.svelte imports and calls validateFileType()
 			 */
 			const spoofedFile = await CorruptedFileFactory.createSpoofedExtension(
 				'jpeg',
@@ -220,16 +234,13 @@ test.describe('File Validation Errors', () => {
 			page
 		}) => {
 			/**
-			 * SKIPPED: Magic byte validation not enforced at upload time.
+			 * SKIPPED: Magic byte validation not called at upload time
+			 * Blocker: FileUploader.svelte doesn't call validateFileType()
 			 *
 			 * Current behavior: File with random bytes but valid .jpeg extension is accepted
 			 * Expected behavior: Rejected with "File content doesn't match format"
 			 *
-			 * Root cause: FileUploader.svelte uses detectFileType() from config.ts which
-			 * only checks extension and MIME type. Magic byte validation in file-validation.ts
-			 * is not called during the upload flow.
-			 *
-			 * Fix: Import and use validateFileType() from file-validation.ts in FileUploader.
+			 * Unskip when: FileUploader.svelte imports and calls validateFileType()
 			 */
 			const badHeader = CorruptedFileFactory.createBadHeaderFile('jpeg', 200);
 
@@ -259,8 +270,9 @@ test.describe('File Validation Errors', () => {
 			page
 		}) => {
 			/**
-			 * SKIPPED: Magic byte validation not enforced at upload time.
-			 * See above test for details.
+			 * SKIPPED: Magic byte validation not called at upload time
+			 * Blocker: FileUploader.svelte doesn't call validateFileType()
+			 * Unskip when: FileUploader.svelte imports and calls validateFileType()
 			 */
 			const badHeader = CorruptedFileFactory.createBadHeaderFile('png', 100);
 
@@ -331,15 +343,13 @@ test.describe('File Validation Errors', () => {
 		 */
 		test.skip('rejects GIF file exceeding 5MB limit', async ({ page }) => {
 			/**
-			 * SKIPPED: Size validation not enforced at upload time.
+			 * SKIPPED: Size validation not enforced at upload time
+			 * Blocker: FileUploader.svelte calls detectFileType() not validateFile()
 			 *
 			 * Current behavior: 6MB GIF is accepted and shown in file list
 			 * Expected behavior: Rejected with "File too large. Maximum size is 5MB"
 			 *
-			 * Root cause: FileUploader.svelte calls detectFileType() but not
-			 * validateFile() which contains the size check.
-			 *
-			 * Fix: Call validateFile() in processFiles() function.
+			 * Unskip when: FileUploader.svelte calls validateFile() in processFiles()
 			 */
 			const oversizedBuffer = CorruptedFileFactory.createLargeFile(6, 'gif');
 
@@ -368,8 +378,8 @@ test.describe('File Validation Errors', () => {
 			page
 		}) => {
 			/**
-			 * SKIPPED: Size validation not enforced at upload time.
-			 * See above test for details.
+			 * SKIPPED: Size validation not enforced at upload time
+			 * Blocker: Same as above - validateFile() not called
 			 */
 			const oversizedBuffer = CorruptedFileFactory.createLargeFile(6, 'gif');
 
@@ -430,12 +440,13 @@ test.describe('File Validation Errors', () => {
 		 */
 		test.skip('rejects empty PNG file (0 bytes)', async ({ page }) => {
 			/**
-			 * SKIPPED: Zero-byte validation not implemented.
+			 * SKIPPED: Zero-byte validation not implemented
+			 * Blocker: No file.size === 0 check in FileUploader.svelte processFiles()
 			 *
 			 * Current behavior: Empty file is accepted and shown in file list
 			 * Expected behavior: Rejected with "File is empty" or similar
 			 *
-			 * Fix: Add file.size === 0 check in processFiles() function.
+			 * Unskip when: FileUploader.svelte adds file.size === 0 check
 			 */
 			const emptyBuffer = CorruptedFileFactory.createZeroByteFile('empty.png');
 
@@ -464,7 +475,8 @@ test.describe('File Validation Errors', () => {
 
 		test.skip('rejects empty JPEG file (0 bytes)', async ({ page }) => {
 			/**
-			 * SKIPPED: Zero-byte validation not implemented.
+			 * SKIPPED: Zero-byte validation not implemented
+			 * Blocker: Same as above - no file.size === 0 check
 			 */
 			const emptyBuffer = CorruptedFileFactory.createZeroByteFile('empty.jpeg');
 
@@ -486,7 +498,8 @@ test.describe('File Validation Errors', () => {
 
 		test.skip('rejects empty JSON file (0 bytes)', async ({ page }) => {
 			/**
-			 * SKIPPED: Zero-byte validation not implemented.
+			 * SKIPPED: Zero-byte validation not implemented
+			 * Blocker: Same as above - no file.size === 0 check
 			 */
 			const emptyBuffer = CorruptedFileFactory.createZeroByteFile('empty.json');
 

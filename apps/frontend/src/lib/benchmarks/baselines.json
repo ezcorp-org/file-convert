@@ -1,141 +1,186 @@
 {
   "conversions": {
     "png-to-jpeg": {
-      "baselineMs": 500,
+      "baselineMs": 150,
       "threshold": 0.5,
-      "fileSize": "1MB",
-      "lastUpdated": "2026-01-25"
+      "fileSize": "100x100px",
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "actual-measurement",
+      "measuredMs": 114
     },
     "png-to-webp": {
-      "baselineMs": 600,
+      "baselineMs": 150,
       "threshold": 0.5,
-      "fileSize": "1MB",
-      "lastUpdated": "2026-01-25"
+      "fileSize": "100x100px",
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "actual-measurement",
+      "measuredMs": 107
     },
     "jpeg-to-png": {
-      "baselineMs": 400,
+      "baselineMs": 150,
       "threshold": 0.5,
-      "fileSize": "1MB",
-      "lastUpdated": "2026-01-25"
+      "fileSize": "100x100px",
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "actual-measurement",
+      "measuredMs": 116
     },
     "jpeg-to-webp": {
-      "baselineMs": 550,
+      "baselineMs": 150,
       "threshold": 0.5,
-      "fileSize": "1MB",
-      "lastUpdated": "2026-01-25"
+      "fileSize": "100x100px",
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "estimated",
+      "notes": "Estimated from jpeg-to-png + webp overhead"
     },
     "webp-to-png": {
-      "baselineMs": 400,
+      "baselineMs": 150,
       "threshold": 0.5,
-      "fileSize": "1MB",
-      "lastUpdated": "2026-01-25"
+      "fileSize": "100x100px",
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "estimated",
+      "notes": "Estimated from webp-to-jpeg"
     },
     "webp-to-jpeg": {
-      "baselineMs": 450,
+      "baselineMs": 150,
       "threshold": 0.5,
-      "fileSize": "1MB",
-      "lastUpdated": "2026-01-25"
+      "fileSize": "100x100px",
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "actual-measurement",
+      "measuredMs": 102
     },
     "wav-to-mp3": {
       "baselineMs": 2000,
       "threshold": 0.5,
       "fileSize": "1MB",
-      "lastUpdated": "2026-01-25"
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "estimated",
+      "notes": "Audio encoding requires significant processing"
     },
     "csv-to-json": {
       "baselineMs": 150,
       "threshold": 0.5,
       "fileSize": "100KB",
-      "lastUpdated": "2026-01-25"
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "actual-measurement",
+      "measuredMs": 111
     },
     "csv-to-tsv": {
       "baselineMs": 150,
       "threshold": 0.5,
       "fileSize": "100KB",
-      "lastUpdated": "2026-01-25"
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "actual-measurement",
+      "measuredMs": 111
     },
     "tsv-to-csv": {
       "baselineMs": 150,
       "threshold": 0.5,
       "fileSize": "100KB",
-      "lastUpdated": "2026-01-25"
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "estimated",
+      "notes": "Estimated from csv-to-tsv (similar complexity)"
     },
     "tsv-to-json": {
       "baselineMs": 150,
       "threshold": 0.5,
       "fileSize": "100KB",
-      "lastUpdated": "2026-01-25"
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "estimated",
+      "notes": "Estimated from csv-to-json"
     },
     "json-to-csv": {
       "baselineMs": 150,
       "threshold": 0.5,
       "fileSize": "100KB",
-      "lastUpdated": "2026-01-25"
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "estimated",
+      "notes": "Estimated from json-to-yaml"
     },
     "json-to-yaml": {
       "baselineMs": 150,
       "threshold": 0.5,
       "fileSize": "100KB",
-      "lastUpdated": "2026-01-25"
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "actual-measurement",
+      "measuredMs": 99
     },
     "yaml-to-json": {
       "baselineMs": 150,
       "threshold": 0.5,
       "fileSize": "100KB",
-      "lastUpdated": "2026-01-25"
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "estimated",
+      "notes": "Estimated from json-to-yaml"
     },
     "zip-to-tar": {
       "baselineMs": 500,
       "threshold": 0.5,
       "fileSize": "1MB",
-      "lastUpdated": "2026-01-25"
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "estimated",
+      "notes": "Archive operations require decompression/recompression"
     },
     "tar-to-zip": {
       "baselineMs": 500,
       "threshold": 0.5,
       "fileSize": "1MB",
-      "lastUpdated": "2026-01-25"
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "estimated",
+      "notes": "Archive operations require decompression/recompression"
     },
     "txt-to-md": {
       "baselineMs": 150,
       "threshold": 0.5,
       "fileSize": "100KB",
-      "lastUpdated": "2026-01-25"
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "estimated",
+      "notes": "Estimated from md-to-html"
     },
     "txt-to-html": {
       "baselineMs": 150,
       "threshold": 0.5,
       "fileSize": "100KB",
-      "lastUpdated": "2026-01-25"
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "estimated",
+      "notes": "Estimated from md-to-html"
     },
     "md-to-html": {
       "baselineMs": 150,
       "threshold": 0.5,
       "fileSize": "100KB",
-      "lastUpdated": "2026-01-25"
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "actual-measurement",
+      "measuredMs": 104
     },
     "md-to-txt": {
       "baselineMs": 150,
       "threshold": 0.5,
       "fileSize": "100KB",
-      "lastUpdated": "2026-01-25"
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "estimated",
+      "notes": "Estimated from html-to-txt"
     },
     "html-to-txt": {
       "baselineMs": 150,
       "threshold": 0.5,
       "fileSize": "100KB",
-      "lastUpdated": "2026-01-25"
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "actual-measurement",
+      "measuredMs": 117
     },
     "html-to-md": {
       "baselineMs": 150,
       "threshold": 0.5,
       "fileSize": "100KB",
-      "lastUpdated": "2026-01-25"
+      "lastUpdated": "2026-01-25",
+      "calibratedFrom": "estimated",
+      "notes": "Estimated from html-to-txt"
     }
   },
   "meta": {
     "generatedAt": "2026-01-25",
     "environment": "Chromium/Playwright",
+    "calibrationMethod": "actual measurements + 20% buffer, rounded to 150ms minimum",
     "notes": "Baselines calibrated from E2E tests. Values include browser UI overhead (page nav, upload processing). Threshold 0.5 = 50% regression detection per CONTEXT.md decision."
   }
 }

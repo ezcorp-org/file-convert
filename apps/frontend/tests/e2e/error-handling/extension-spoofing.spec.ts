@@ -1,60 +1,66 @@
 /**
- * ERROR-05: Extension Spoofing Detection Tests
+ * ERROR-05: Extension Spoofing Detection Tests (Binary Files)
  *
- * EXTENSION SPOOFING DETECTION STATUS: NOT IMPLEMENTED
+ * EXTENSION SPOOFING DETECTION STATUS: PARTIALLY IMPLEMENTED
  *
- * Test Run Date: 2026-01-24
- * Test Results: 3/4 tests FAILED (detection not implemented), 1/4 passed (negative case)
+ * Test Run Date: 2026-01-25
+ * Test Results: 3/4 skipped (binary spoofing detection not in upload flow), 1/4 passed (negative case)
  *
- * Current Behavior:
- * - App accepts spoofed files without warning (shows "Files loaded - Added 1 file")
- * - No magic byte validation occurs during upload
+ * ## What Has Been Implemented (BUG-05 Fix - Plan 06-03)
+ *
+ * Text format validation via validateTextFormat() in file-validation.ts:
+ * - JSON: Validated via JSON.parse
+ * - CSV: Column count consistency
+ * - TSV: Column count consistency
+ * - YAML: Structure pattern validation
+ * - TXT/MD/HTML/XML: Non-empty check
+ *
+ * This validation is integrated into validateFileType() and catches text format spoofing
+ * (e.g., a PNG file renamed to .json would fail JSON.parse validation).
+ *
+ * ## What Remains NOT Implemented
+ *
+ * Binary file magic byte validation in the upload flow:
+ * - JPEG file with .png extension: NOT detected at upload
+ * - PNG file with .jpg extension: NOT detected at upload
+ * - WAV file with .mp3 extension: NOT detected at upload
+ *
+ * Current Behavior for Binary Files:
+ * - App accepts spoofed binary files without warning
+ * - Magic byte validation exists in file-validation.ts (validateFileSignature)
+ * - BUT FileUploader.svelte does not call validateFileType() during upload
  * - Files are processed based on extension/MIME type only
  *
- * The application does not currently validate magic bytes against file extension.
- * The test infrastructure exists (MagicByteValidator in tests/fixtures/validators/magic-bytes.ts)
- * but is NOT integrated into the application's upload flow.
+ * ## TO IMPLEMENT BINARY SPOOFING DETECTION
  *
- * TO IMPLEMENT:
- * 1. Copy/import magic byte detection to src/lib/utils/magic-byte-validator.ts
- *    (The test fixture version uses file-type library which works in browser)
- *
- * 2. Modify FileUploader.svelte to validate magic bytes on upload:
+ * 1. In FileUploader.svelte's processFiles() function:
  *    ```typescript
- *    // In processFiles() function, after file type detection:
- *    const fileBuffer = await file.arrayBuffer();
- *    const detectedFormat = await detectFormatFromBytes(Buffer.from(fileBuffer));
- *    const extensionFormat = file.name.split('.').pop()?.toLowerCase();
+ *    import { validateFileType } from '$lib/utils/file-validation';
  *
- *    if (detectedFormat && extensionFormat && detectedFormat !== extensionFormat) {
- *      // Handle aliases (jpg/jpeg, tif/tiff)
- *      const isAlias = isFormatAlias(detectedFormat, extensionFormat);
- *      if (!isAlias) {
- *        notifications.warning(
- *          'Format mismatch detected',
- *          `This file appears to be ${detectedFormat.toUpperCase()}, not ${extensionFormat.toUpperCase()}. Continue anyway?`
- *        );
- *        // Per CONTEXT.md: "warn but allow" - file still added to validFiles
- *      }
+ *    // After detecting file type from extension:
+ *    const validation = await validateFileType(file);
+ *    if (!validation.isValid && validation.detectedType) {
+ *      // Magic byte mismatch detected
+ *      notifications.warning(
+ *        'Format mismatch detected',
+ *        `This file appears to be ${validation.detectedType.toUpperCase()}, not ${extension.toUpperCase()}.`
+ *      );
+ *      // Per CONTEXT.md: "warn but allow"
  *    }
  *    ```
  *
- * 3. Add browser-compatible file-type detection:
- *    - Option A: Use file-type library (npm install file-type) - works in browser
- *    - Option B: Manual magic byte checking for common formats (see MAGIC_SIGNATURES)
- *
- * 4. Consider two detection levels per CONTEXT.md:
- *    - "Suspicious" (extension mismatch): Warn but allow
- *    - "Definitely corrupted" (invalid headers): Reject immediately
+ * 2. validateFileType() already:
+ *    - Reads magic bytes via validateFileSignature()
+ *    - Returns isValid=false with detectedType when mismatch found
+ *    - This just needs to be called in FileUploader.svelte
  *
  * Expected behavior per CONTEXT.md:
- * - Spoofed extensions: "Warn but allow" (e.g., "This appears to be a JPEG, not PNG. Continue anyway?")
- * - Truly corrupted files: Reject immediately - never attempt conversion
+ * - Spoofed extensions: "Warn but allow"
+ * - Truly corrupted files: Reject immediately
  *
- * Key Files to Modify:
- * - src/routes/convert/components/FileUploader.svelte (add validation call)
- * - src/lib/utils/magic-byte-validator.ts (create from test fixture)
- * - src/lib/conversion/config.ts (optional: add validateMagicBytes function)
+ * Key Files:
+ * - src/routes/convert/components/FileUploader.svelte (needs to call validateFileType)
+ * - src/lib/utils/file-validation.ts (validation logic already exists)
  *
  * Test Infrastructure Reference:
  * - tests/fixtures/validators/magic-bytes.ts - MagicByteValidator class
@@ -72,8 +78,10 @@ test.describe('ERROR-05: Extension Spoofing Detection', () => {
 		await page.waitForLoadState('networkidle');
 	});
 
-	// SKIPPED: Extension spoofing detection not implemented
-	// Unskip when magic byte validation is added to upload flow
+	// SKIPPED: Binary spoofing detection not integrated into upload flow
+	// Blocker: FileUploader.svelte doesn't call validateFileType() during upload
+	// validateFileSignature() exists in file-validation.ts but is not used at upload time
+	// Unskip when: FileUploader.svelte imports and calls validateFileType()
 	test.skip('detects JPEG file with PNG extension', async ({ page }) => {
 		// Create valid JPEG using ImageFactory
 		const jpegBuffer = await ImageFactory.createJPEG({ width: 100, height: 100 });
@@ -109,7 +117,8 @@ test.describe('ERROR-05: Extension Spoofing Detection', () => {
 		await expect(fileItem.first()).toBeVisible({ timeout: 3000 });
 	});
 
-	// SKIPPED: Extension spoofing detection not implemented
+	// SKIPPED: Binary spoofing detection not integrated into upload flow
+	// Same blocker as above - validateFileType() not called at upload time
 	test.skip('detects PNG file with JPEG extension', async ({ page }) => {
 		// Create valid PNG using ImageFactory
 		const pngBuffer = await ImageFactory.createPNG({ width: 100, height: 100 });
@@ -143,7 +152,8 @@ test.describe('ERROR-05: Extension Spoofing Detection', () => {
 		await expect(fileItem.first()).toBeVisible({ timeout: 3000 });
 	});
 
-	// SKIPPED: Extension spoofing detection not implemented
+	// SKIPPED: Binary spoofing detection not integrated into upload flow
+	// Same blocker as above - validateFileType() not called at upload time
 	test.skip('detects WAV file with MP3 extension', async ({ page }) => {
 		// Create valid WAV using AudioFactory
 		const wavBuffer = AudioFactory.createWAV({

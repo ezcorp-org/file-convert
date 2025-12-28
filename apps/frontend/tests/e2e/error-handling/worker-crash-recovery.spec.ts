@@ -1,9 +1,13 @@
 /**
  * ERROR-06: Worker Crash Recovery Tests
  *
+ * Test Run Date: 2026-01-25
+ * Test Results: 6 passing, 2 skipped
+ *
  * Tests that the application recovers gracefully from worker failures.
  *
- * Test strategy:
+ * ## Test Strategy
+ *
  * Worker crashes are difficult to simulate directly in E2E tests. Instead,
  * we test observable behaviors that would result from worker failures:
  *
@@ -11,6 +15,22 @@
  * 2. UI remains responsive after conversion failure
  * 3. Error notifications are visible to the user
  * 4. Subsequent valid conversions still work (worker recovery)
+ *
+ * ## Current Status
+ *
+ * **Worker Recovery Tests:** WORKING (4/4 passing)
+ * - UI remains responsive after conversion failure
+ * - Error notifications display for corrupted files
+ * - Successful conversion works after previous failure
+ * - Batch conversion continues with valid files
+ *
+ * **Worker Error Messages:** WORKING (2/2 passing)
+ * - Error messages are user-friendly (no stack traces)
+ * - Page remains responsive after conversion failure
+ *
+ * **Worker Internals:** SKIPPED (2 tests)
+ * - Retry indicator: Requires worker mocking (not available in E2E)
+ * - Crash pattern detection: Requires session state mocking
  *
  * Per CONTEXT.md decisions:
  * - Auto-retry with visible notification ("Conversion failed, retrying...")
@@ -292,42 +312,31 @@ test.describe('ERROR-06: Worker Crash Recovery', () => {
 
 	test.skip('shows retry indicator when worker retries', async () => {
 		/**
-		 * SKIP REASON: Testing retry behavior requires either:
-		 * 1. Mocking worker to fail once then succeed (complex in E2E)
-		 * 2. A file that consistently fails first attempt but succeeds on retry (unreliable)
+		 * SKIPPED: Requires worker mocking (not available in E2E)
+		 * Blocker: Cannot force a worker to fail once then succeed reliably
 		 *
-		 * Per CONTEXT.md, retry behavior should show "Retrying (attempt 2/2)..."
-		 * This test documents expected behavior but can't reliably test it E2E.
-		 *
-		 * TO TEST RETRY BEHAVIOR:
-		 * - Use unit tests on worker-manager.ts with mocked workers
-		 * - Add a test flag that forces retry behavior for testing purposes
+		 * Alternative testing approaches:
+		 * - Unit tests on worker-manager.ts with mocked workers
+		 * - Add a test flag that forces retry behavior
 		 * - Use network throttling to cause timeout-based retries
 		 *
-		 * EXPECTED BEHAVIOR (from CONTEXT.md decisions):
-		 * - Auto-retry with visible notification: "Conversion failed, retrying..."
+		 * EXPECTED BEHAVIOR (from CONTEXT.md):
+		 * - Auto-retry with notification: "Conversion failed, retrying..."
 		 * - Show "Retrying (attempt 2/2)" during retry
 		 * - 1 retry (2 total attempts) before marking as failed
-		 * - Pattern detection: If same worker type crashes 3+ times in session, suggest page refresh
 		 */
 	});
 
 	test.skip('detects pattern of repeated worker crashes', async () => {
 		/**
-		 * SKIP REASON: Testing crash pattern detection requires:
-		 * 1. Causing 3+ crashes of the same worker type in one session
-		 * 2. Verifying the "suggest page refresh" message appears
+		 * SKIPPED: Requires session state mocking (not available in E2E)
+		 * Blocker: Cannot reliably cause 3+ crashes of same worker type
 		 *
-		 * This is difficult to test reliably in E2E because:
-		 * - We can't directly crash workers
-		 * - Corrupted files may trigger different error paths
-		 * - Session state tracking requires multiple failed conversions
-		 *
-		 * TO TEST PATTERN DETECTION:
-		 * - Use unit tests with mocked worker crash counts
+		 * Alternative testing approaches:
+		 * - Unit tests with mocked worker crash counts
 		 * - Add a debug flag to artificially trigger crash detection
 		 *
-		 * EXPECTED BEHAVIOR (from CONTEXT.md decisions):
+		 * EXPECTED BEHAVIOR (from CONTEXT.md):
 		 * - If same worker type crashes 3+ times in session, suggest page refresh
 		 */
 	});

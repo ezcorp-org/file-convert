@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Upload/Download & Basic Coverage** - File handling flows and pilot conversion tests
 - [x] **Phase 4: Comprehensive Format Coverage** - All conversion paths across 6 format categories
 - [x] **Phase 5: Error Handling & Edge Cases** - Error scenarios, corrupted files, and edge case validation
-- [ ] **Phase 6: Performance & Bug Fixes** - Performance benchmarking and resolution of known bugs
+- [x] **Phase 6: Performance & Bug Fixes** - Performance benchmarking and resolution of known bugs
 
 ## Phase Details
 
@@ -157,14 +157,14 @@ Plans:
 **Plans**: 8 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — Fix memory leak and message handler issues (BUG-01, BUG-02)
-- [ ] 06-02-PLAN.md — Fix worker timeout and localStorage privacy (BUG-03, BUG-06)
-- [ ] 06-03-PLAN.md — Add text format validation for spoofing detection (BUG-05)
-- [ ] 06-04-PLAN.md — Create benchmark infrastructure with baselines
-- [ ] 06-05-PLAN.md — Large file and progress indicator tests
-- [ ] 06-06-PLAN.md — Enable skipped tests and verify suite stability
-- [ ] 06-07-PLAN.md — Calibrate benchmarks and verify worker init timing
-- [ ] 06-08-PLAN.md — Move audio decoding to worker thread (BUG-04)
+- [x] 06-01-PLAN.md — Fix memory leak and message handler issues (BUG-01, BUG-02)
+- [x] 06-02-PLAN.md — Fix worker timeout and localStorage privacy (BUG-03, BUG-06)
+- [x] 06-03-PLAN.md — Add text format validation for spoofing detection (BUG-05)
+- [x] 06-04-PLAN.md — Create benchmark infrastructure with baselines
+- [x] 06-05-PLAN.md — Large file and progress indicator tests
+- [x] 06-06-PLAN.md — Enable skipped tests and verify suite stability
+- [x] 06-07-PLAN.md — Calibrate benchmarks and verify worker init timing
+- [x] 06-08-PLAN.md — Move audio decoding to worker thread (BUG-04)
 
 ## Progress
 
@@ -178,4 +178,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 3. Upload/Download & Basic Coverage | 6/6 | Complete | 2026-01-24 |
 | 4. Comprehensive Format Coverage | 14/14 | Complete | 2026-01-24 |
 | 5. Error Handling & Edge Cases | 5/5 | Complete | 2026-01-24 |
-| 6. Performance & Bug Fixes | 0/8 | Planned | - |
+| 6. Performance & Bug Fixes | 8/8 | Complete | 2026-01-25 |

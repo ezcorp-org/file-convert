@@ -423,3 +423,127 @@ test.describe('Regression Detection Verification', () => {
 		expect(regressionResult.message).toContain('60%');
 	});
 });
+
+/**
+ * Worker Initialization Timing Tests (PERF-07)
+ *
+ * Validates that workers initialize within acceptable time limits.
+ * Per CONTEXT.md: Worker initialization should complete within 10 seconds.
+ *
+ * Workers are lazy-loaded when files are uploaded, so we measure the time
+ * from page load + file upload to first conversion being ready.
+ */
+test.describe('Worker Initialization', () => {
+	const WORKER_INIT_TIMEOUT_MS = 10000; // 10 seconds per PERF-07
+
+	let fileHelper: FileHelper;
+	let downloadHelper: DownloadHelper;
+
+	test.beforeEach(async ({ page }) => {
+		fileHelper = new FileHelper(page);
+		downloadHelper = new DownloadHelper(page);
+	});
+
+	test.afterEach(async () => {
+		await downloadHelper.cleanup();
+	});
+
+	test('image worker initializes within 10 seconds', async ({ page }) => {
+		const start = Date.now();
+
+		// Navigate to convert page
+		await page.goto('/convert');
+		await page.waitForLoadState('networkidle');
+
+		// Upload a small PNG to trigger image worker initialization
+		const pngBuffer = await ImageFactory.createPNG({ width: 10, height: 10 });
+		await fileHelper.uploadFile({
+			name: 'init-test.png',
+			mimeType: 'image/png',
+			buffer: pngBuffer
+		});
+
+		// Wait for format options to appear (indicates worker is ready)
+		await page.locator('.format-option, .output-format').first().waitFor({
+			state: 'visible',
+			timeout: WORKER_INIT_TIMEOUT_MS
+		});
+
+		const initTime = Date.now() - start;
+		console.log(`Image worker init time: ${initTime}ms`);
+
+		expect(initTime, `Image worker init (${initTime}ms) should be under ${WORKER_INIT_TIMEOUT_MS}ms`).toBeLessThan(WORKER_INIT_TIMEOUT_MS);
+	});
+
+	test('audio worker initializes within 10 seconds', async ({ page }) => {
+		const start = Date.now();
+
+		// Navigate to convert page
+		await page.goto('/convert');
+		await page.waitForLoadState('networkidle');
+
+		// Create a minimal WAV file to trigger audio worker
+		// WAV header: 44 bytes minimum
+		const wavHeader = Buffer.alloc(44);
+		// RIFF header
+		wavHeader.write('RIFF', 0);
+		wavHeader.writeUInt32LE(36, 4); // File size - 8
+		wavHeader.write('WAVE', 8);
+		// fmt chunk
+		wavHeader.write('fmt ', 12);
+		wavHeader.writeUInt32LE(16, 16); // fmt chunk size
+		wavHeader.writeUInt16LE(1, 20); // Audio format (PCM)
+		wavHeader.writeUInt16LE(1, 22); // Channels
+		wavHeader.writeUInt32LE(44100, 24); // Sample rate
+		wavHeader.writeUInt32LE(44100 * 2, 28); // Byte rate
+		wavHeader.writeUInt16LE(2, 32); // Block align
+		wavHeader.writeUInt16LE(16, 34); // Bits per sample
+		// data chunk
+		wavHeader.write('data', 36);
+		wavHeader.writeUInt32LE(0, 40); // Data size
+
+		await fileHelper.uploadFile({
+			name: 'init-test.wav',
+			mimeType: 'audio/wav',
+			buffer: wavHeader
+		});
+
+		// Wait for format options to appear (indicates worker is ready)
+		await page.locator('.format-option, .output-format').first().waitFor({
+			state: 'visible',
+			timeout: WORKER_INIT_TIMEOUT_MS
+		});
+
+		const initTime = Date.now() - start;
+		console.log(`Audio worker init time: ${initTime}ms`);
+
+		expect(initTime, `Audio worker init (${initTime}ms) should be under ${WORKER_INIT_TIMEOUT_MS}ms`).toBeLessThan(WORKER_INIT_TIMEOUT_MS);
+	});
+
+	test('spreadsheet worker initializes within 10 seconds', async ({ page }) => {
+		const start = Date.now();
+
+		// Navigate to convert page
+		await page.goto('/convert');
+		await page.waitForLoadState('networkidle');
+
+		// Upload a simple CSV to trigger spreadsheet worker
+		const csvBuffer = SpreadsheetFactory.createCSV();
+		await fileHelper.uploadFile({
+			name: 'init-test.csv',
+			mimeType: 'text/csv',
+			buffer: csvBuffer
+		});
+
+		// Wait for format options to appear (indicates worker is ready)
+		await page.locator('.format-option, .output-format').first().waitFor({
+			state: 'visible',
+			timeout: WORKER_INIT_TIMEOUT_MS
+		});
+
+		const initTime = Date.now() - start;
+		console.log(`Spreadsheet worker init time: ${initTime}ms`);
+
+		expect(initTime, `Spreadsheet worker init (${initTime}ms) should be under ${WORKER_INIT_TIMEOUT_MS}ms`).toBeLessThan(WORKER_INIT_TIMEOUT_MS);
+	});
+});

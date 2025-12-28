@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-23)
 
 **Core value:** Every supported file conversion works correctly and produces valid, accurate output files that can be opened and used without errors
-**Current focus:** Phase 6 - Performance & Bug Fixes
+**Current focus:** Milestone v1.0 Complete - Ready for audit
 
 ## Current Position
 
-Phase: 6 of 6 (Performance & Bug Fixes) - IN PROGRESS
-Plan: 6 of 8 complete
-Status: Plan 06-05 complete (large file and progress indicator tests)
-Last activity: 2026-01-25 - Completed 06-05-PLAN.md
+Phase: 6 of 6 (Performance & Bug Fixes) - COMPLETE
+Milestone: v1.0 (Comprehensive Testing & Validation) - COMPLETE
+Status: All 6 phases complete, milestone ready for audit
+Last activity: 2026-01-25 - Completed Phase 6
 
-Progress: [█████████░] 95% (41/43 plans complete)
+Progress: [██████████] 100% (44/44 plans complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 41
-- Average duration: 4.9 min
-- Total execution time: 3.4 hours
+- Total plans completed: 44
+- Average duration: 5.3 min
+- Total execution time: 3.9 hours
 
 **By Phase:**
 
@@ -32,11 +32,11 @@ Progress: [█████████░] 95% (41/43 plans complete)
 | 03 (Upload/Download/Coverage) | 6/6 | 37 min | 6.2 min |
 | 04 (Comprehensive Coverage) | 14/14 | 62 min | 4.4 min |
 | 05 (Error Handling) | 5/5 | 32 min | 6.4 min |
-| 06 (Performance & Bug Fixes) | 6/8 | 26 min | 4.3 min |
+| 06 (Performance & Bug Fixes) | 8/8 | 48 min | 6.0 min |
 
 **Recent Trend:**
-- Last 5 plans: 4.6 min average
-- Trend: Stable (4min → 4min → 4min → 6min → 4min)
+- Last 5 plans: 5.0 min average
+- Trend: Stable (6min → 4min → 4min → 11min → 3min)
 
 *Updated after each plan completion*
 
@@ -188,6 +188,8 @@ Recent decisions affecting current work:
 | 06-05 | Playwright 50MB buffer limit | setInputFiles cannot handle >50MB buffers | Archive tests scaled to 40MB |
 | 06-05 | Gradient patterns for images | Solid colors compress to 0.1MB regardless of dimensions | Use createGradient() for size testing |
 | 06-05 | Document current behavior | Tests pass and document state when feature not implemented | Reduces false test failures |
+| 06-06 | Keep binary spoofing tests skipped | validateFileType() not called in FileUploader upload flow | Text validation from BUG-05 doesn't enable these |
+| 06-06 | Document specific blockers in skip comments | "Unskip when" conditions help future developers | Clear path to enable tests when features added |
 
 ### Pending Todos
 
@@ -365,11 +367,13 @@ None.
   - TXT/MD/HTML/XML: non-empty check
 - Unit tests: 46 passing in tests/unit/validation/text-format-validation.test.ts
 
-**Benchmark Infrastructure Status (from 06-04):**
+**Benchmark Infrastructure Status (updated 06-07):**
 - Benchmark runner: runBenchmark() and compareToBaseline() functions
 - Baselines: 22 working conversion paths documented
+- Calibration: 9 paths measured from actual tests, rest estimated
 - Regression detection: Tests detect >50% slowdowns
-- E2E tests: 14 passing (4 baseline validation, 9 conversion, 1 verification)
+- Worker init tests: All workers init <1s (PERF-07 verified)
+- E2E tests: 17 passing (4 baseline validation, 9 conversion, 1 verification, 3 worker init)
 - Key artifacts:
   - apps/frontend/src/lib/benchmarks/runner.ts
   - apps/frontend/src/lib/benchmarks/baselines.json
@@ -390,6 +394,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-25 (Phase 6 in progress)
-Stopped at: Completed 06-05-PLAN.md (large file and progress indicator tests)
-Resume file: .planning/phases/06-performance-bug-fixes/06-06-PLAN.md
+Last session: 2026-01-25 (Milestone v1.0 complete)
+Stopped at: All 44 plans executed, all 6 phases verified
+Resume: /gsd:audit-milestone or /gsd:complete-milestone
