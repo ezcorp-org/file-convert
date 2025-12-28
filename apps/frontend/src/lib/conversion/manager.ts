@@ -653,96 +653,69 @@ export class ConversionManager {
   }
 
   /**
-   * Decode audio file to WAV using AudioContext (main thread only)
-   * This allows us to support MP3, FLAC, OGG as source formats
+   * Decode audio file to WAV using Web Worker (offloads work from main thread)
+   * This allows us to support MP3, FLAC, OGG as source formats without blocking UI
    */
   private async decodeAudioToWAV(file: File, conversionId: string): Promise<File> {
-    // AudioContext is only available in the main thread (not in workers)
-    if (typeof AudioContext === 'undefined' && typeof (window as any).webkitAudioContext === 'undefined') {
-      throw new Error('AudioContext not available in this browser');
-    }
+    // Get the audio worker for decoding
+    const worker = await this.getOrCreateWorker('audio');
 
-    const audioContext = new (AudioContext || (window as any).webkitAudioContext)();
+    // Read file as array buffer
+    const arrayBuffer = await file.arrayBuffer();
 
-    try {
-      // Read file as array buffer
-      const arrayBuffer = await file.arrayBuffer();
+    // Send decode request to worker and wait for result
+    return new Promise<File>((resolve, reject) => {
+      // Message handler for this specific decode operation
+      const messageHandler = (event: MessageEvent) => {
+        const { type, id, result, error, progress, message } = event.data;
 
-      // Decode audio data using AudioContext
-      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+        // Only handle messages for this conversion
+        if (id !== conversionId) return;
 
-      // Create WAV file from decoded audio
-      const wavBlob = this.audioBufferToWAV(audioBuffer);
+        switch (type) {
+          case 'DECODE_PROGRESS':
+            // Update state with decode progress (maps to 20-40% of overall conversion)
+            const mappedProgress = 20 + Math.floor((progress / 100) * 20);
+            this.updateState(conversionId, {
+              progress: mappedProgress,
+              message: message || 'Decoding audio...'
+            });
+            break;
 
-      // Create a File object from the WAV blob
-      const originalName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-      const wavFile = new File([wavBlob], `${originalName}.wav`, { type: 'audio/wav' });
+          case 'DECODE_RESULT':
+            // Cleanup handler before resolving
+            worker.removeEventListener('message', messageHandler);
 
-      return wavFile;
-    } finally {
-      // Close audio context to free resources
-      await audioContext.close();
-    }
-  }
+            // Create a File object from the decoded WAV data
+            const originalName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+            const wavBlob = new Blob([result.arrayBuffer], { type: 'audio/wav' });
+            const wavFile = new File([wavBlob], `${originalName}.wav`, { type: 'audio/wav' });
 
-  /**
-   * Convert AudioBuffer to WAV file blob
-   */
-  private audioBufferToWAV(audioBuffer: AudioBuffer): Blob {
-    const numberOfChannels = audioBuffer.numberOfChannels;
-    const sampleRate = audioBuffer.sampleRate;
-    const format = 1; // PCM
-    const bitDepth = 16;
+            resolve(wavFile);
+            break;
 
-    // Get audio data from all channels
-    const length = audioBuffer.length * numberOfChannels;
-    const samples = new Int16Array(length);
+          case 'DECODE_ERROR':
+            // Cleanup handler before rejecting
+            worker.removeEventListener('message', messageHandler);
+            reject(new Error(error?.message || 'Audio decoding failed'));
+            break;
+        }
+      };
 
-    // Interleave channels
-    for (let channel = 0; channel < numberOfChannels; channel++) {
-      const channelData = audioBuffer.getChannelData(channel);
-      for (let i = 0; i < audioBuffer.length; i++) {
-        // Convert float32 [-1, 1] to int16 [-32768, 32767]
-        const sample = Math.max(-1, Math.min(1, channelData[i]));
-        samples[i * numberOfChannels + channel] = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
-      }
-    }
+      worker.addEventListener('message', messageHandler);
 
-    // Calculate sizes
-    const bytesPerSample = bitDepth / 8;
-    const blockAlign = numberOfChannels * bytesPerSample;
-    const byteRate = sampleRate * blockAlign;
-    const dataSize = samples.length * bytesPerSample;
-    const buffer = new ArrayBuffer(44 + dataSize);
-    const view = new DataView(buffer);
-
-    // Helper to write strings
-    const writeString = (offset: number, string: string) => {
-      for (let i = 0; i < string.length; i++) {
-        view.setUint8(offset + i, string.charCodeAt(i));
-      }
-    };
-
-    // Write WAV header
-    writeString(0, 'RIFF');
-    view.setUint32(4, 36 + dataSize, true);
-    writeString(8, 'WAVE');
-    writeString(12, 'fmt ');
-    view.setUint32(16, 16, true); // fmt chunk size
-    view.setUint16(20, format, true);
-    view.setUint16(22, numberOfChannels, true);
-    view.setUint32(24, sampleRate, true);
-    view.setUint32(28, byteRate, true);
-    view.setUint16(32, blockAlign, true);
-    view.setUint16(34, bitDepth, true);
-    writeString(36, 'data');
-    view.setUint32(40, dataSize, true);
-
-    // Write sample data
-    const samplesView = new Int16Array(buffer, 44);
-    samplesView.set(samples);
-
-    return new Blob([buffer], { type: 'audio/wav' });
+      // Send DECODE_AUDIO message to worker with transferable ArrayBuffer
+      worker.postMessage({
+        type: 'DECODE_AUDIO',
+        id: conversionId,
+        data: {
+          arrayBuffer: arrayBuffer,
+          sampleRate: 44100, // Default sample rate, will be detected from file
+          numberOfChannels: 2, // Default stereo, will be detected from file
+          duration: 0 // Unknown, will be estimated from file size
+        }
+      }, [arrayBuffer]); // Transfer the ArrayBuffer for efficiency
+    });
   }
 
   /**

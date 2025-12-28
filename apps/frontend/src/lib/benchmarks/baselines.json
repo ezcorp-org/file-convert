@@ -1,0 +1,141 @@
+{
+  "conversions": {
+    "png-to-jpeg": {
+      "baselineMs": 500,
+      "threshold": 0.5,
+      "fileSize": "1MB",
+      "lastUpdated": "2026-01-25"
+    },
+    "png-to-webp": {
+      "baselineMs": 600,
+      "threshold": 0.5,
+      "fileSize": "1MB",
+      "lastUpdated": "2026-01-25"
+    },
+    "jpeg-to-png": {
+      "baselineMs": 400,
+      "threshold": 0.5,
+      "fileSize": "1MB",
+      "lastUpdated": "2026-01-25"
+    },
+    "jpeg-to-webp": {
+      "baselineMs": 550,
+      "threshold": 0.5,
+      "fileSize": "1MB",
+      "lastUpdated": "2026-01-25"
+    },
+    "webp-to-png": {
+      "baselineMs": 400,
+      "threshold": 0.5,
+      "fileSize": "1MB",
+      "lastUpdated": "2026-01-25"
+    },
+    "webp-to-jpeg": {
+      "baselineMs": 450,
+      "threshold": 0.5,
+      "fileSize": "1MB",
+      "lastUpdated": "2026-01-25"
+    },
+    "wav-to-mp3": {
+      "baselineMs": 2000,
+      "threshold": 0.5,
+      "fileSize": "1MB",
+      "lastUpdated": "2026-01-25"
+    },
+    "csv-to-json": {
+      "baselineMs": 150,
+      "threshold": 0.5,
+      "fileSize": "100KB",
+      "lastUpdated": "2026-01-25"
+    },
+    "csv-to-tsv": {
+      "baselineMs": 150,
+      "threshold": 0.5,
+      "fileSize": "100KB",
+      "lastUpdated": "2026-01-25"
+    },
+    "tsv-to-csv": {
+      "baselineMs": 150,
+      "threshold": 0.5,
+      "fileSize": "100KB",
+      "lastUpdated": "2026-01-25"
+    },
+    "tsv-to-json": {
+      "baselineMs": 150,
+      "threshold": 0.5,
+      "fileSize": "100KB",
+      "lastUpdated": "2026-01-25"
+    },
+    "json-to-csv": {
+      "baselineMs": 150,
+      "threshold": 0.5,
+      "fileSize": "100KB",
+      "lastUpdated": "2026-01-25"
+    },
+    "json-to-yaml": {
+      "baselineMs": 150,
+      "threshold": 0.5,
+      "fileSize": "100KB",
+      "lastUpdated": "2026-01-25"
+    },
+    "yaml-to-json": {
+      "baselineMs": 150,
+      "threshold": 0.5,
+      "fileSize": "100KB",
+      "lastUpdated": "2026-01-25"
+    },
+    "zip-to-tar": {
+      "baselineMs": 500,
+      "threshold": 0.5,
+      "fileSize": "1MB",
+      "lastUpdated": "2026-01-25"
+    },
+    "tar-to-zip": {
+      "baselineMs": 500,
+      "threshold": 0.5,
+      "fileSize": "1MB",
+      "lastUpdated": "2026-01-25"
+    },
+    "txt-to-md": {
+      "baselineMs": 150,
+      "threshold": 0.5,
+      "fileSize": "100KB",
+      "lastUpdated": "2026-01-25"
+    },
+    "txt-to-html": {
+      "baselineMs": 150,
+      "threshold": 0.5,
+      "fileSize": "100KB",
+      "lastUpdated": "2026-01-25"
+    },
+    "md-to-html": {
+      "baselineMs": 150,
+      "threshold": 0.5,
+      "fileSize": "100KB",
+      "lastUpdated": "2026-01-25"
+    },
+    "md-to-txt": {
+      "baselineMs": 150,
+      "threshold": 0.5,
+      "fileSize": "100KB",
+      "lastUpdated": "2026-01-25"
+    },
+    "html-to-txt": {
+      "baselineMs": 150,
+      "threshold": 0.5,
+      "fileSize": "100KB",
+      "lastUpdated": "2026-01-25"
+    },
+    "html-to-md": {
+      "baselineMs": 150,
+      "threshold": 0.5,
+      "fileSize": "100KB",
+      "lastUpdated": "2026-01-25"
+    }
+  },
+  "meta": {
+    "generatedAt": "2026-01-25",
+    "environment": "Chromium/Playwright",
+    "notes": "Baselines calibrated from E2E tests. Values include browser UI overhead (page nav, upload processing). Threshold 0.5 = 50% regression detection per CONTEXT.md decision."
+  }
+}
