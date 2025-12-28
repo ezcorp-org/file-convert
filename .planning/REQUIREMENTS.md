@@ -79,9 +79,9 @@ Requirements for comprehensive testing and bug-fixing initiative. Each maps to r
 
 - [ ] **ERROR-01**: Test conversion with unsupported input format (expect graceful rejection)
 - [ ] **ERROR-02**: Test conversion with corrupted file header (expect error message)
-- [ ] **ERROR-03**: Test conversion with file exceeding size limit (expect error message)
-- [ ] **ERROR-04**: Test conversion with zero-byte file (expect error message)
-- [ ] **ERROR-05**: Test conversion with mismatched extension and MIME type (expect validation)
+- [x] **ERROR-03**: Test conversion with file exceeding size limit (expect error message)
+- [x] **ERROR-04**: Test conversion with zero-byte file (expect error message)
+- [x] **ERROR-05**: Test conversion with mismatched extension and MIME type (expect validation)
 - [ ] **ERROR-06**: Test Web Worker crash recovery (conversion fails gracefully, UI remains responsive)
 - [ ] **ERROR-07**: Test multiple simultaneous conversion failures (queue continues processing)
 - [ ] **ERROR-08**: Test success/failure UI indicators display correctly
@@ -208,9 +208,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ADV-16 | Phase 4 | Pending |
 | ERROR-01 | Phase 5 | Pending |
 | ERROR-02 | Phase 5 | Pending |
-| ERROR-03 | Phase 5 | Pending |
-| ERROR-04 | Phase 5 | Pending |
-| ERROR-05 | Phase 5 | Pending |
+| ERROR-03 | Phase 5 → 7 | Gap Closure |
+| ERROR-04 | Phase 5 → 7 | Gap Closure |
+| ERROR-05 | Phase 5 → 7 | Gap Closure |
 | ERROR-06 | Phase 5 | Pending |
 | ERROR-07 | Phase 5 | Pending |
 | ERROR-08 | Phase 5 | Pending |

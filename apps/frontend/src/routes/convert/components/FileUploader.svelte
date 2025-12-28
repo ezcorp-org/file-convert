@@ -1,6 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { detectFileType, validateFile } from '$lib/conversion/config';
+  import { validateFileType } from '$lib/utils/file-validation';
   import { notifications } from '$lib/stores/notifications';
 
   const dispatch = createEventDispatcher();
@@ -9,12 +10,12 @@
   let fileInput;
   let errors = [];
 
-  function handleDrop(event) {
+  async function handleDrop(event) {
     event.preventDefault();
     isDragging = false;
 
     const files = Array.from(event.dataTransfer?.files || []);
-    processFiles(files);
+    await processFiles(files);
   }
 
   function handleDragOver(event) {
@@ -27,12 +28,12 @@
     isDragging = false;
   }
 
-  function handleFileSelect(event) {
+  async function handleFileSelect(event) {
     console.log('FileUploader: handleFileSelect called');
     const input = event.target;
     const files = Array.from(input.files || []);
     console.log('FileUploader: Selected files:', files.length, files.map(f => f.name));
-    processFiles(files);
+    await processFiles(files);
 
     // Reset input
     if (fileInput) {
@@ -40,7 +41,7 @@
     }
   }
 
-  function processFiles(files) {
+  async function processFiles(files) {
     console.log('FileUploader: processFiles called with', files.length, 'files');
     errors = [];
     const validFiles = [];
@@ -48,6 +49,16 @@
     const validationErrors = [];
 
     for (const file of files) {
+      // Zero-byte validation (ERROR-04)
+      if (file.size === 0) {
+        errors.push({
+          file: file.name,
+          message: 'File is empty (0 bytes)'
+        });
+        validationErrors.push(`${file.name}: File is empty`);
+        continue;
+      }
+
       // Detect file type
       const config = detectFileType(file);
 
@@ -72,6 +83,29 @@
         });
         validationErrors.push(`${file.name}: ${errorMsg}`);
         continue;
+      }
+
+      // Magic byte / content validation (ERROR-05)
+      const typeValidation = await validateFileType(file);
+
+      if (!typeValidation.isValid) {
+        if (typeValidation.detectedType) {
+          // Extension spoofing detected - warn but allow (per CONTEXT.md policy)
+          const extension = file.name.split('.').pop()?.toLowerCase() || '';
+          notifications.warning(
+            'Format mismatch detected',
+            `${file.name} appears to be ${typeValidation.detectedType.toUpperCase()}, not ${extension.toUpperCase()}. The file will still be processed.`
+          );
+          // File is still added to validFiles per "warn but allow" policy
+        } else if (typeValidation.reason) {
+          // Truly corrupted file (no valid magic bytes) - reject
+          errors.push({
+            file: file.name,
+            message: typeValidation.reason
+          });
+          validationErrors.push(`${file.name}: ${typeValidation.reason}`);
+          continue;
+        }
       }
 
       validFiles.push(file);

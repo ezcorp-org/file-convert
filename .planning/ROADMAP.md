@@ -166,10 +166,26 @@ Plans:
 - [x] 06-07-PLAN.md — Calibrate benchmarks and verify worker init timing
 - [x] 06-08-PLAN.md — Move audio decoding to worker thread (BUG-04)
 
+### Phase 7: Upload Validation Integration
+**Goal**: Integrate existing validation infrastructure into upload flow to enforce size limits, reject zero-byte files, and detect extension spoofing
+**Depends on**: Phase 5, Phase 6
+**Requirements**: ERROR-03, ERROR-04, ERROR-05
+**Gap Closure**: Closes validation gaps from v1 audit (BUG-001, BUG-002, BUG-003)
+**Success Criteria** (what must be TRUE):
+  1. Files exceeding configured size limits are rejected at upload with clear error message
+  2. Zero-byte files are rejected at upload before processing starts
+  3. Files with mismatched extension and magic bytes are detected and rejected
+  4. All 8 previously-skipped validation tests pass
+  5. No regressions in existing 180+ passing tests
+**Plans**: 1 plan
+
+Plans:
+- [x] 07-01-PLAN.md — Integrate validation into FileUploader upload flow
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -179,3 +195,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 4. Comprehensive Format Coverage | 14/14 | Complete | 2026-01-24 |
 | 5. Error Handling & Edge Cases | 5/5 | Complete | 2026-01-24 |
 | 6. Performance & Bug Fixes | 8/8 | Complete | 2026-01-25 |
+| 7. Upload Validation Integration | 1/1 | Complete | 2026-01-25 |

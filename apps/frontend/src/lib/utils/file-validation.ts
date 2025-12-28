@@ -86,11 +86,10 @@ const MIME_TYPE_MAP: MimeTypeMap = {
 const FILE_SIGNATURES: { [key: string]: { offset: number; signature: number[] }[] } = {
 	'png': [{ offset: 0, signature: [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A] }],
 	'jpg': [
-		{ offset: 0, signature: [0xFF, 0xD8, 0xFF, 0xE0] },
-		{ offset: 0, signature: [0xFF, 0xD8, 0xFF, 0xE1] },
-		{ offset: 0, signature: [0xFF, 0xD8, 0xFF, 0xE2] },
-		{ offset: 0, signature: [0xFF, 0xD8, 0xFF, 0xE3] },
-		{ offset: 0, signature: [0xFF, 0xD8, 0xFF, 0xE8] }
+		{ offset: 0, signature: [0xFF, 0xD8, 0xFF] } // JPEG SOI (Start of Image) + marker start - more specific than just SOI
+	],
+	'jpeg': [
+		{ offset: 0, signature: [0xFF, 0xD8, 0xFF] } // Same as jpg - alias for compatibility
 	],
 	'gif': [
 		{ offset: 0, signature: [0x47, 0x49, 0x46, 0x38, 0x37, 0x61] }, // GIF87a
@@ -233,6 +232,10 @@ export async function validateFileType(file: File): Promise<FileValidationResult
 
 /**
  * Validates file signature (magic numbers) to ensure file content matches extension
+ *
+ * Handles two types of signature patterns:
+ * 1. Alternative signatures (OR): Multiple signatures at same offset (e.g., JPEG variants)
+ * 2. Compound signatures (AND): Multiple parts at different offsets (e.g., RIFF + WEBP)
  */
 async function validateFileSignature(file: File, extension: string): Promise<boolean | null> {
 	const signatures = FILE_SIGNATURES[extension];
@@ -240,23 +243,27 @@ async function validateFileSignature(file: File, extension: string): Promise<boo
 		// No signature check available for this format
 		return null;
 	}
-	
+
 	// Read enough bytes to check all possible signatures
 	const maxBytes = Math.max(...signatures.map(s => s.offset + s.signature.length));
 	const buffer = await readFileBytes(file, maxBytes);
-	
+
 	if (!buffer) {
 		return null;
 	}
-	
-	// Check if any signature matches
-	for (const sig of signatures) {
-		if (checkSignature(buffer, sig.offset, sig.signature)) {
-			return true;
-		}
+
+	// Determine if this is a compound signature (different offsets = AND logic)
+	// or alternative signatures (same offset = OR logic)
+	const offsets = new Set(signatures.map(s => s.offset));
+	const isCompound = offsets.size > 1;
+
+	if (isCompound) {
+		// Compound signature: ALL parts must match (e.g., RIFF at 0 AND WEBP at 8)
+		return signatures.every(sig => checkSignature(buffer, sig.offset, sig.signature));
+	} else {
+		// Alternative signatures: ANY one must match (e.g., JPEG variants)
+		return signatures.some(sig => checkSignature(buffer, sig.offset, sig.signature));
 	}
-	
-	return false;
 }
 
 /**
@@ -299,21 +306,35 @@ function checkSignature(buffer: Uint8Array, offset: number, signature: number[])
 
 /**
  * Attempts to detect the actual file type based on magic numbers
+ *
+ * Handles both compound signatures (AND logic) and alternative signatures (OR logic)
  */
 async function detectFileType(file: File): Promise<string | undefined> {
 	const buffer = await readFileBytes(file, 512);
 	if (!buffer) {
 		return undefined;
 	}
-	
+
 	for (const [format, signatures] of Object.entries(FILE_SIGNATURES)) {
-		for (const sig of signatures) {
-			if (checkSignature(buffer, sig.offset, sig.signature)) {
-				return format;
-			}
+		// Determine if this is a compound signature (different offsets = AND logic)
+		// or alternative signatures (same offset = OR logic)
+		const offsets = new Set(signatures.map(s => s.offset));
+		const isCompound = offsets.size > 1;
+
+		let matches = false;
+		if (isCompound) {
+			// Compound signature: ALL parts must match (e.g., RIFF + WEBP)
+			matches = signatures.every(sig => checkSignature(buffer, sig.offset, sig.signature));
+		} else {
+			// Alternative signatures: ANY one must match (e.g., JPEG variants)
+			matches = signatures.some(sig => checkSignature(buffer, sig.offset, sig.signature));
+		}
+
+		if (matches) {
+			return format;
 		}
 	}
-	
+
 	return undefined;
 }
 

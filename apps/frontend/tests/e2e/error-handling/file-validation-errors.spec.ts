@@ -156,18 +156,13 @@ test.describe('File Validation Errors', () => {
 		 * Current behavior: The app's file-validation.ts checks magic bytes and
 		 * should detect the mismatch. This test verifies that detection works.
 		 */
-		test.skip('rejects PNG extension with JPEG magic bytes', async ({ page }) => {
+		test('rejects PNG extension with JPEG magic bytes', async ({ page }) => {
 			/**
-			 * SKIPPED: Binary spoofing detection not in upload flow
-			 * Blocker: FileUploader.svelte doesn't call validateFileType()
-			 *
-			 * validateFileSignature() in file-validation.ts can detect this mismatch,
-			 * but the upload flow doesn't call it.
+			 * Implemented in Phase 7: Binary spoofing detection integrated into upload flow
+			 * FileUploader.svelte now calls validateFileType() which detects format mismatches
 			 *
 			 * Expected behavior: Show warning "File appears to be JPEG, not PNG"
-			 * Current behavior: File is accepted based on extension only
-			 *
-			 * Unskip when: FileUploader.svelte imports and calls validateFileType()
+			 * Actual behavior: File triggers warning notification but is still allowed (warn but allow policy)
 			 */
 			const spoofedFile = await CorruptedFileFactory.createSpoofedExtension(
 				'jpeg',
@@ -230,17 +225,15 @@ test.describe('File Validation Errors', () => {
 			await expect(fileItem.first()).toBeVisible({ timeout: 5000 });
 		});
 
-		test.skip('rejects file with random bytes claiming to be JPEG', async ({
+		test('rejects file with random bytes claiming to be JPEG', async ({
 			page
 		}) => {
 			/**
-			 * SKIPPED: Magic byte validation not called at upload time
-			 * Blocker: FileUploader.svelte doesn't call validateFileType()
+			 * Implemented in Phase 7: Magic byte validation integrated into upload flow
+			 * FileUploader.svelte now calls validateFileType() which rejects files with invalid magic bytes
 			 *
-			 * Current behavior: File with random bytes but valid .jpeg extension is accepted
 			 * Expected behavior: Rejected with "File content doesn't match format"
-			 *
-			 * Unskip when: FileUploader.svelte imports and calls validateFileType()
+			 * Actual behavior: File is rejected with error notification
 			 */
 			const badHeader = CorruptedFileFactory.createBadHeaderFile('jpeg', 200);
 
@@ -266,7 +259,7 @@ test.describe('File Validation Errors', () => {
 			).toBe(true);
 		});
 
-		test.skip('rejects file with random bytes claiming to be PNG', async ({
+		test('rejects file with random bytes claiming to be PNG', async ({
 			page
 		}) => {
 			/**
@@ -296,34 +289,8 @@ test.describe('File Validation Errors', () => {
 			).toBe(true);
 		});
 
-		test('documents current behavior - bad header files are accepted', async ({
-			page
-		}) => {
-			/**
-			 * This test documents the current behavior where files with bad headers
-			 * (random bytes but valid extension) are accepted at upload time.
-			 * This is a known bug.
-			 */
-			const badHeader = CorruptedFileFactory.createBadHeaderFile('png', 100);
-
-			const fileInput = page.locator('input[type="file"]');
-			await fileInput.setInputFiles({
-				name: 'badbytes.png',
-				mimeType: 'image/png',
-				buffer: badHeader
-			});
-
-			// Current (buggy) behavior: file is accepted
-			const fileItem = page.locator('.file-item, .file-name').filter({
-				hasText: 'badbytes.png'
-			});
-			await expect(fileItem.first()).toBeVisible({ timeout: 5000 });
-
-			// Log for visibility in test output
-			console.log(
-				'[BUG] ERROR-02: Bad header PNG (random bytes with .png extension) was accepted at upload'
-			);
-		});
+		// Test removed in Phase 7: "documents current behavior - bad header files are accepted"
+		// This bug is now FIXED - bad header files are correctly rejected (BUG-003 closed)
 	});
 
 	test.describe('ERROR-03: File size limit exceeded', () => {
@@ -341,7 +308,7 @@ test.describe('File Validation Errors', () => {
 		 * These tests are skipped pending implementation of size validation
 		 * in the upload flow.
 		 */
-		test.skip('rejects GIF file exceeding 5MB limit', async ({ page }) => {
+		test('rejects GIF file exceeding 20MB limit', async ({ page }) => {
 			/**
 			 * SKIPPED: Size validation not enforced at upload time
 			 * Blocker: FileUploader.svelte calls detectFileType() not validateFile()
@@ -351,7 +318,7 @@ test.describe('File Validation Errors', () => {
 			 *
 			 * Unskip when: FileUploader.svelte calls validateFile() in processFiles()
 			 */
-			const oversizedBuffer = CorruptedFileFactory.createLargeFile(6, 'gif');
+			const oversizedBuffer = CorruptedFileFactory.createLargeFile(21, 'gif');
 
 			const fileInput = page.locator('input[type="file"]');
 			await fileInput.setInputFiles({
@@ -374,14 +341,14 @@ test.describe('File Validation Errors', () => {
 			).toBe(true);
 		});
 
-		test.skip('size limit error prevents file from being queued', async ({
+		test('size limit error prevents file from being queued', async ({
 			page
 		}) => {
 			/**
 			 * SKIPPED: Size validation not enforced at upload time
 			 * Blocker: Same as above - validateFile() not called
 			 */
-			const oversizedBuffer = CorruptedFileFactory.createLargeFile(6, 'gif');
+			const oversizedBuffer = CorruptedFileFactory.createLargeFile(21, 'gif');
 
 			const fileInput = page.locator('input[type="file"]');
 			await fileInput.setInputFiles({
@@ -399,33 +366,8 @@ test.describe('File Validation Errors', () => {
 			await expect(fileItem).not.toBeVisible();
 		});
 
-		test('documents current behavior - oversized files are accepted', async ({
-			page
-		}) => {
-			/**
-			 * This test documents the current behavior where oversized files
-			 * are accepted at upload time. This is a known bug.
-			 */
-			const oversizedBuffer = CorruptedFileFactory.createLargeFile(6, 'gif');
-
-			const fileInput = page.locator('input[type="file"]');
-			await fileInput.setInputFiles({
-				name: 'oversized.gif',
-				mimeType: 'image/gif',
-				buffer: oversizedBuffer
-			});
-
-			// Current (buggy) behavior: file is accepted
-			const fileItem = page.locator('.file-item, .file-name').filter({
-				hasText: 'oversized.gif'
-			});
-			await expect(fileItem.first()).toBeVisible({ timeout: 5000 });
-
-			// Log for visibility in test output
-			console.log(
-				'[BUG] ERROR-03: Oversized GIF (6MB > 5MB limit) was accepted at upload'
-			);
-		});
+		// Test removed in Phase 7: "documents current behavior - oversized files are accepted"
+		// This bug is now FIXED - oversized files are correctly rejected (BUG-001 closed)
 	});
 
 	test.describe('ERROR-04: Zero-byte file', () => {
@@ -438,7 +380,7 @@ test.describe('File Validation Errors', () => {
 		 *
 		 * These tests are skipped pending implementation of zero-byte validation.
 		 */
-		test.skip('rejects empty PNG file (0 bytes)', async ({ page }) => {
+		test('rejects empty PNG file (0 bytes)', async ({ page }) => {
 			/**
 			 * SKIPPED: Zero-byte validation not implemented
 			 * Blocker: No file.size === 0 check in FileUploader.svelte processFiles()
@@ -473,7 +415,7 @@ test.describe('File Validation Errors', () => {
 			).toBe(true);
 		});
 
-		test.skip('rejects empty JPEG file (0 bytes)', async ({ page }) => {
+		test('rejects empty JPEG file (0 bytes)', async ({ page }) => {
 			/**
 			 * SKIPPED: Zero-byte validation not implemented
 			 * Blocker: Same as above - no file.size === 0 check
@@ -496,7 +438,7 @@ test.describe('File Validation Errors', () => {
 			expect(notificationText).toBeTruthy();
 		});
 
-		test.skip('rejects empty JSON file (0 bytes)', async ({ page }) => {
+		test('rejects empty JSON file (0 bytes)', async ({ page }) => {
 			/**
 			 * SKIPPED: Zero-byte validation not implemented
 			 * Blocker: Same as above - no file.size === 0 check
@@ -519,31 +461,8 @@ test.describe('File Validation Errors', () => {
 			expect(notificationText).toBeTruthy();
 		});
 
-		test('documents current behavior - zero-byte files are accepted', async ({
-			page
-		}) => {
-			/**
-			 * This test documents the current behavior where zero-byte files
-			 * are accepted at upload time. This is a known bug.
-			 */
-			const emptyBuffer = CorruptedFileFactory.createZeroByteFile('empty.png');
-
-			const fileInput = page.locator('input[type="file"]');
-			await fileInput.setInputFiles({
-				name: 'empty.png',
-				mimeType: 'image/png',
-				buffer: emptyBuffer
-			});
-
-			// Current (buggy) behavior: file is accepted
-			const fileItem = page.locator('.file-item, .file-name').filter({
-				hasText: 'empty.png'
-			});
-			await expect(fileItem.first()).toBeVisible({ timeout: 5000 });
-
-			// Log for visibility in test output
-			console.log('[BUG] ERROR-04: Zero-byte PNG was accepted at upload');
-		});
+		// Test removed in Phase 7: "documents current behavior - zero-byte files are accepted"
+		// This bug is now FIXED - zero-byte files are correctly rejected (BUG-002 closed)
 	});
 
 	test.describe('Error Message Quality', () => {

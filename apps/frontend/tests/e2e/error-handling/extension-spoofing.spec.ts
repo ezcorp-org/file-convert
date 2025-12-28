@@ -82,7 +82,7 @@ test.describe('ERROR-05: Extension Spoofing Detection', () => {
 	// Blocker: FileUploader.svelte doesn't call validateFileType() during upload
 	// validateFileSignature() exists in file-validation.ts but is not used at upload time
 	// Unskip when: FileUploader.svelte imports and calls validateFileType()
-	test.skip('detects JPEG file with PNG extension', async ({ page }) => {
+	test('detects JPEG file with PNG extension', async ({ page }) => {
 		// Create valid JPEG using ImageFactory
 		const jpegBuffer = await ImageFactory.createJPEG({ width: 100, height: 100 });
 
@@ -119,7 +119,7 @@ test.describe('ERROR-05: Extension Spoofing Detection', () => {
 
 	// SKIPPED: Binary spoofing detection not integrated into upload flow
 	// Same blocker as above - validateFileType() not called at upload time
-	test.skip('detects PNG file with JPEG extension', async ({ page }) => {
+	test('detects PNG file with JPEG extension', async ({ page }) => {
 		// Create valid PNG using ImageFactory
 		const pngBuffer = await ImageFactory.createPNG({ width: 100, height: 100 });
 
@@ -154,7 +154,7 @@ test.describe('ERROR-05: Extension Spoofing Detection', () => {
 
 	// SKIPPED: Binary spoofing detection not integrated into upload flow
 	// Same blocker as above - validateFileType() not called at upload time
-	test.skip('detects WAV file with MP3 extension', async ({ page }) => {
+	test('detects WAV file with MP3 extension', async ({ page }) => {
 		// Create valid WAV using AudioFactory
 		const wavBuffer = AudioFactory.createWAV({
 			duration: 0.5,
