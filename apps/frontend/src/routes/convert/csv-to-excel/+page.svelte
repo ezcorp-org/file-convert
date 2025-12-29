@@ -28,7 +28,7 @@
 		},
 		{
 			question: "Can I convert large CSV files?",
-			answer: "Yes! We support CSV files up to 100MB with millions of rows of data."
+			answer: "Yes! We support CSV files up to 10GB with millions of rows of data."
 		}
 	]}
 />

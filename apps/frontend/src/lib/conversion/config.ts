@@ -41,6 +41,9 @@ export interface ConversionRoute {
   validate?: (file: File) => Promise<{ valid: boolean; reason?: string }>;
 }
 
+// Maximum file size: 10 GB
+const MAX_FILE_SIZE = 10 * 1024 * 1024 * 1024;
+
 // File Type Configurations
 export const FILE_TYPES: Record<string, FileTypeConfig> = {
   // Images
@@ -51,7 +54,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['image/png'],
     category: 'image',
     icon: '🖼️',
-    maxSize: 50 * 1024 * 1024, // 50MB
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['jpeg', 'webp', 'tiff', 'bmp', 'gif', 'ico', 'pnm'],
     workerType: 'image'
   },
@@ -62,7 +65,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['image/jpeg'],
     category: 'image',
     icon: '📷',
-    maxSize: 50 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['png', 'webp', 'tiff', 'bmp', 'gif', 'pnm'],
     workerType: 'image'
   },
@@ -73,7 +76,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['image/webp'],
     category: 'image',
     icon: '🌐',
-    maxSize: 50 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['png', 'jpeg', 'tiff', 'bmp'],
     workerType: 'image'
   },
@@ -84,7 +87,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['image/gif'],
     category: 'image',
     icon: '🎬',
-    maxSize: 20 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['png', 'jpeg', 'webp'],
     workerType: 'image'
   },
@@ -95,7 +98,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['image/bmp', 'image/x-ms-bmp'],
     category: 'image',
     icon: '🖌️',
-    maxSize: 50 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['png', 'jpeg', 'webp'],
     workerType: 'image'
   },
@@ -106,7 +109,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['image/tiff'],
     category: 'image',
     icon: '📐',
-    maxSize: 100 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['png', 'jpeg', 'webp'],
     workerType: 'image'
   },
@@ -117,7 +120,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['image/x-icon', 'image/vnd.microsoft.icon'],
     category: 'image',
     icon: '🎯',
-    maxSize: 5 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['png'],
     workerType: 'image'
   },
@@ -130,7 +133,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['audio/wav', 'audio/wave'],
     category: 'audio',
     icon: '🎵',
-    maxSize: 200 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['mp3', 'wav'], // WAV to MP3 and WAV to WAV (quality adjustment)
     workerType: 'audio'
   },
@@ -141,7 +144,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['audio/mpeg', 'audio/mp3'],
     category: 'audio',
     icon: '🎧',
-    maxSize: 100 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['wav', 'mp3'], // MP3 decoded in main thread using AudioContext, then converted in worker
     workerType: 'audio'
   },
@@ -152,7 +155,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['audio/flac'],
     category: 'audio',
     icon: '🎼',
-    maxSize: 200 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['wav', 'mp3'], // FLAC decoded in main thread using AudioContext, then converted in worker
     workerType: 'audio'
   },
@@ -163,7 +166,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['audio/ogg', 'audio/vorbis'],
     category: 'audio',
     icon: '🔊',
-    maxSize: 100 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['wav', 'mp3'], // OGG decoded in main thread using AudioContext, then converted in worker
     workerType: 'audio'
   },
@@ -176,7 +179,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['application/pdf'],
     category: 'document',
     icon: '📄',
-    maxSize: 100 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['png', 'jpeg'],
     workerType: 'document'
   },
@@ -188,7 +191,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['text/markdown', 'text/x-markdown'],
     category: 'text',
     icon: '📋',
-    maxSize: 10 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['html', 'pdf', 'txt'],
     workerType: 'text'
   },
@@ -199,7 +202,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['text/html'],
     category: 'text',
     icon: '🌐',
-    maxSize: 10 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['pdf', 'md', 'txt'],
     workerType: 'text'
   },
@@ -210,7 +213,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['text/plain'],
     category: 'text',
     icon: '📝',
-    maxSize: 10 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['html', 'md'],
     workerType: 'text'
   },
@@ -221,7 +224,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['application/json', 'text/json', 'text/x-json'],
     category: 'text',
     icon: '{}',
-    maxSize: 50 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['yaml', 'xml', 'csv', 'xlsx'],
     workerType: 'text'
   },
@@ -232,7 +235,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['text/yaml', 'application/x-yaml', 'text/x-yaml'],
     category: 'text',
     icon: '📦',
-    maxSize: 50 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['json', 'xml'],
     workerType: 'text'
   },
@@ -243,7 +246,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['text/xml', 'application/xml', 'application/x-xml'],
     category: 'text',
     icon: '🏷️',
-    maxSize: 50 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['json', 'yaml', 'csv'],
     workerType: 'text'
   },
@@ -256,7 +259,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['text/csv', 'application/csv', 'text/x-csv'],
     category: 'spreadsheet',
     icon: '📊',
-    maxSize: 100 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['xlsx', 'json', 'tsv'],
     workerType: 'spreadsheet'
   },
@@ -267,7 +270,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['text/tab-separated-values', 'text/tsv'],
     category: 'spreadsheet',
     icon: '📈',
-    maxSize: 100 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['csv', 'xlsx', 'json'],
     workerType: 'spreadsheet'
   },
@@ -278,7 +281,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
     category: 'spreadsheet',
     icon: '📉',
-    maxSize: 100 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['csv', 'tsv', 'json'],
     workerType: 'spreadsheet'
   },
@@ -291,7 +294,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['application/zip'],
     category: 'archive',
     icon: '📁',
-    maxSize: 500 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['tar', 'tgz', '7z'],
     workerType: 'archive'
   },
@@ -302,7 +305,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['application/x-tar'],
     category: 'archive',
     icon: '📦',
-    maxSize: 500 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['zip', 'tgz'],
     workerType: 'archive'
   },
@@ -313,7 +316,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['application/gzip', 'application/x-gzip'],
     category: 'archive',
     icon: '🗜️',
-    maxSize: 500 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['zip', 'tar'],
     workerType: 'archive'
   },
@@ -324,7 +327,7 @@ export const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['application/x-7z-compressed'],
     category: 'archive',
     icon: '🗂️',
-    maxSize: 500 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE,
     supportedOutputs: ['zip', 'tar'],
     workerType: 'archive'
   }
@@ -464,7 +467,7 @@ export function validateFile(file: File, config: FileTypeConfig): { valid: boole
   if (file.size > config.maxSize) {
     return {
       valid: false,
-      reason: `File too large. Maximum size is ${Math.round(config.maxSize / 1024 / 1024)}MB`
+      reason: `File too large. Maximum size is ${config.maxSize >= 1024 * 1024 * 1024 ? Math.round(config.maxSize / 1024 / 1024 / 1024) + 'GB' : Math.round(config.maxSize / 1024 / 1024) + 'MB'}`
     };
   }
   

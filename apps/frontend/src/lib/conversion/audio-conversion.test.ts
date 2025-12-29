@@ -141,9 +141,9 @@ describe('Audio File Type Detection', () => {
     });
 
     it('should reject WAV file exceeding size limit', () => {
-      const maxSize = FILE_TYPES.wav.maxSize;
-      // Use Uint8Array to create large file without memory issues
-      const file = new File([new Uint8Array(maxSize + 1)], 'huge.wav', { type: 'audio/wav' });
+      // Simulate a file larger than 10GB by mocking the size property
+      const file = new File(['x'], 'huge.wav', { type: 'audio/wav' });
+      Object.defineProperty(file, 'size', { value: 10 * 1024 * 1024 * 1024 + 1 });
       const config = FILE_TYPES.wav;
       const validation = validateFile(file, config);
       expect(validation.valid).toBe(false);
@@ -158,9 +158,9 @@ describe('Audio File Type Detection', () => {
     });
 
     it('should reject MP3 file exceeding size limit', () => {
-      const maxSize = FILE_TYPES.mp3.maxSize;
-      // Use Uint8Array to create large file without memory issues
-      const file = new File([new Uint8Array(maxSize + 1)], 'huge.mp3', { type: 'audio/mpeg' });
+      // Simulate a file larger than 10GB by mocking the size property
+      const file = new File(['x'], 'huge.mp3', { type: 'audio/mpeg' });
+      Object.defineProperty(file, 'size', { value: 10 * 1024 * 1024 * 1024 + 1 });
       const config = FILE_TYPES.mp3;
       const validation = validateFile(file, config);
       expect(validation.valid).toBe(false);
@@ -350,24 +350,12 @@ describe('Audio File Type Detection', () => {
   });
 
   describe('Audio Max File Sizes', () => {
-    it('should have appropriate max size for WAV (200MB)', () => {
-      const wavConfig = FILE_TYPES.wav;
-      expect(wavConfig.maxSize).toBe(200 * 1024 * 1024);
-    });
-
-    it('should have appropriate max size for MP3 (100MB)', () => {
-      const mp3Config = FILE_TYPES.mp3;
-      expect(mp3Config.maxSize).toBe(100 * 1024 * 1024);
-    });
-
-    it('should have appropriate max size for FLAC (200MB)', () => {
-      const flacConfig = FILE_TYPES.flac;
-      expect(flacConfig.maxSize).toBe(200 * 1024 * 1024);
-    });
-
-    it('should have appropriate max size for OGG (100MB)', () => {
-      const oggConfig = FILE_TYPES.ogg;
-      expect(oggConfig.maxSize).toBe(100 * 1024 * 1024);
+    it('should allow files up to 10GB for all audio formats', () => {
+      const tenGB = 10 * 1024 * 1024 * 1024;
+      expect(FILE_TYPES.wav.maxSize).toBe(tenGB);
+      expect(FILE_TYPES.mp3.maxSize).toBe(tenGB);
+      expect(FILE_TYPES.flac.maxSize).toBe(tenGB);
+      expect(FILE_TYPES.ogg.maxSize).toBe(tenGB);
     });
   });
 

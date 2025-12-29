@@ -25,7 +25,7 @@
 		},
 		{
 			question: "Is Excel to PDF conversion free?",
-			answer: "Yes! Our Excel to PDF converter is completely free. Convert up to 5 Excel files simultaneously with files up to 100MB each."
+			answer: "Yes! Our Excel to PDF converter is completely free. Convert up to 5 Excel files simultaneously with files up to 10GB each."
 		},
 		{
 			question: "Will my Excel formatting be preserved in PDF?",

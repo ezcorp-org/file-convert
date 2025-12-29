@@ -25,7 +25,7 @@
 		},
 		{
 			question: "Is image to PDF conversion free?",
-			answer: "Yes! Our image to PDF converter is completely free. You can convert up to 5 images simultaneously with no file size limits up to 100MB each."
+			answer: "Yes! Our image to PDF converter is completely free. You can convert up to 5 images simultaneously with no file size limits up to 10GB each."
 		},
 		{
 			question: "What image formats can be converted to PDF?",

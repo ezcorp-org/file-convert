@@ -25,7 +25,7 @@
 		},
 		{
 			question: "Is PDF to Word conversion free?",
-			answer: "Yes! Our PDF to Word converter is completely free. You can convert up to 5 PDF files simultaneously with no file size limits up to 100MB each."
+			answer: "Yes! Our PDF to Word converter is completely free. You can convert up to 5 PDF files simultaneously with no file size limits up to 10GB each."
 		},
 		{
 			question: "Will my PDF formatting be preserved in Word?",

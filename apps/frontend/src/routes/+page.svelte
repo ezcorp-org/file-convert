@@ -66,7 +66,7 @@
     {
       question: "Are there any limitations?",
       answer:
-        "The web app allows multiple simultaneous conversions with files up to 100MB each. Perfect for everyday use and completely free.",
+        "The web app allows multiple simultaneous conversions with files up to 10GB each. Perfect for everyday use and completely free.",
     },
     {
       question: "How does offline mode work?",

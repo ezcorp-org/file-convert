@@ -49,11 +49,11 @@ describe('Audio Conversion Configuration Integration', () => {
 
     it('should validate audio file sizes correctly', () => {
       const testCases = [
-        { format: 'wav', size: 100 * 1024 * 1024, shouldPass: true },  // 100MB WAV (within 200MB limit)
-        { format: 'mp3', size: 50 * 1024 * 1024, shouldPass: true },   // 50MB MP3 (within 100MB limit)
-        { format: 'flac', size: 150 * 1024 * 1024, shouldPass: true }, // 150MB FLAC (within 200MB limit)
-        { format: 'wav', size: 300 * 1024 * 1024, shouldPass: false }, // 300MB WAV (exceeds 200MB limit)
-        { format: 'mp3', size: 150 * 1024 * 1024, shouldPass: false }, // 150MB MP3 (exceeds 100MB limit)
+        { format: 'wav', size: 100 * 1024 * 1024, shouldPass: true },  // 100MB WAV (within 10GB limit)
+        { format: 'mp3', size: 50 * 1024 * 1024, shouldPass: true },   // 50MB MP3 (within 10GB limit)
+        { format: 'flac', size: 150 * 1024 * 1024, shouldPass: true }, // 150MB FLAC (within 10GB limit)
+        { format: 'wav', size: 300 * 1024 * 1024, shouldPass: true },  // 300MB WAV (within 10GB limit)
+        { format: 'mp3', size: 150 * 1024 * 1024, shouldPass: true },  // 150MB MP3 (within 10GB limit)
       ];
 
       testCases.forEach(({ format, size, shouldPass }) => {
@@ -156,16 +156,12 @@ describe('Audio Conversion Configuration Integration', () => {
   });
 
   describe('Audio File Size Limits', () => {
-    it('should enforce appropriate limits for uncompressed audio', () => {
-      // WAV and FLAC (uncompressed/lossless) should have higher limits
-      expect(FILE_TYPES.wav.maxSize).toBe(200 * 1024 * 1024); // 200MB
-      expect(FILE_TYPES.flac.maxSize).toBe(200 * 1024 * 1024); // 200MB
-    });
-
-    it('should enforce appropriate limits for compressed audio', () => {
-      // MP3 and OGG (compressed) should have lower limits
-      expect(FILE_TYPES.mp3.maxSize).toBe(100 * 1024 * 1024); // 100MB
-      expect(FILE_TYPES.ogg.maxSize).toBe(100 * 1024 * 1024); // 100MB
+    it('should allow files up to 10GB for all audio formats', () => {
+      const tenGB = 10 * 1024 * 1024 * 1024;
+      expect(FILE_TYPES.wav.maxSize).toBe(tenGB);
+      expect(FILE_TYPES.flac.maxSize).toBe(tenGB);
+      expect(FILE_TYPES.mp3.maxSize).toBe(tenGB);
+      expect(FILE_TYPES.ogg.maxSize).toBe(tenGB);
     });
   });
 });

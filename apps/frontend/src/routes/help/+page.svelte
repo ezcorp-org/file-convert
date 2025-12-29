@@ -80,7 +80,7 @@
 					</details>
 					<details class="faq-item">
 						<summary>What are the file size limits?</summary>
-						<p>Files up to 100MB are supported. For larger files, consider self-hosting the application.</p>
+						<p>Files up to 10GB are supported.</p>
 					</details>
 					<details class="faq-item">
 						<summary>Can I self-host File Convert?</summary>

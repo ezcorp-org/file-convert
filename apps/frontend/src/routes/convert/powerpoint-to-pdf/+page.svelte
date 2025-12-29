@@ -25,7 +25,7 @@
 		},
 		{
 			question: "Is PowerPoint to PDF conversion free?",
-			answer: "Yes! Our PowerPoint to PDF converter is completely free. You can convert up to 5 presentations simultaneously with no file size limits up to 100MB each."
+			answer: "Yes! Our PowerPoint to PDF converter is completely free. You can convert up to 5 presentations simultaneously with no file size limits up to 10GB each."
 		},
 		{
 			question: "Will my PowerPoint formatting be preserved in PDF?",

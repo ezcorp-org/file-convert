@@ -11,7 +11,7 @@
     {
       question: "Is this file converter free to use?",
       answer:
-        "Yes, our basic file converter is completely free with no hidden costs. You can convert up to 5 files simultaneously with files up to 100MB each. For unlimited conversions and advanced features, check out our Pro version.",
+        "Yes, our basic file converter is completely free with no hidden costs. You can convert up to 5 files simultaneously with files up to 10GB each. For unlimited conversions and advanced features, check out our Pro version.",
     },
     {
       question: "How does the conversion process work?",

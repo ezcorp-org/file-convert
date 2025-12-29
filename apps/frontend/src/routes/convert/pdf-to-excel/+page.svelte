@@ -25,7 +25,7 @@
 		},
 		{
 			question: "Is PDF to Excel conversion free?",
-			answer: "Yes! Our PDF to Excel converter is completely free. Convert up to 5 PDF files simultaneously with no file size limits up to 100MB each."
+			answer: "Yes! Our PDF to Excel converter is completely free. Convert up to 5 PDF files simultaneously with no file size limits up to 10GB each."
 		},
 		{
 			question: "Can I extract tables from PDF to Excel?",

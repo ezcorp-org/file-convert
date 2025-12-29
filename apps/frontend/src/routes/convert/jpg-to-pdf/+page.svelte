@@ -24,7 +24,7 @@
 		},
 		{
 			question: "Is JPG to PDF conversion free?",
-			answer: "Yes! Convert up to 5 JPG files simultaneously for free with no file size limits up to 100MB each."
+			answer: "Yes! Convert up to 5 JPG files simultaneously for free with no file size limits up to 10GB each."
 		},
 		{
 			question: "Can I combine multiple JPG files into one PDF?",

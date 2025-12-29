@@ -24,7 +24,7 @@
 		},
 		{
 			question: "Is PDF to JPG conversion free?",
-			answer: "Yes! Convert PDFs to JPG for free with no limits on the number of pages or file size up to 100MB."
+			answer: "Yes! Convert PDFs to JPG for free with no limits on the number of pages or file size up to 10GB."
 		},
 		{
 			question: "Can I convert all PDF pages to JPG?",
