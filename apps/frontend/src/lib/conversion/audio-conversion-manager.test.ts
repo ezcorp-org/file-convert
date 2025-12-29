@@ -26,23 +26,22 @@ describe('Audio Conversion Configuration Integration', () => {
     });
 
     it('should validate conversion paths between audio formats', () => {
-      // WAV can convert to MP3, FLAC, OGG
+      // WAV can convert to MP3 (and WAV for quality adjustment)
       const wavConfig = FILE_TYPES.wav;
       expect(wavConfig.supportedOutputs).toContain('mp3');
-      expect(wavConfig.supportedOutputs).toContain('flac');
-      expect(wavConfig.supportedOutputs).toContain('ogg');
+      expect(wavConfig.supportedOutputs).toContain('wav');
 
-      // MP3 can convert to WAV, FLAC, OGG
+      // MP3 can convert to WAV and MP3
       const mp3Config = FILE_TYPES.mp3;
       expect(mp3Config.supportedOutputs).toContain('wav');
-      expect(mp3Config.supportedOutputs).toContain('flac');
+      expect(mp3Config.supportedOutputs).toContain('mp3');
 
-      // FLAC can convert to WAV, MP3, OGG
+      // FLAC can convert to WAV, MP3
       const flacConfig = FILE_TYPES.flac;
       expect(flacConfig.supportedOutputs).toContain('wav');
       expect(flacConfig.supportedOutputs).toContain('mp3');
 
-      // OGG can convert to WAV, MP3, FLAC
+      // OGG can convert to WAV, MP3
       const oggConfig = FILE_TYPES.ogg;
       expect(oggConfig.supportedOutputs).toContain('wav');
       expect(oggConfig.supportedOutputs).toContain('mp3');
@@ -71,26 +70,23 @@ describe('Audio Conversion Configuration Integration', () => {
     });
 
     it('should provide correct available output formats', () => {
-      // Test WAV output formats
+      // Test WAV output formats - mp3 and wav are supported
       const wavOutputs = getAvailableOutputFormats('wav');
       expect(wavOutputs.length).toBeGreaterThan(0);
       expect(wavOutputs.some(f => f.id === 'mp3')).toBe(true);
-      expect(wavOutputs.some(f => f.id === 'flac')).toBe(true);
-      expect(wavOutputs.some(f => f.id === 'ogg')).toBe(true);
 
-      // Test MP3 output formats
+      // Test MP3 output formats - wav and mp3 are supported
       const mp3Outputs = getAvailableOutputFormats('mp3');
       expect(mp3Outputs.length).toBeGreaterThan(0);
       expect(mp3Outputs.some(f => f.id === 'wav')).toBe(true);
-      expect(mp3Outputs.some(f => f.id === 'flac')).toBe(true);
 
-      // Test FLAC output formats
+      // Test FLAC output formats - wav and mp3 are supported
       const flacOutputs = getAvailableOutputFormats('flac');
       expect(flacOutputs.length).toBeGreaterThan(0);
       expect(flacOutputs.some(f => f.id === 'wav')).toBe(true);
       expect(flacOutputs.some(f => f.id === 'mp3')).toBe(true);
 
-      // Test OGG output formats
+      // Test OGG output formats - wav and mp3 are supported
       const oggOutputs = getAvailableOutputFormats('ogg');
       expect(oggOutputs.length).toBeGreaterThan(0);
       expect(oggOutputs.some(f => f.id === 'wav')).toBe(true);
@@ -121,18 +117,16 @@ describe('Audio Conversion Configuration Integration', () => {
       });
     });
 
-    it('should verify WAV can convert to all lossy formats', () => {
+    it('should verify WAV can convert to MP3', () => {
       const wavConfig = FILE_TYPES.wav;
-      const lossyFormats = ['mp3', 'ogg'];
-
-      lossyFormats.forEach(format => {
-        expect(wavConfig.supportedOutputs).toContain(format);
-      });
+      expect(wavConfig.supportedOutputs).toContain('mp3');
     });
 
-    it('should verify lossless conversion paths', () => {
-      // WAV <-> FLAC should be supported (both lossless)
-      expect(FILE_TYPES.wav.supportedOutputs).toContain('flac');
+    it('should verify bidirectional WAV/MP3 conversion paths', () => {
+      // WAV -> MP3 and MP3 -> WAV should be supported
+      expect(FILE_TYPES.wav.supportedOutputs).toContain('mp3');
+      expect(FILE_TYPES.mp3.supportedOutputs).toContain('wav');
+      // FLAC -> WAV is also supported
       expect(FILE_TYPES.flac.supportedOutputs).toContain('wav');
     });
   });

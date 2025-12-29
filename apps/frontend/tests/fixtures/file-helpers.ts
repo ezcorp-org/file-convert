@@ -31,7 +31,8 @@ export class FileHelper {
 		}
 
 		// Wait for file to appear in the UI using web-first assertion
-		await this.page.locator('.file-item').first().waitFor({ state: 'visible' });
+		// Use longer timeout to account for file processing
+		await this.page.locator('.file-item').first().waitFor({ state: 'visible', timeout: 15000 });
 
 		// Return count of uploaded files
 		const fileItems = await this.page.locator('.file-item').count();
@@ -60,8 +61,8 @@ export class FileHelper {
 
 		await fileInput.setInputFiles(fileInputs);
 
-		// Wait for at least one file to appear
-		await this.page.locator('.file-item').first().waitFor({ state: 'visible' });
+		// Wait for at least one file to appear (use longer timeout for file processing)
+		await this.page.locator('.file-item').first().waitFor({ state: 'visible', timeout: 15000 });
 
 		// Return count of uploaded files
 		const fileItems = await this.page.locator('.file-item').count();

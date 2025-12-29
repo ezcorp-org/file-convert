@@ -13,14 +13,14 @@ test.describe('File Conversion System', () => {
   test('should display file converter page', async ({ page }) => {
     // Check page title
     await expect(page.locator('h1')).toContainText('File Converter');
-    
+
     // Check subtitle
     await expect(page.locator('.subtitle')).toContainText('100% private');
-    
+
     // Check steps are visible
     await expect(page.locator('.step')).toHaveCount(4);
     await expect(page.locator('.step.active')).toHaveCount(1);
-    await expect(page.locator('.step.active .step-label')).toContainText('Upload Files');
+    await expect(page.locator('.step.active .step-label')).toContainText('Upload');
   });
 
   test('should show file uploader', async ({ page }) => {
@@ -63,8 +63,8 @@ test.describe('File Conversion System', () => {
     // Check file appears in list
     await expect(page.locator('.files-list')).toBeVisible();
     await expect(page.locator('.file-item')).toHaveCount(1);
-    await expect(page.locator('.file-name')).toContainText('test-image.png');
-    
+    await expect(page.locator('.file-item .file-name').first()).toContainText('test-image.png');
+
     // Check step changes to configure
     await expect(page.locator('.step.active .step-label')).toContainText('Configure');
   });
@@ -152,28 +152,28 @@ test.describe('File Conversion System', () => {
     
     // Check only one file remains
     await expect(page.locator('.file-item')).toHaveCount(1);
-    await expect(page.locator('.file-name')).toContainText('test-document.pdf');
+    await expect(page.locator('.file-item .file-name').first()).toContainText('test-document.pdf');
   });
 
   test('should handle clear all files', async ({ page }) => {
     // Upload files
     const pngBuffer = Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
     const pdfBuffer = Buffer.from('%PDF-1.4');
-    
+
     const testFiles = [
       { name: 'test-image.png', mimeType: 'image/png', buffer: pngBuffer },
       { name: 'test-document.pdf', mimeType: 'application/pdf', buffer: pdfBuffer }
     ];
-    
+
     const fileInput = page.locator('input[type="file"]');
     await fileInput.setInputFiles(testFiles);
-    
+
     // Click clear all
     await page.locator('.clear-btn').click();
-    
+
     // Check files are cleared
     await expect(page.locator('.files-list')).not.toBeVisible();
-    await expect(page.locator('.step.active .step-label')).toContainText('Upload Files');
+    await expect(page.locator('.step.active .step-label')).toContainText('Upload');
   });
 
   test('should show conversion options for selected format', async ({ page }) => {

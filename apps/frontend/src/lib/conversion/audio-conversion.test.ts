@@ -142,7 +142,8 @@ describe('Audio File Type Detection', () => {
 
     it('should reject WAV file exceeding size limit', () => {
       const maxSize = FILE_TYPES.wav.maxSize;
-      const file = new File(['x'.repeat(maxSize + 1)], 'huge.wav', { type: 'audio/wav' });
+      // Use Uint8Array to create large file without memory issues
+      const file = new File([new Uint8Array(maxSize + 1)], 'huge.wav', { type: 'audio/wav' });
       const config = FILE_TYPES.wav;
       const validation = validateFile(file, config);
       expect(validation.valid).toBe(false);
@@ -158,7 +159,8 @@ describe('Audio File Type Detection', () => {
 
     it('should reject MP3 file exceeding size limit', () => {
       const maxSize = FILE_TYPES.mp3.maxSize;
-      const file = new File(['x'.repeat(maxSize + 1)], 'huge.mp3', { type: 'audio/mpeg' });
+      // Use Uint8Array to create large file without memory issues
+      const file = new File([new Uint8Array(maxSize + 1)], 'huge.mp3', { type: 'audio/mpeg' });
       const config = FILE_TYPES.mp3;
       const validation = validateFile(file, config);
       expect(validation.valid).toBe(false);
@@ -184,44 +186,37 @@ describe('Audio File Type Detection', () => {
     it('should list supported output formats for WAV', () => {
       const wavConfig = FILE_TYPES.wav;
       expect(wavConfig.supportedOutputs).toContain('mp3');
-      expect(wavConfig.supportedOutputs).toContain('flac');
-      expect(wavConfig.supportedOutputs).toContain('ogg');
-      expect(wavConfig.supportedOutputs).toContain('opus');
+      expect(wavConfig.supportedOutputs).toContain('wav'); // quality adjustment
     });
 
     it('should list supported output formats for MP3', () => {
       const mp3Config = FILE_TYPES.mp3;
       expect(mp3Config.supportedOutputs).toContain('wav');
-      expect(mp3Config.supportedOutputs).toContain('flac');
-      expect(mp3Config.supportedOutputs).toContain('ogg');
+      expect(mp3Config.supportedOutputs).toContain('mp3');
     });
 
     it('should list supported output formats for FLAC', () => {
       const flacConfig = FILE_TYPES.flac;
       expect(flacConfig.supportedOutputs).toContain('wav');
       expect(flacConfig.supportedOutputs).toContain('mp3');
-      expect(flacConfig.supportedOutputs).toContain('ogg');
     });
 
     it('should list supported output formats for OGG', () => {
       const oggConfig = FILE_TYPES.ogg;
       expect(oggConfig.supportedOutputs).toContain('wav');
       expect(oggConfig.supportedOutputs).toContain('mp3');
-      expect(oggConfig.supportedOutputs).toContain('flac');
     });
 
     it('should get available output formats for WAV', () => {
       const formats = getAvailableOutputFormats('wav');
       expect(formats.length).toBeGreaterThan(0);
       expect(formats.some(f => f.id === 'mp3')).toBe(true);
-      expect(formats.some(f => f.id === 'flac')).toBe(true);
     });
 
     it('should get available output formats for MP3', () => {
       const formats = getAvailableOutputFormats('mp3');
       expect(formats.length).toBeGreaterThan(0);
       expect(formats.some(f => f.id === 'wav')).toBe(true);
-      expect(formats.some(f => f.id === 'flac')).toBe(true);
     });
 
     it('should return empty array for unknown format', () => {

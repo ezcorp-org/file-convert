@@ -5,6 +5,8 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
+  testMatch: '**/*.spec.ts',  // Only match .spec.ts files (E2E tests)
+  testIgnore: ['**/fixtures/**/*.test.ts', '**/unit/**/*.test.ts', '**/benchmarks/**'],  // Ignore vitest unit tests
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
