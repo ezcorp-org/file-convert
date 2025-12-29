@@ -10,7 +10,7 @@
 	$: isComplete = progressPercent === 100;
 	$: statusColor = isComplete ? 'var(--success)' : 'var(--primary)';
 	
-	function getFormatIcon(): string {
+	function getFormatIcon(format: string): string {
 		const icons: Record<string, string> = {
 			// Images
 			'png': '🖼️',
@@ -49,7 +49,7 @@
 		return icons[format.toLowerCase()] || '📁';
 	}
 	
-	function truncateFileName(): string {
+	function truncateFileName(name: string, maxLength = 30): string {
 		if (name.length <= maxLength) return name;
 		const ext = name.split('.').pop() || '';
 		const nameWithoutExt = name.substring(0, name.lastIndexOf('.'));

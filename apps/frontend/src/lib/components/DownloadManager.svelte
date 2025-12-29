@@ -88,37 +88,37 @@
 		.filter(d => d.selected)
 		.reduce((sum, d) => sum + d.size, 0);
 	
-	function formatFileSize(): string {
+	function formatFileSize(bytes: number): string {
 		if (bytes === 0) return '0 B';
 		const k = 1024;
 		const sizes = ['B', 'KB', 'MB', 'GB'];
 		const i = Math.floor(Math.log(bytes) / Math.log(k));
 		return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 	}
-	
-	function formatDate(): string {
+
+	function formatDate(date: Date): string {
 		const now = new Date();
 		const diff = now.getTime() - date.getTime();
 		const seconds = Math.floor(diff / 1000);
-		
+
 		if (seconds < 60) return 'Just now';
 		if (seconds < 3600) return `${Math.floor(seconds / 60)} min ago`;
 		if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
 		return date.toLocaleDateString();
 	}
-	
-	function downloadFile() {
+
+	function downloadFile(item: DownloadItem) {
 		if (!item.downloadUrl) return;
-		
+
 		const a = document.createElement('a');
 		a.href = item.downloadUrl;
 		a.download = item.filename;
 		a.click();
-		
+
 		item.downloaded = true;
 		downloads = new Map(downloads);
-		
-		dispatch();
+
+		dispatch('download', { id: item.id });
 	}
 	
 	function downloadSelected() {
@@ -133,12 +133,12 @@
 		}
 	}
 	
-	async function createAndDownloadZip() {
+	async function createAndDownloadZip(items: DownloadItem[]) {
 		// Dynamically import fflate for ZIP creation
 		const { zipSync } = await import('fflate');
-		
+
 		const files: Record<string, Uint8Array> = {};
-		
+
 		for (const item of items) {
 			const arrayBuffer = await item.blob.arrayBuffer();
 			files[item.filename] = new Uint8Array(arrayBuffer);
@@ -161,10 +161,10 @@
 		});
 		downloads = new Map(downloads);
 		
-		dispatch();
+		dispatch('download-zip');
 	}
-	
-	function toggleSelection() {
+
+	function toggleSelection(id: string) {
 		const item = downloads.get(id);
 		if (item) {
 			item.selected = !item.selected;
@@ -180,7 +180,7 @@
 		downloads = new Map(downloads);
 	}
 	
-	function removeItem() {
+	function removeItem(id: string) {
 		const item = downloads.get(id);
 		if (item?.downloadUrl) {
 			URL.revokeObjectURL(item.downloadUrl);
@@ -201,9 +201,9 @@
 		});
 		downloads = new Map(downloads);
 		
-		dispatch();
+		dispatch('remove-selected');
 	}
-	
+
 	function clearAll() {
 		downloads.forEach(item => {
 			if (item.downloadUrl) {
@@ -216,7 +216,7 @@
 		dispatch('clear');
 	}
 	
-	function getFileIcon(): string {
+	function getFileIcon(mimeType: string): string {
 		if (mimeType.startsWith('image/')) return '🖼️';
 		if (mimeType.startsWith('audio/')) return '🎵';
 		if (mimeType.startsWith('video/')) return '🎬';

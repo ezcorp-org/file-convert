@@ -42,12 +42,12 @@
 		.filter((_, i) => selectedFiles.has(i))
 		.reduce((sum, file) => sum + file.size, 0);
 	
-	function getFileExtension(): string {
+	function getFileExtension(filename: string): string {
 		const parts = filename.split('.');
 		return parts.length > 1 ? parts.pop()!.toLowerCase() : 'unknown';
 	}
 	
-	function formatFileSize(): string {
+	function formatFileSize(bytes: number): string {
 		if (bytes === 0) return '0 B';
 		const k = 1024;
 		const sizes = ['B', 'KB', 'MB', 'GB'];
@@ -55,7 +55,7 @@
 		return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 	}
 	
-	function toggleFileSelection() {
+	function toggleFileSelection(index: number) {
 		if (selectedFiles.has(index)) {
 			selectedFiles.delete(index);
 		} else {
@@ -74,14 +74,14 @@
 		selectAll = !selectAll;
 	}
 	
-	function selectByFormat() {
+	function selectByFormat(format: string) {
 		fileGroups[format]?.forEach(({ index }) => {
 			selectedFiles.add(index);
 		});
 		selectedFiles = new Set(selectedFiles);
 	}
 	
-	function deselectByFormat() {
+	function deselectByFormat(format: string) {
 		fileGroups[format]?.forEach(({ index }) => {
 			selectedFiles.delete(index);
 		});
@@ -134,7 +134,7 @@
 		}
 	};
 	
-	function getFormatGroup(): string | undefined {
+	function getFormatGroup(ext: string): string | undefined {
 		for (const [group, data] of Object.entries(formatGroups)) {
 			if (data.formats.includes(ext)) {
 				return group;

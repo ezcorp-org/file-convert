@@ -10,7 +10,7 @@
 	const dispatch = createEventDispatcher();
 	
 	// Map technical errors to user-friendly messages
-	function getUserFriendlyError(): { title: string; description: string; suggestions: string[] } {
+	function getUserFriendlyError(_error?: string): { title: string; description: string; suggestions: string[] } {
 		// Handle null, undefined, or empty error messages
 		if (!error) {
 			return {
@@ -108,7 +108,7 @@
 		dispatch('dismiss', { jobId });
 	}
 	
-	function getFormatIcon(): string {
+	function getFormatIcon(format: string): string {
 		const icons: Record<string, string> = {
 			'png': '🖼️', 'jpeg': '📷', 'jpg': '📷', 'webp': '🌐',
 			'gif': '🎞️', 'bmp': '🎨', 'ico': '⚡', 'tiff': '📐',

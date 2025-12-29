@@ -1,7 +1,4 @@
-import wavefileModule from 'wavefile';
-
-// Extract WaveFile class from default export
-const { WaveFile } = wavefileModule as any;
+import { WaveFile } from 'wavefile';
 
 export interface AudioFixtureOptions {
 	duration?: number; // seconds, default: 1
