@@ -128,6 +128,47 @@ describe('ConversionResults', () => {
 		expect(screen.getByText('Download All')).toBeDefined();
 	});
 
+	it('dispatches download for all completed files when Download All clicked', async () => {
+		vi.useFakeTimers();
+
+		const completedConversions = Array.from({ length: 15 }, (_, i) => ({
+			id: `conv-${i}`,
+			status: 'completed',
+			result: {
+				filename: `output-${i}.webp`,
+				data: new Uint8Array([1, 2, 3]),
+				metadata: { outputSize: 1024 },
+			},
+		}));
+
+		const { component } = render(ConversionResults, {
+			props: {
+				conversions: completedConversions,
+				fileNames: new Map(),
+			},
+		});
+
+		const downloadedStates: any[] = [];
+		component.$on('download', (e: CustomEvent) => {
+			downloadedStates.push(e.detail);
+		});
+
+		await fireEvent.click(screen.getByText('Download All'));
+
+		// Advance past all staggered timeouts (15 files * 150ms)
+		await vi.advanceTimersByTimeAsync(15 * 150 + 200);
+
+		expect(downloadedStates).toHaveLength(15);
+
+		// Verify every file was included
+		const downloadedIds = downloadedStates.map(s => s.id);
+		completedConversions.forEach(conv => {
+			expect(downloadedIds).toContain(conv.id);
+		});
+
+		vi.useRealTimers();
+	});
+
 	it('does not show Download All for single conversion', () => {
 		render(ConversionResults, {
 			props: {

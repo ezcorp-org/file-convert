@@ -13,25 +13,23 @@
   }
   
   function handleDownloadAll() {
-    let downloadCount = 0;
-    conversions.forEach(state => {
-      if (state.status === 'completed' && state.result) {
-        setTimeout(() => {
-          handleDownload(state);
-          downloadCount++;
-        }, 100);
-      }
+    const completed = conversions.filter(state => state.status === 'completed' && state.result);
+
+    completed.forEach((state, index) => {
+      setTimeout(() => {
+        handleDownload(state);
+      }, index * 150);
     });
-    
-    // Show success notification for bulk download
-    setTimeout(() => {
-      if (downloadCount > 0) {
+
+    // Show success notification after all downloads are triggered
+    if (completed.length > 0) {
+      setTimeout(() => {
         notifications.success(
-          `Downloaded ${downloadCount} file${downloadCount > 1 ? 's' : ''}`,
+          `Downloaded ${completed.length} file${completed.length > 1 ? 's' : ''}`,
           'All converted files have been saved to your downloads folder'
         );
-      }
-    }, 200);
+      }, completed.length * 150 + 100);
+    }
   }
   
   $: successful = conversions.filter(c => c.status === 'completed');
