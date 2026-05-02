@@ -109,16 +109,18 @@
 </script>
 
 <div
-	class="drop-zone"
-	class:dragging={isDragging}
+	role="button"
+	tabindex="0"
 	data-testid="file-drop-zone"
+	class="card flex flex-col items-center justify-center text-center min-h-[260px] p-8 border-2 border-dashed cursor-pointer transition-all duration-base
+	{isDragging
+		? 'border-ez-yellow bg-ez-yellow/5'
+		: 'border-ez-border-lt hover:border-ez-yellow hover:bg-ez-s2'}"
 	on:dragenter={handleDragEnter}
 	on:dragleave={handleDragLeave}
 	on:dragover={handleDragOver}
 	on:drop={handleDrop}
 	on:click={openFileDialog}
-	role="button"
-	tabindex="0"
 	on:keydown={(e) => e.key === 'Enter' && openFileDialog()}
 >
 	<input
@@ -127,73 +129,15 @@
 		accept={acceptAttribute}
 		{multiple}
 		on:change={handleFileInput}
-		style="display: none;"
+		class="hidden"
 	/>
 
-	<div class="drop-content">
-		<svg class="upload-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-			<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-			<polyline points="17 8 12 3 7 8" />
-			<line x1="12" y1="3" x2="12" y2="15" />
-		</svg>
-
-		<h3>Drop files here or click to browse</h3>
-		<p>Supports images, audio, documents, archives, and more</p>
-	</div>
+	<div class="text-ez-yellow text-4xl leading-none mb-3" aria-hidden="true">&darr;</div>
+	<p class="text-ez-white font-semibold text-md">Drop files here</p>
+	<p class="text-ez-subtle text-sm mt-1">
+		or <span class="text-ez-yellow underline">click to browse</span>
+	</p>
+	<p class="font-mono text-xs text-ez-muted mt-4 uppercase tracking-[0.1em]">
+		Up to 10GB · Any format · Stays in your browser
+	</p>
 </div>
-
-<style>
-	.drop-zone {
-		border: 2px dashed var(--gray-400);
-		border-radius: var(--border-radius);
-		padding: 3rem;
-		text-align: center;
-		cursor: pointer;
-		transition: all var(--transition-speed);
-		background: var(--white);
-		min-height: 300px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.drop-zone:hover,
-	.drop-zone.dragging {
-		border-color: var(--primary);
-		background: rgba(0, 123, 255, 0.05);
-	}
-
-	.drop-zone:focus {
-		outline: 2px solid var(--primary);
-		outline-offset: 2px;
-	}
-
-	.drop-content {
-		pointer-events: none;
-	}
-
-	.upload-icon {
-		color: var(--gray-500);
-		margin-bottom: 1rem;
-	}
-
-	.drop-zone.dragging .upload-icon {
-		color: var(--primary);
-		animation: bounce 0.5s ease-in-out;
-	}
-
-	h3 {
-		color: var(--gray-800);
-		margin: 1rem 0 0.5rem;
-	}
-
-	p {
-		color: var(--gray-600);
-		margin: 0.5rem 0;
-	}
-
-	@keyframes bounce {
-		0%, 100% { transform: translateY(0); }
-		50% { transform: translateY(-10px); }
-	}
-</style>

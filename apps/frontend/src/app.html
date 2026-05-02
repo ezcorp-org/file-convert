@@ -3,26 +3,16 @@
 
 <head>
 	<meta charset="utf-8" />
-	<link rel="icon" type="image/png" href="%sveltekit.assets%/favicon.png" />
+	<link rel="icon" type="image/svg+xml" href="%sveltekit.assets%/ez-logo.svg" />
 	<link rel="icon" type="image/x-icon" href="%sveltekit.assets%/favicon.ico" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<style>
-		/* Inter font local fallback */
-		@font-face {
-			font-family: 'Inter';
-			font-style: normal;
-			font-weight: 400;
-			font-display: swap;
-			src: url('%sveltekit.assets%/fonts/inter.woff2') format('woff2');
-		}
-	</style>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 	%sveltekit.head%
 </head>
 
-<body data-sveltekit-preload-data="hover">
+<body class="bg-ez-black text-ez-text font-sans antialiased" data-sveltekit-preload-data="hover">
 	<div style="display: contents">%sveltekit.body%</div>
 </body>
 

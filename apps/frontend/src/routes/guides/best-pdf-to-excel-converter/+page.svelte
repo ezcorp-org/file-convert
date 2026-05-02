@@ -8,146 +8,126 @@
 	keywords="best pdf excel converter, pdf to xlsx, convert pdf spreadsheet, pdf excel comparison"
 />
 
-<article class="guide-article">
-	<div class="container">
-		<header class="guide-header">
-			<h1>Best PDF to Excel Converter Guide</h1>
-			<p class="subtitle">Choose the right PDF to Excel converter for your needs</p>
-		</header>
+<article class="max-w-3xl mx-auto px-6 py-16">
+	<div class="section-eyebrow">guide</div>
+	<h1 class="text-4xl font-bold tracking-[-0.03em] text-ez-white leading-[1.1]">
+		Best PDF to Excel converter
+	</h1>
+	<p class="text-lg text-ez-subtle mt-4 leading-relaxed">
+		What separates a real table extractor from a glorified text dump.
+	</p>
 
-		<section>
-			<h2>What Makes a Great PDF to Excel Converter?</h2>
-			<p>The best PDF to Excel converters should offer:</p>
-			<ul>
-				<li><strong>Accurate table detection:</strong> Correctly identifies rows and columns</li>
-				<li><strong>Formula preservation:</strong> Maintains calculations when possible</li>
-				<li><strong>Formatting retention:</strong> Keeps cell formatting, colors, and styles</li>
-				<li><strong>Fast processing:</strong> Converts files quickly without delays</li>
-				<li><strong>Privacy protection:</strong> Secure handling of sensitive data</li>
-			</ul>
-		</section>
+	<div
+		class="mt-10 space-y-6 text-ez-text leading-relaxed
+		[&_h2]:text-2xl [&_h2]:mt-12 [&_h2]:mb-3 [&_h2]:font-bold [&_h2]:tracking-[-0.03em] [&_h2]:text-ez-white
+		[&_h3]:text-xl [&_h3]:mt-8 [&_h3]:mb-2 [&_h3]:text-ez-white [&_h3]:font-semibold
+		[&_p]:text-ez-subtle
+		[&_a]:text-ez-yellow [&_a]:underline hover:[&_a]:text-ez-yellow-lt
+		[&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_ul]:text-ez-subtle
+		[&_strong]:text-ez-white"
+	>
+		<h2>What makes a good one</h2>
+		<p>The bar is higher than people think. A real PDF-to-Excel tool should hit:</p>
+		<ul>
+			<li><strong>Accurate table detection.</strong> Rows and columns identified correctly, even with merged cells.</li>
+			<li><strong>Data type preservation.</strong> Numbers stay numbers. Dates stay dates. Currencies don't become strings.</li>
+			<li><strong>Formatting retention.</strong> Cell colors, alignment, basic styling.</li>
+			<li><strong>Speed.</strong> Instant on small files, no spinner-of-doom on big ones.</li>
+			<li><strong>Privacy.</strong> Your spreadsheet shouldn't leak through someone's analytics pipeline.</li>
+		</ul>
 
-		<section>
-			<h2>Top Features to Look For</h2>
-			<div class="features-grid">
-				<div class="feature">
-					<h3>📊 Advanced Table Recognition</h3>
-					<p>AI-powered detection of complex tables, merged cells, and nested structures</p>
-				</div>
-				<div class="feature">
-					<h3>🔢 Data Type Preservation</h3>
-					<p>Maintains numbers, dates, currencies, and percentages in correct formats</p>
-				</div>
-				<div class="feature">
-					<h3>⚡ Batch Processing</h3>
-					<p>Convert multiple PDF files to Excel simultaneously</p>
-				</div>
-				<div class="feature">
-					<h3>🔒 Security & Privacy</h3>
-					<p>Local processing without uploading files to servers</p>
-				</div>
+		<h2>Features to look for</h2>
+		<div class="grid md:grid-cols-2 gap-4 not-prose">
+			<div class="card card-body !p-5">
+				<h3 class="!text-lg !mt-0">Advanced table recognition</h3>
+				<p class="!text-ez-subtle text-sm">Handles merged cells, nested headers, and irregular grids.</p>
 			</div>
-		</section>
+			<div class="card card-body !p-5">
+				<h3 class="!text-lg !mt-0">Data type preservation</h3>
+				<p class="!text-ez-subtle text-sm">Numbers, dates, currencies, percentages — all in the right format.</p>
+			</div>
+			<div class="card card-body !p-5">
+				<h3 class="!text-lg !mt-0">Batch processing</h3>
+				<p class="!text-ez-subtle text-sm">Convert dozens of PDFs in one job.</p>
+			</div>
+			<div class="card card-body !p-5">
+				<h3 class="!text-lg !mt-0">Local processing</h3>
+				<p class="!text-ez-subtle text-sm">Sensitive data stays on your machine. No upload.</p>
+			</div>
+		</div>
 
-		<section>
-			<h2>Converter Comparison</h2>
-			<table>
+		<h2>Comparison</h2>
+		<div class="overflow-x-auto not-prose">
+			<table class="w-full text-sm border-collapse">
 				<thead>
-					<tr>
-						<th>Feature</th>
-						<th>File Converter Pro</th>
-						<th>Adobe Acrobat</th>
-						<th>Free Online Tools</th>
+					<tr class="text-left">
+						<th class="border-b border-ez-border px-3 py-2 font-mono text-xs text-ez-muted uppercase tracking-[0.1em]">Feature</th>
+						<th class="border-b border-ez-border px-3 py-2 font-mono text-xs text-ez-muted uppercase tracking-[0.1em]">File Convert</th>
+						<th class="border-b border-ez-border px-3 py-2 font-mono text-xs text-ez-muted uppercase tracking-[0.1em]">Adobe Acrobat</th>
+						<th class="border-b border-ez-border px-3 py-2 font-mono text-xs text-ez-muted uppercase tracking-[0.1em]">Free online tools</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody class="text-ez-subtle">
 					<tr>
-						<td>Table Accuracy</td>
-						<td>✅ 95%+</td>
-						<td>✅ 90%+</td>
-						<td>⚠️ 70-80%</td>
+						<td class="border-b border-ez-border px-3 py-2">Table accuracy</td>
+						<td class="border-b border-ez-border px-3 py-2 text-ez-success">95%+</td>
+						<td class="border-b border-ez-border px-3 py-2 text-ez-success">90%+</td>
+						<td class="border-b border-ez-border px-3 py-2 text-ez-yellow">70–80%</td>
 					</tr>
 					<tr>
-						<td>Processing Speed</td>
-						<td>✅ Instant</td>
-						<td>✅ Fast</td>
-						<td>⚠️ Slow</td>
+						<td class="border-b border-ez-border px-3 py-2">Speed</td>
+						<td class="border-b border-ez-border px-3 py-2 text-ez-success">Instant</td>
+						<td class="border-b border-ez-border px-3 py-2 text-ez-success">Fast</td>
+						<td class="border-b border-ez-border px-3 py-2 text-ez-yellow">Slow</td>
 					</tr>
 					<tr>
-						<td>Privacy</td>
-						<td>✅ 100% local</td>
-						<td>✅ Desktop app</td>
-						<td>❌ Server upload</td>
+						<td class="border-b border-ez-border px-3 py-2">Privacy</td>
+						<td class="border-b border-ez-border px-3 py-2 text-ez-success">100% local</td>
+						<td class="border-b border-ez-border px-3 py-2 text-ez-success">Desktop app</td>
+						<td class="border-b border-ez-border px-3 py-2 text-ez-red-lt">Server upload</td>
 					</tr>
 					<tr>
-						<td>Cost</td>
-						<td>✅ Free (basic)</td>
-						<td>❌ $15.99/mo</td>
-						<td>✅ Free</td>
+						<td class="border-b border-ez-border px-3 py-2">Cost</td>
+						<td class="border-b border-ez-border px-3 py-2 text-ez-success">Free</td>
+						<td class="border-b border-ez-border px-3 py-2 text-ez-red-lt">$15.99/mo</td>
+						<td class="border-b border-ez-border px-3 py-2 text-ez-success">Free</td>
 					</tr>
 					<tr>
-						<td>Batch Convert</td>
-						<td>✅ Yes (Pro)</td>
-						<td>✅ Yes</td>
-						<td>❌ Limited</td>
+						<td class="border-b border-ez-border px-3 py-2">Batch convert</td>
+						<td class="border-b border-ez-border px-3 py-2 text-ez-success">Yes</td>
+						<td class="border-b border-ez-border px-3 py-2 text-ez-success">Yes</td>
+						<td class="border-b border-ez-border px-3 py-2 text-ez-red-lt">Limited</td>
 					</tr>
 				</tbody>
 			</table>
-		</section>
-
-		<section>
-			<h2>How to Choose the Right Converter</h2>
-			<h3>For Simple Tables</h3>
-			<p>If your PDFs have basic tables with clear rows and columns, any good converter will work. Our free converter handles these perfectly.</p>
-
-			<h3>For Complex Spreadsheets</h3>
-			<p>PDFs with merged cells, formulas, and complex formatting require advanced converters with AI-powered table detection.</p>
-
-			<h3>For Sensitive Data</h3>
-			<p>Financial statements, payroll data, or confidential information should only be converted using secure, browser-based tools that don't upload files.</p>
-
-			<h3>For Bulk Conversions</h3>
-			<p>If you regularly convert many PDFs, invest in a Pro plan with batch processing and automation features.</p>
-		</section>
-
-		<div class="cta-section">
-			<h2>Try Our PDF to Excel Converter</h2>
-			<p>Advanced table recognition, 100% private processing, instant results.</p>
-			<a href="/convert/pdf-to-excel/" class="btn">Convert PDF to Excel Now</a>
 		</div>
 
-		<div class="related-guides">
-			<h3>Related Guides</h3>
-			<ul>
-				<li><a href="/convert/excel-to-pdf/">Excel to PDF Converter</a></li>
-				<li><a href="/guides/maintain-formatting-pdf-conversion/">Maintain Formatting Guide</a></li>
-				<li><a href="/guides/secure-file-conversion-online/">Secure Conversion Guide</a></li>
-			</ul>
-		</div>
+		<h2>How to choose</h2>
+		<h3>Simple tables</h3>
+		<p>Plain rows, plain columns? Any decent converter works. Ours included.</p>
+
+		<h3>Complex spreadsheets</h3>
+		<p>Merged cells, nested headers, embedded calculations? You need real table detection — not OCR-of-text.</p>
+
+		<h3>Sensitive data</h3>
+		<p>Financials, payroll, customer lists — only use a tool that processes locally.</p>
+
+		<h3>Bulk work</h3>
+		<p>If this is a regular thing, pick a tool with proper batch and a stable workflow.</p>
+
+		<h2>Related</h2>
+		<ul>
+			<li><a href="/convert/excel-to-pdf/">Excel to PDF</a></li>
+			<li><a href="/guides/maintain-formatting-pdf-conversion/">Keep formatting through conversion</a></li>
+			<li><a href="/guides/secure-file-conversion-online/">Secure file conversion</a></li>
+		</ul>
+	</div>
+
+	<div class="mt-16 card card-body">
+		<h2 class="text-xl text-ez-white mb-2">Try it now.</h2>
+		<p class="text-ez-subtle text-sm mb-4">
+			Open File Convert and try this conversion in your browser.
+		</p>
+		<a href="/convert" class="btn btn-primary">Open File Convert →</a>
 	</div>
 </article>
-
-<style>
-	.guide-article { background: white; min-height: 100vh; padding: 2rem 0; }
-	.container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
-	.guide-header { margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 2px solid #e5e7eb; }
-	.guide-header h1 { font-size: 2.5rem; margin-bottom: 1rem; color: #1f2937; }
-	.subtitle { font-size: 1.25rem; color: #6b7280; }
-	section { margin-bottom: 3rem; }
-	section h2 { font-size: 2rem; margin-bottom: 1rem; color: #1f2937; }
-	section h3 { font-size: 1.5rem; margin: 1.5rem 0 1rem; color: #374151; }
-	section p { line-height: 1.7; color: #374151; margin-bottom: 1rem; }
-	section ul { margin: 1rem 0; padding-left: 2rem; line-height: 1.7; }
-	.features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
-	.feature { background: #f9fafb; padding: 1.5rem; border-radius: 0.5rem; }
-	.feature h3 { font-size: 1.125rem; margin-bottom: 0.75rem; }
-	table { width: 100%; border-collapse: collapse; margin: 2rem 0; }
-	th, td { padding: 0.75rem; text-align: left; border: 1px solid #e5e7eb; }
-	th { background: #f9fafb; font-weight: 600; }
-	.cta-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 3rem; border-radius: 1rem; text-align: center; margin: 3rem 0; }
-	.cta-section h2 { color: white; margin-bottom: 1rem; }
-	.btn { padding: 0.75rem 2rem; border-radius: 2rem; text-decoration: none; font-weight: 600; background: white; color: #667eea; display: inline-block; }
-	.related-guides { background: #f9fafb; padding: 2rem; border-radius: 0.5rem; }
-	.related-guides ul { list-style: none; padding: 0; }
-	.related-guides a { color: #667eea; text-decoration: none; font-weight: 500; }
-</style>

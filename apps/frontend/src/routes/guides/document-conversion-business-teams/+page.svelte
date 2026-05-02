@@ -8,172 +8,156 @@
 	keywords="business document conversion, enterprise file conversion, team workflows, business pdf converter"
 />
 
-<article class="guide-article">
-	<div class="container">
-		<header class="guide-header">
-			<h1>Document Conversion for Business Teams</h1>
-			<p class="subtitle">Enterprise guide to efficient file conversion workflows</p>
-		</header>
+<article class="max-w-3xl mx-auto px-6 py-16">
+	<div class="section-eyebrow">guide</div>
+	<h1 class="text-4xl font-bold tracking-[-0.03em] text-ez-white leading-[1.1]">
+		Document conversion for business teams
+	</h1>
+	<p class="text-lg text-ez-subtle mt-4 leading-relaxed">
+		Workflows, security, and naming conventions for teams that ship documents at scale.
+	</p>
 
-		<section>
-			<h2>Why Document Conversion Matters for Businesses</h2>
-			<p>Modern businesses handle thousands of documents daily. Efficient conversion workflows:</p>
-			<ul>
-				<li>Save time and reduce manual work</li>
-				<li>Improve collaboration across teams</li>
-				<li>Ensure data security and compliance</li>
-				<li>Reduce software licensing costs</li>
-			</ul>
-		</section>
+	<div
+		class="mt-10 space-y-6 text-ez-text leading-relaxed
+		[&_h2]:text-2xl [&_h2]:mt-12 [&_h2]:mb-3 [&_h2]:font-bold [&_h2]:tracking-[-0.03em] [&_h2]:text-ez-white
+		[&_h3]:text-xl [&_h3]:mt-8 [&_h3]:mb-2 [&_h3]:text-ez-white [&_h3]:font-semibold
+		[&_p]:text-ez-subtle
+		[&_a]:text-ez-yellow [&_a]:underline hover:[&_a]:text-ez-yellow-lt
+		[&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_ul]:text-ez-subtle
+		[&_strong]:text-ez-white"
+	>
+		<h2>Why this matters at work</h2>
+		<p>Most teams move thousands of documents a week. A working conversion process:</p>
+		<ul>
+			<li>Cuts manual reformatting time</li>
+			<li>Keeps cross-team collaboration cleaner</li>
+			<li>Avoids accidental data leaks</li>
+			<li>Reduces software licensing sprawl</li>
+		</ul>
 
-		<section>
-			<h2>Common Business Use Cases</h2>
+		<h2>Common use cases</h2>
 
-			<h3>1. Contract Management</h3>
-			<p>Convert signed PDF contracts to editable Word documents for revisions, or convert Word agreements to PDF for signing.</p>
+		<h3>Contract management</h3>
+		<p>Signed PDFs back to Word for revisions. Word agreements out as PDF for signing.</p>
 
-			<h3>2. Financial Reporting</h3>
-			<p>Extract data from PDF financial statements into Excel for analysis, budgeting, and forecasting.</p>
+		<h3>Financial reporting</h3>
+		<p>PDF statements into Excel for analysis, budgeting, and forecasting.</p>
 
-			<h3>3. Presentation Sharing</h3>
-			<p>Convert PowerPoint presentations to PDF for easy distribution and consistent formatting across devices.</p>
+		<h3>Presentation sharing</h3>
+		<p>PowerPoint to PDF for distribution that looks the same on every device.</p>
 
-			<h3>4. Document Archiving</h3>
-			<p>Convert all documents to PDF/A format for long-term storage and regulatory compliance.</p>
-		</section>
+		<h3>Document archiving</h3>
+		<p>Convert everything to PDF/A for long-term storage and compliance.</p>
 
-		<section>
-			<h2>Best Practices for Business Teams</h2>
+		<h2>Best practices</h2>
 
-			<div class="practice-item">
-				<h3>🔒 Prioritize Security</h3>
-				<p>Use secure, browser-based converters that don't upload sensitive business documents to external servers. Our converter processes everything locally.</p>
-			</div>
+		<div class="card card-body !p-5 my-4">
+			<div class="font-mono text-xs text-ez-yellow uppercase tracking-[0.1em]">security</div>
+			<h3 class="!mt-2">Process locally</h3>
+			<p>Never upload sensitive business documents to a third-party server. Browser-only converters keep them on the employee's machine.</p>
+		</div>
 
-			<div class="practice-item">
-				<h3>⚡ Standardize Workflows</h3>
-				<p>Create standard operating procedures for document conversion. Define which formats to use for different document types.</p>
-			</div>
+		<div class="card card-body !p-5 my-4">
+			<div class="font-mono text-xs text-ez-yellow uppercase tracking-[0.1em]">workflow</div>
+			<h3 class="!mt-2">Standardize the steps</h3>
+			<p>Document which formats your team uses for which purpose. Saves arguments.</p>
+		</div>
 
-			<div class="practice-item">
-				<h3>📊 Track Conversion Activity</h3>
-				<p>Monitor conversion volumes and types to identify workflow bottlenecks and optimization opportunities.</p>
-			</div>
+		<div class="card card-body !p-5 my-4">
+			<div class="font-mono text-xs text-ez-yellow uppercase tracking-[0.1em]">tracking</div>
+			<h3 class="!mt-2">Watch the flow</h3>
+			<p>Monitor conversion volume and types. Spot bottlenecks before they spread.</p>
+		</div>
 
-			<div class="practice-item">
-				<h3>🎓 Train Your Team</h3>
-				<p>Provide training on conversion best practices, security protocols, and quality assurance checks.</p>
-			</div>
+		<div class="card card-body !p-5 my-4">
+			<div class="font-mono text-xs text-ez-yellow uppercase tracking-[0.1em]">training</div>
+			<h3 class="!mt-2">Train once, reference often</h3>
+			<p>A short doc covering security, naming, and quality checks beats slack threads.</p>
+		</div>
 
-			<div class="practice-item">
-				<h3>♻️ Implement Version Control</h3>
-				<p>Maintain clear version numbering and naming conventions for converted documents to avoid confusion.</p>
-			</div>
-		</section>
+		<div class="card card-body !p-5 my-4">
+			<div class="font-mono text-xs text-ez-yellow uppercase tracking-[0.1em]">versions</div>
+			<h3 class="!mt-2">Use clear version numbers</h3>
+			<p>Naming conventions like contract-v3-final.pdf save someone's afternoon.</p>
+		</div>
 
-		<section>
-			<h2>Recommended Conversion Workflows</h2>
+		<h2>Workflows by team</h2>
 
-			<h3>Legal Department</h3>
-			<ul>
-				<li>PDF → Word: For contract editing and redlining</li>
-				<li>Word → PDF: For final contract distribution</li>
-				<li>Use password protection for sensitive agreements</li>
-			</ul>
+		<h3>Legal</h3>
+		<ul>
+			<li>PDF &rarr; Word for redlining</li>
+			<li>Word &rarr; PDF for final distribution</li>
+			<li>Password-protect anything sensitive</li>
+		</ul>
 
-			<h3>Finance Team</h3>
-			<ul>
-				<li>PDF → Excel: For data extraction and analysis</li>
-				<li>Excel → PDF: For report distribution</li>
-				<li>Maintain number formatting and formulas</li>
-			</ul>
+		<h3>Finance</h3>
+		<ul>
+			<li>PDF &rarr; Excel for data extraction</li>
+			<li>Excel &rarr; PDF for report distribution</li>
+			<li>Preserve number formatting and formulas</li>
+		</ul>
 
-			<h3>Marketing Department</h3>
-			<ul>
-				<li>PowerPoint → PDF: For presentation sharing</li>
-				<li>Image → PDF: For brochure creation</li>
-				<li>Preserve brand colors and fonts</li>
-			</ul>
+		<h3>Marketing</h3>
+		<ul>
+			<li>PowerPoint &rarr; PDF for sharing</li>
+			<li>Image &rarr; PDF for one-pagers</li>
+			<li>Lock in brand colors and fonts</li>
+		</ul>
 
-			<h3>HR Department</h3>
-			<ul>
-				<li>PDF → Word: For policy document updates</li>
-				<li>Word → PDF: For employee handbook distribution</li>
-				<li>Ensure data privacy compliance</li>
-			</ul>
-		</section>
+		<h3>HR</h3>
+		<ul>
+			<li>PDF &rarr; Word for policy updates</li>
+			<li>Word &rarr; PDF for handbook distribution</li>
+			<li>Compliance-grade privacy</li>
+		</ul>
 
-		<section>
-			<h2>Enterprise Features to Look For</h2>
-			<table>
+		<h2>Enterprise checklist</h2>
+		<div class="overflow-x-auto not-prose">
+			<table class="w-full text-sm border-collapse">
 				<thead>
-					<tr>
-						<th>Feature</th>
-						<th>Business Value</th>
+					<tr class="text-left">
+						<th class="border-b border-ez-border px-3 py-2 font-mono text-xs text-ez-muted uppercase tracking-[0.1em]">Feature</th>
+						<th class="border-b border-ez-border px-3 py-2 font-mono text-xs text-ez-muted uppercase tracking-[0.1em]">Why it matters</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody class="text-ez-subtle">
 					<tr>
-						<td>Batch Processing</td>
-						<td>Convert multiple files simultaneously, saving time</td>
+						<td class="border-b border-ez-border px-3 py-2">Batch processing</td>
+						<td class="border-b border-ez-border px-3 py-2">Convert dozens at once.</td>
 					</tr>
 					<tr>
-						<td>API Integration</td>
-						<td>Automate conversions in existing workflows</td>
+						<td class="border-b border-ez-border px-3 py-2">API integration</td>
+						<td class="border-b border-ez-border px-3 py-2">Wire conversions into existing pipelines.</td>
 					</tr>
 					<tr>
-						<td>Format Preservation</td>
-						<td>Maintain professional document appearance</td>
+						<td class="border-b border-ez-border px-3 py-2">Format preservation</td>
+						<td class="border-b border-ez-border px-3 py-2">Documents look like documents, not lorem ipsum.</td>
 					</tr>
 					<tr>
-						<td>Security Compliance</td>
-						<td>Meet SOC 2, GDPR, HIPAA requirements</td>
+						<td class="border-b border-ez-border px-3 py-2">Security compliance</td>
+						<td class="border-b border-ez-border px-3 py-2">SOC 2, GDPR, HIPAA all expect controlled handling.</td>
 					</tr>
 					<tr>
-						<td>Audit Logging</td>
-						<td>Track conversion activity for compliance</td>
+						<td class="border-b border-ez-border px-3 py-2">Audit logging</td>
+						<td class="border-b border-ez-border px-3 py-2">Track conversion activity when auditors ask.</td>
 					</tr>
 				</tbody>
 			</table>
-		</section>
-
-		<div class="cta-section">
-			<h2>Ready to Streamline Your Business Workflows?</h2>
-			<p>Secure, fast, and reliable document conversion for your entire team.</p>
-			<a href="/convert" class="btn">Start Converting Now</a>
 		</div>
 
-		<div class="related-guides">
-			<h3>Related Guides</h3>
-			<ul>
-				<li><a href="/guides/secure-file-conversion-online/">Secure File Conversion</a></li>
-				<li><a href="/guides/batch-convert-images-to-pdf/">Batch Convert Images</a></li>
-				<li><a href="/convert/pdf-to-word/">PDF to Word Converter</a></li>
-			</ul>
-		</div>
+		<h2>Related</h2>
+		<ul>
+			<li><a href="/guides/secure-file-conversion-online/">Secure file conversion</a></li>
+			<li><a href="/guides/batch-convert-images-to-pdf/">Batch convert images</a></li>
+			<li><a href="/convert/pdf-to-word/">PDF to Word converter</a></li>
+		</ul>
+	</div>
+
+	<div class="mt-16 card card-body">
+		<h2 class="text-xl text-ez-white mb-2">Try it now.</h2>
+		<p class="text-ez-subtle text-sm mb-4">
+			Open File Convert and try this conversion in your browser.
+		</p>
+		<a href="/convert" class="btn btn-primary">Open File Convert →</a>
 	</div>
 </article>
-
-<style>
-	.guide-article { background: white; min-height: 100vh; padding: 2rem 0; }
-	.container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
-	.guide-header { margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 2px solid #e5e7eb; }
-	.guide-header h1 { font-size: 2.5rem; margin-bottom: 1rem; color: #1f2937; }
-	.subtitle { font-size: 1.25rem; color: #6b7280; }
-	section { margin-bottom: 3rem; }
-	section h2 { font-size: 2rem; margin-bottom: 1rem; color: #1f2937; }
-	section h3 { font-size: 1.5rem; margin: 1.5rem 0 1rem; color: #374151; }
-	section p { line-height: 1.7; color: #374151; margin-bottom: 1rem; }
-	section ul { margin: 1rem 0; padding-left: 2rem; line-height: 1.7; }
-	.practice-item { background: #f9fafb; padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1rem; border-left: 4px solid #667eea; }
-	.practice-item h3 { font-size: 1.125rem; margin-bottom: 0.75rem; }
-	table { width: 100%; border-collapse: collapse; margin: 2rem 0; }
-	th, td { padding: 0.75rem; text-align: left; border: 1px solid #e5e7eb; }
-	th { background: #f9fafb; font-weight: 600; }
-	.cta-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 3rem; border-radius: 1rem; text-align: center; margin: 3rem 0; }
-	.cta-section h2 { color: white; margin-bottom: 1rem; }
-	.btn { padding: 0.75rem 2rem; border-radius: 2rem; text-decoration: none; font-weight: 600; background: white; color: #667eea; display: inline-block; }
-	.related-guides { background: #f9fafb; padding: 2rem; border-radius: 0.5rem; }
-	.related-guides ul { list-style: none; padding: 0; }
-	.related-guides a { color: #667eea; text-decoration: none; font-weight: 500; }
-</style>

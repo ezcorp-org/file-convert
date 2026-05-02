@@ -26,8 +26,16 @@
   let conversionFileNames: Map<string, string> = new Map();
 
   // UI State
-  let currentStep: "upload" | "configure" | "converting" | "complete" = "upload";
+  type Step = "upload" | "configure" | "converting" | "complete";
+  let currentStep: Step = "upload";
   let isConverting: boolean = false;
+
+  const steps: Array<{ key: Step; label: string }> = [
+    { key: "upload", label: "Upload" },
+    { key: "configure", label: "Configure" },
+    { key: "converting", label: "Converting" },
+    { key: "complete", label: "Complete" },
+  ];
 
   // Subscriptions
   let subscriptions: Array<() => void> = [];
@@ -292,6 +300,8 @@
     (sum, group) => sum + group.files.length,
     0
   );
+
+  $: currentStepIndex = steps.findIndex((s) => s.key === currentStep);
 </script>
 
 <SEOHead
@@ -300,546 +310,199 @@
   keywords="file converter, pdf converter, image converter, document converter, online converter, free converter"
 />
 
-<div class="file-convert-page">
-  <div class="main-content">
-    <div class="header">
-      <h1>File Converter</h1>
-      <p class="subtitle">
-        Convert files locally in your browser - 100% private, no uploads
-      </p>
+<!-- Header -->
+<div class="max-w-4xl mx-auto px-6 pt-12 pb-8">
+  <div class="section-eyebrow">file convert</div>
+  <h1 class="text-3xl font-bold tracking-[-0.03em] text-ez-white">Convert.</h1>
+  <p class="text-ez-subtle mt-2">Local. Private. Fast. Files never leave your device.</p>
+</div>
 
-      <div class="steps">
-        <div class="step" class:active={currentStep === "upload"}>
-          <span class="step-number">1</span>
-          <span class="step-label">Upload</span>
+<!-- Step indicator -->
+<div class="max-w-4xl mx-auto px-6 mb-8">
+  <ol class="flex flex-wrap items-center gap-2 font-mono text-xs text-ez-muted uppercase tracking-[0.1em]">
+    {#each steps as s, i}
+      <li class="flex items-center gap-2">
+        <span
+          class="w-6 h-6 rounded-pill flex items-center justify-center {currentStepIndex === i
+            ? 'bg-ez-yellow text-ez-black'
+            : currentStepIndex > i
+              ? 'bg-ez-s3 text-ez-text'
+              : 'bg-ez-s2 text-ez-muted'}"
+        >{i + 1}</span>
+        <span class={currentStepIndex === i ? 'text-ez-yellow' : ''}>{s.label}</span>
+        {#if i < steps.length - 1}
+          <span class="text-ez-border ml-2">/</span>
+        {/if}
+      </li>
+    {/each}
+  </ol>
+</div>
+
+<!-- Main content -->
+<div class="max-w-4xl mx-auto px-6 pb-20 space-y-6">
+  {#if currentStep === "upload" || currentStep === "configure"}
+    <div class="card card-body">
+      <FileUploader on:files={handleFilesUploaded} />
+    </div>
+
+    {#if uploadedFiles.length > 0}
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3 class="text-lg text-ez-white">Selected files</h3>
+            <p class="font-mono text-xs text-ez-muted mt-1">
+              {selectedFiles.size}/{uploadedFiles.length} selected
+            </p>
+          </div>
+          <button class="btn btn-ghost btn-sm" on:click={clearAll}>Clear all</button>
         </div>
-        <div class="step" class:active={currentStep === "configure"}>
-          <span class="step-number">2</span>
-          <span class="step-label">Configure</span>
+
+        <div class="p-6 space-y-2">
+          {#each uploadedFiles as file}
+            {@const config = detectFileType(file)}
+            {@const isSelected = selectedFiles.has(file.name)}
+            <div
+              class="bg-ez-s2 border rounded-md px-4 py-3 flex items-center justify-between transition-all duration-fast {isSelected
+                ? 'border-ez-border-lt'
+                : 'border-ez-border opacity-60'}"
+            >
+              <label class="flex items-center gap-3 cursor-pointer flex-1 min-w-0">
+                <input
+                  type="checkbox"
+                  class="w-4 h-4 accent-ez-yellow cursor-pointer"
+                  checked={isSelected}
+                  on:change={() => handleFileToggle(file.name)}
+                />
+                <div class="flex flex-col min-w-0">
+                  <span class="text-ez-text truncate">{file.name}</span>
+                  <span class="font-mono text-xs text-ez-muted mt-0.5">
+                    {config?.name || "Unknown"} · {formatFileSize(file.size)}
+                  </span>
+                </div>
+              </label>
+              <button
+                class="btn btn-ghost btn-icon"
+                aria-label="Remove file"
+                on:click={() => removeFile(file.name)}
+              >×</button>
+            </div>
+          {/each}
         </div>
-        <div class="step" class:active={currentStep === "converting"}>
-          <span class="step-number">3</span>
-          <span class="step-label">Converting</span>
+      </div>
+    {/if}
+
+    {#if currentStep === "configure" && fileTypeGroups.size > 0}
+      <div class="card">
+        <div class="card-header">
+          <h3 class="text-lg text-ez-white">Pick output formats</h3>
+          <span class="font-mono text-xs text-ez-muted">{fileTypeGroups.size} group{fileTypeGroups.size !== 1 ? 's' : ''}</span>
         </div>
-        <div class="step" class:active={currentStep === "complete"}>
-          <span class="step-number">4</span>
-          <span class="step-label">Complete</span>
+
+        <div class="p-6 space-y-6">
+          {#each [...fileTypeGroups.entries()] as [typeKey, group]}
+            <div class="bg-ez-s2 border border-ez-border rounded-md p-5">
+              <div class="flex items-center justify-between mb-4">
+                <h4 class="text-md text-ez-white">{group.config.name}</h4>
+                <span class="font-mono text-xs text-ez-muted">{group.files.length} file{group.files.length !== 1 ? 's' : ''}</span>
+              </div>
+
+              <ul class="space-y-1 mb-5">
+                {#each group.files as file}
+                  <li class="font-mono text-xs text-ez-muted truncate">— {file.name}</li>
+                {/each}
+              </ul>
+
+              <div class="border-t border-ez-border pt-4">
+                <div class="font-mono text-xs text-ez-yellow uppercase tracking-[0.1em] mb-3">Convert to</div>
+                {#if group.config.supportedOutputs?.length > 0}
+                  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                    {#each group.config.supportedOutputs as outputId}
+                      {@const outputFormat = FILE_TYPES[outputId]}
+                      {#if outputFormat}
+                        <button
+                          class="tool-card !p-3 !gap-1 text-left {group.targetFormat === outputId ? '!border-ez-yellow !bg-ez-s3' : ''}"
+                          on:click={() => updateTargetFormat(typeKey, outputId)}
+                        >
+                          <span class="text-ez-white text-sm font-semibold">{outputFormat.name}</span>
+                          <span class="font-mono text-xs text-ez-muted">.{outputFormat.extensions[0]}</span>
+                        </button>
+                      {/if}
+                    {/each}
+                  </div>
+                {:else}
+                  <p class="text-ez-muted italic text-sm">No conversion options available.</p>
+                {/if}
+              </div>
+
+              {#if group.targetFormat && group.config.category === "audio"}
+                <div class="mt-5 border-t border-ez-border pt-4">
+                  <ConversionOptions
+                    sourceFormat={group.config.id}
+                    targetFormat={group.targetFormat}
+                    bind:options={group.options}
+                  />
+                </div>
+              {/if}
+            </div>
+          {/each}
+        </div>
+
+        <div class="card-footer">
+          <span class="font-mono text-xs text-ez-muted">
+            {totalFilesToConvert} file{totalFilesToConvert !== 1 ? 's' : ''} queued
+          </span>
+          <button
+            class="btn btn-primary btn-lg"
+            disabled={!canConvert}
+            on:click={startConversion}
+          >
+            Convert {totalFilesToConvert} file{totalFilesToConvert !== 1 ? "s" : ""} →
+          </button>
+        </div>
+      </div>
+    {/if}
+  {/if}
+
+  {#if currentStep === "converting"}
+    <div class="card">
+      <div class="card-header">
+        <h2 class="text-lg text-ez-white">Converting…</h2>
+        <span class="font-mono text-xs text-ez-yellow">in progress</span>
+      </div>
+      <div class="p-6 space-y-3">
+        {#each [...conversions.values()] as state}
+          <ConversionStatus
+            {state}
+            fileName={conversionFileNames.get(state.id) || "Unknown"}
+            on:cancel={() => handleCancel(state.id)}
+          />
+        {/each}
+      </div>
+    </div>
+  {/if}
+
+  {#if currentStep === "complete"}
+    <div class="alert alert-success">
+      <div class="flex-1">
+        <div class="font-semibold">Done.</div>
+        <div class="text-sm text-ez-subtle mt-1">
+          {completedConversions.length} file{completedConversions.length !== 1 ? 's' : ''} converted. Files stayed on your device.
         </div>
       </div>
     </div>
 
-    <div class="content">
-      {#if currentStep === "upload" || currentStep === "configure"}
-        <div class="upload-section">
-          <FileUploader on:files={handleFilesUploaded} />
-
-          {#if uploadedFiles.length > 0}
-            <div class="files-list">
-              <div class="files-header">
-                <h3>
-                  Selected Files ({selectedFiles.size}/{uploadedFiles.length})
-                </h3>
-                <button class="clear-btn" on:click={clearAll}>Clear All</button>
-              </div>
-
-              <div class="files">
-                {#each uploadedFiles as file}
-                  {@const config = detectFileType(file)}
-                  <div
-                    class="file-item"
-                    class:selected={selectedFiles.has(file.name)}
-                  >
-                    <label class="file-checkbox">
-                      <input
-                        type="checkbox"
-                        checked={selectedFiles.has(file.name)}
-                        on:change={() => handleFileToggle(file.name)}
-                      />
-                      <span class="file-icon">{config?.icon || "📄"}</span>
-                      <div class="file-details">
-                        <span class="file-name">{file.name}</span>
-                        <span class="file-info">
-                          {config?.name || "Unknown"} • {formatFileSize(file.size)}
-                        </span>
-                      </div>
-                    </label>
-                    <button
-                      class="remove-btn"
-                      on:click={() => removeFile(file.name)}>×</button
-                    >
-                  </div>
-                {/each}
-              </div>
-            </div>
-          {/if}
-        </div>
-
-        {#if currentStep === "configure" && fileTypeGroups.size > 0}
-          <div class="configure-section">
-            <h3>Choose Output Formats</h3>
-
-            <div class="type-groups">
-              {#each [...fileTypeGroups.entries()] as [typeKey, group]}
-                <div class="type-group">
-                  <div class="group-header">
-                    <div class="group-title">
-                      <span class="group-icon">{group.config.icon}</span>
-                      <h4>{group.config.name} Files</h4>
-                      <span class="file-count">({group.files.length})</span>
-                    </div>
-                  </div>
-
-                  <div class="group-files">
-                    {#each group.files as file}
-                      <div class="group-file">
-                        <span class="file-bullet">•</span>
-                        <span class="file-name">{file.name}</span>
-                      </div>
-                    {/each}
-                  </div>
-
-                  <div class="format-selection">
-                    <div class="format-label">Convert to:</div>
-                    {#if group.config.supportedOutputs?.length > 0}
-                      <div class="format-grid">
-                        {#each group.config.supportedOutputs as outputId}
-                          {@const outputFormat = FILE_TYPES[outputId]}
-                          {#if outputFormat}
-                            <button
-                              class="format-option"
-                              class:selected={group.targetFormat === outputId}
-                              on:click={() => updateTargetFormat(typeKey, outputId)}
-                            >
-                              <span class="format-icon">{outputFormat.icon}</span>
-                              <span class="format-name">{outputFormat.name}</span>
-                              <span class="format-ext">.{outputFormat.extensions[0]}</span>
-                            </button>
-                          {/if}
-                        {/each}
-                      </div>
-                    {:else}
-                      <p class="no-formats">No conversion options available</p>
-                    {/if}
-                  </div>
-
-                  {#if group.targetFormat && group.config.category === "audio"}
-                    <ConversionOptions
-                      sourceFormat={group.config.id}
-                      targetFormat={group.targetFormat}
-                      bind:options={group.options}
-                    />
-                  {/if}
-                </div>
-              {/each}
-            </div>
-
-            <div class="actions">
-              <button
-                class="convert-btn primary"
-                disabled={!canConvert}
-                on:click={startConversion}
-              >
-                Convert {totalFilesToConvert} File{totalFilesToConvert !== 1 ? "s" : ""}
-              </button>
-            </div>
-          </div>
-        {/if}
-      {/if}
-
-      {#if currentStep === "converting"}
-        <div class="converting-section">
-          <h2>Converting Files...</h2>
-
-          <div class="conversions">
-            {#each [...conversions.values()] as state}
-              <ConversionStatus
-                {state}
-                fileName={conversionFileNames.get(state.id) || "Unknown"}
-                on:cancel={() => handleCancel(state.id)}
-              />
-            {/each}
-          </div>
-        </div>
-      {/if}
-
-      {#if currentStep === "complete"}
-        <div class="complete-section">
-          <h2>Conversion Complete!</h2>
-
-          <ConversionResults
-            conversions={completedConversions}
-            fileNames={conversionFileNames}
-            on:download={(e) => handleDownload(e.detail)}
-          />
-
-          <div class="actions">
-            <button class="convert-btn primary" on:click={startNewConversion}>
-              Convert More Files
-            </button>
-          </div>
-        </div>
-      {/if}
+    <div class="card card-body">
+      <ConversionResults
+        conversions={completedConversions}
+        fileNames={conversionFileNames}
+        on:download={(e) => handleDownload(e.detail)}
+      />
     </div>
-  </div>
+
+    <div class="flex justify-center">
+      <button class="btn btn-ghost btn-lg" on:click={startNewConversion}>
+        Convert another
+      </button>
+    </div>
+  {/if}
 </div>
-
-<style>
-  .file-convert-page {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-
-  .header {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-
-  .header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .subtitle {
-    color: #6b7280;
-    font-size: 1.125rem;
-    margin-bottom: 2rem;
-  }
-
-  .steps {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    padding: 1rem;
-    flex-wrap: wrap;
-  }
-
-  .step {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    opacity: 0.5;
-    transition: opacity 0.3s;
-  }
-
-  .step.active {
-    opacity: 1;
-  }
-
-  .step-number {
-    width: 2rem;
-    height: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #e5e7eb;
-    border-radius: 50%;
-    font-weight: 600;
-  }
-
-  .step.active .step-number {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-  }
-
-  .step-label {
-    font-weight: 500;
-  }
-
-  .content {
-    background: white;
-    border-radius: 1rem;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-    padding: 2rem;
-  }
-
-  .files-list {
-    margin-top: 2rem;
-  }
-
-  .files-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-
-  .files-header h3 {
-    margin: 0;
-  }
-
-  .clear-btn {
-    padding: 0.5rem 1rem;
-    background: #ef4444;
-    color: white;
-    border: none;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    font-size: 0.875rem;
-  }
-
-  .clear-btn:hover {
-    background: #dc2626;
-  }
-
-  .files {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .file-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem;
-    background: #f9fafb;
-    border: 2px solid #e5e7eb;
-    border-radius: 0.5rem;
-    transition: all 0.2s;
-  }
-
-  .file-item.selected {
-    background: #eff6ff;
-    border-color: #3b82f6;
-  }
-
-  .file-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    cursor: pointer;
-    flex: 1;
-  }
-
-  .file-checkbox input {
-    width: 1.25rem;
-    height: 1.25rem;
-    cursor: pointer;
-  }
-
-  .file-icon {
-    font-size: 1.5rem;
-  }
-
-  .file-details {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .file-name {
-    font-weight: 500;
-  }
-
-  .file-info {
-    font-size: 0.875rem;
-    color: #6b7280;
-  }
-
-  .remove-btn {
-    width: 2rem;
-    height: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #ef4444;
-    color: white;
-    border: none;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    font-size: 1.5rem;
-  }
-
-  .remove-btn:hover {
-    background: #dc2626;
-  }
-
-  .configure-section {
-    margin-top: 2rem;
-  }
-
-  .configure-section h3 {
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
-  }
-
-  .type-groups {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .type-group {
-    padding: 1.5rem;
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.75rem;
-  }
-
-  .group-header {
-    margin-bottom: 1rem;
-  }
-
-  .group-title {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  .group-icon {
-    font-size: 1.5rem;
-  }
-
-  .group-title h4 {
-    margin: 0;
-    font-size: 1.125rem;
-  }
-
-  .file-count {
-    color: #6b7280;
-    font-size: 0.875rem;
-  }
-
-  .group-files {
-    margin-bottom: 1.5rem;
-    padding-left: 2.5rem;
-  }
-
-  .group-file {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.25rem 0;
-    color: #6b7280;
-    font-size: 0.875rem;
-  }
-
-  .format-selection {
-    border-top: 1px solid #e5e7eb;
-    padding-top: 1rem;
-  }
-
-  .format-label {
-    font-weight: 500;
-    margin-bottom: 0.75rem;
-    color: #374151;
-  }
-
-  .format-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 0.75rem;
-  }
-
-  .format-option {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem;
-    background: white;
-    border: 2px solid #e5e7eb;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .format-option:hover {
-    border-color: #9ca3af;
-    transform: translateY(-1px);
-  }
-
-  .format-option.selected {
-    background: rgba(102, 126, 234, 0.1);
-    border-color: #667eea;
-  }
-
-  .format-icon {
-    font-size: 1.5rem;
-  }
-
-  .format-name {
-    font-weight: 500;
-    font-size: 0.875rem;
-  }
-
-  .format-ext {
-    font-size: 0.75rem;
-    color: #6b7280;
-  }
-
-  .no-formats {
-    color: #6b7280;
-    font-style: italic;
-  }
-
-  .actions {
-    display: flex;
-    justify-content: center;
-    margin-top: 2rem;
-  }
-
-  .convert-btn {
-    padding: 0.75rem 2rem;
-    border: none;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .convert-btn.primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-  }
-
-  .convert-btn.primary:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px -5px rgba(102, 126, 234, 0.3);
-  }
-
-  .convert-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .converting-section,
-  .complete-section {
-    text-align: center;
-  }
-
-  .converting-section h2,
-  .complete-section h2 {
-    margin-bottom: 2rem;
-  }
-
-  .conversions {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  @media (max-width: 768px) {
-    .file-convert-page {
-      padding: 1rem;
-    }
-
-    .header h1 {
-      font-size: 2rem;
-    }
-
-    .steps {
-      gap: 1rem;
-    }
-
-    .format-grid {
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    }
-  }
-</style>

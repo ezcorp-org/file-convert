@@ -41,24 +41,10 @@
 <!-- Notification Container -->
 <NotificationContainer />
 
-<div class="app-container">
-  <Header />
-  <main>
-    <slot />
-  </main>
-  <Footer />
+<div class="min-h-screen flex flex-col bg-ez-black">
+	<Header />
+	<main class="flex-1 flex flex-col">
+		<slot />
+	</main>
+	<Footer />
 </div>
-
-<style>
-  .app-container {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-</style>

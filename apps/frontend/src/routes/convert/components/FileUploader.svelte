@@ -154,18 +154,20 @@
   }
 </script>
 
-<div class="file-uploader">
+<div class="file-uploader w-full">
   <input
     bind:this={fileInput}
     type="file"
     multiple
     on:change={handleFileSelect}
-    class="hidden-input"
+    class="hidden"
   />
 
   <div
-    class="drop-zone"
-    class:dragging={isDragging}
+    class="drop-zone card flex flex-col items-center justify-center text-center min-h-[260px] p-8 border-2 border-dashed cursor-pointer transition-all duration-base
+    {isDragging
+      ? 'dragging border-ez-yellow bg-ez-yellow/5'
+      : 'border-ez-border-lt hover:border-ez-yellow hover:bg-ez-s2'}"
     on:drop={handleDrop}
     on:dragover={handleDragOver}
     on:dragleave={handleDragLeave}
@@ -174,136 +176,41 @@
     tabindex="0"
     on:keypress={(e) => e.key === 'Enter' && openFileDialog()}
   >
-    <div class="drop-content">
-      <div class="icon">📁</div>
-      <h3>Drop files here or click to browse</h3>
-      <p>Support for images, audio, documents, and more</p>
+    <div class="drop-content pointer-events-none flex flex-col items-center">
+      <div class="text-ez-yellow text-4xl leading-none mb-3" aria-hidden="true">&darr;</div>
+      <h3 class="text-ez-white font-semibold text-md m-0">Drop files here or click to browse</h3>
+      <p class="text-ez-subtle text-sm mt-1 mb-5">Support for images, audio, documents, and more</p>
 
-      <button class="browse-btn" on:click|stopPropagation={openFileDialog}>
+      <button
+        class="btn btn-primary pointer-events-auto"
+        on:click|stopPropagation={openFileDialog}
+        type="button"
+      >
         Browse Files
       </button>
 
-      <div class="supported-formats">
-        <span>Images</span> • <span>Audio</span> • <span>Documents</span> •
-        <span>Archives</span> • <span>Text</span> • <span>Spreadsheets</span>
+      <div class="font-mono text-xs text-ez-muted mt-6 uppercase tracking-[0.1em] flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+        <span class="text-ez-subtle">Images</span><span aria-hidden="true">·</span>
+        <span class="text-ez-subtle">Audio</span><span aria-hidden="true">·</span>
+        <span class="text-ez-subtle">Documents</span><span aria-hidden="true">·</span>
+        <span class="text-ez-subtle">Archives</span><span aria-hidden="true">·</span>
+        <span class="text-ez-subtle">Text</span><span aria-hidden="true">·</span>
+        <span class="text-ez-subtle">Spreadsheets</span>
       </div>
     </div>
   </div>
 
   {#if errors.length > 0}
-    <div class="errors">
+    <div class="errors mt-4 flex flex-col gap-2">
       {#each errors as error}
-        <div class="error">
-          <span class="error-icon">⚠️</span>
-          <span class="error-text">{error.file}: {error.message}</span>
+        <div class="alert alert-danger">
+          <span class="font-mono text-lg leading-none mt-0.5 shrink-0 text-ez-red-lt" aria-hidden="true">!</span>
+          <div class="flex-1 min-w-0 text-left">
+            <span class="font-semibold text-ez-white text-sm">{error.file}:</span>
+            <span class="text-ez-subtle text-sm">{error.message}</span>
+          </div>
         </div>
       {/each}
     </div>
   {/if}
 </div>
-
-<style>
-  .file-uploader {
-    width: 100%;
-  }
-
-  .hidden-input {
-    display: none;
-  }
-
-  .drop-zone {
-    border: 2px dashed #d1d5db;
-    border-radius: 1rem;
-    padding: 3rem 2rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s;
-    background: #f9fafb;
-  }
-
-  .drop-zone:hover {
-    border-color: #9ca3af;
-    background: #f3f4f6;
-  }
-
-  .drop-zone.dragging {
-    border-color: #667eea;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-  }
-
-  .drop-content {
-    pointer-events: none;
-  }
-
-  .icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
-  }
-
-  .drop-content h3 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.5rem;
-    color: #111827;
-  }
-
-  .drop-content p {
-    margin: 0 0 1.5rem 0;
-    color: #6b7280;
-  }
-
-  .browse-btn {
-    padding: 0.75rem 2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    pointer-events: auto;
-  }
-
-  .browse-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px -5px rgba(102, 126, 234, 0.3);
-  }
-
-  .supported-formats {
-    margin-top: 2rem;
-    font-size: 0.875rem;
-    color: #9ca3af;
-  }
-
-  .supported-formats span {
-    color: #6b7280;
-    font-weight: 500;
-  }
-
-  .errors {
-    margin-top: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .error {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    border-radius: 0.5rem;
-    color: #dc2626;
-  }
-
-  .error-icon {
-    font-size: 1.25rem;
-  }
-
-  .error-text {
-    flex: 1;
-    text-align: left;
-  }
-</style>

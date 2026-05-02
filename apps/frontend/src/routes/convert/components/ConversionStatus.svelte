@@ -6,38 +6,43 @@
 
   const dispatch = createEventDispatcher();
 
-  function getStatusIcon(statusValue: string) {
+  function getStatusGlyph(statusValue: string) {
     switch (statusValue) {
       case "pending":
-        return "⏳";
+        return "·";
       case "validating":
-        return "🔍";
+        return "·";
       case "converting":
-        return "⚙️";
+        return "·";
       case "completed":
-        return "✅";
+        return "✓";
       case "failed":
-        return "❌";
+        return "×";
       default:
-        return "⏸️";
+        return "·";
     }
   }
 
-  function getStatusColor(statusValue: string) {
+  function getStatusColorClass(statusValue: string) {
     switch (statusValue) {
       case "pending":
-        return "#9ca3af";
+        return "text-ez-muted";
       case "validating":
-        return "#3b82f6";
+        return "text-ez-info";
       case "converting":
-        return "#8b5cf6";
+        return "text-ez-yellow";
       case "completed":
-        return "#10b981";
+        return "text-ez-success";
       case "failed":
-        return "#ef4444";
+        return "text-ez-red-lt";
       default:
-        return "#6b7280";
+        return "text-ez-muted";
     }
+  }
+
+  function getProgressBarClass(statusValue: string) {
+    if (statusValue === "validating") return "bg-ez-info";
+    return "bg-ez-yellow";
   }
 
   function formatTime(ms) {
@@ -59,125 +64,42 @@
         : 0;
 </script>
 
-<div class="conversion-status">
-  <div class="status-header">
-    <span class="status-icon">{getStatusIcon(state.status)}</span>
-    <div class="file-info">
-      <span class="file-name">{fileName}</span>
-      <span class="status-message">{state.message || state.status}</span>
+<div class="card card-body">
+  <div class="flex items-center gap-3">
+    <span
+      class="font-mono text-lg leading-none shrink-0 {getStatusColorClass(state.status)}"
+      aria-hidden="true"
+    >{getStatusGlyph(state.status)}</span>
+    <div class="flex-1 min-w-0 flex flex-col">
+      <span class="text-ez-white font-semibold text-sm truncate">{fileName}</span>
+      <span class="font-mono text-xs text-ez-muted">{state.message || state.status}</span>
     </div>
     {#if state.status === "converting" || state.status === "validating"}
-      <button class="cancel-btn" on:click={() => dispatch("cancel")}>
+      <button class="btn btn-ghost btn-sm" on:click={() => dispatch("cancel")} type="button">
         Cancel
       </button>
     {/if}
   </div>
 
   {#if state.status === "converting" || state.status === "validating"}
-    <div class="progress-bar">
+    <div class="h-2 bg-ez-s2 rounded-pill overflow-hidden mt-4">
       <div
-        class="progress-fill"
-        style="width: {state.progress}%; background: {getStatusColor(
-          state.status,
-        )}"
-      />
+        class="h-full transition-all duration-base {getProgressBarClass(state.status)}"
+        style="width: {state.progress}%"
+      ></div>
     </div>
-    <div class="progress-info">
-      <span class="progress-percent">{state.progress}%</span>
+    <div class="progress-info flex justify-between mt-2 font-mono text-xs text-ez-muted">
+      <span>{state.progress}%</span>
       {#if elapsedTime > 0}
-        <span class="elapsed-time">{formatTime(elapsedTime)}</span>
+        <span>{formatTime(elapsedTime)}</span>
       {/if}
     </div>
   {/if}
 
   {#if state.status === "failed" && (state.error || state.message)}
-    <div class="error-details">
-      <span class="error-message"
-        >{state.error?.message || state.message || "Conversion failed"}</span
-      >
+    <div class="alert alert-danger mt-4">
+      <span class="font-mono text-lg leading-none shrink-0 text-ez-red-lt" aria-hidden="true">×</span>
+      <span class="text-sm flex-1">{state.error?.message || state.message || "Conversion failed"}</span>
     </div>
   {/if}
 </div>
-
-<style>
-  .conversion-status {
-    padding: 1rem;
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-  }
-
-  .status-header {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .status-icon {
-    font-size: 1.5rem;
-  }
-
-  .file-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .file-name {
-    font-weight: 500;
-    color: #111827;
-  }
-
-  .status-message {
-    font-size: 0.875rem;
-    color: #6b7280;
-  }
-
-  .cancel-btn {
-    padding: 0.5rem 1rem;
-    background: #ef4444;
-    color: white;
-    border: none;
-    border-radius: 0.375rem;
-    font-size: 0.875rem;
-    cursor: pointer;
-  }
-
-  .cancel-btn:hover {
-    background: #dc2626;
-  }
-
-  .progress-bar {
-    margin-top: 1rem;
-    height: 0.5rem;
-    background: #e5e7eb;
-    border-radius: 0.25rem;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    transition: width 0.3s ease;
-  }
-
-  .progress-info {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 0.5rem;
-    font-size: 0.75rem;
-    color: #6b7280;
-  }
-
-  .error-details {
-    margin-top: 1rem;
-    padding: 0.75rem;
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    border-radius: 0.375rem;
-  }
-
-  .error-message {
-    color: #dc2626;
-    font-size: 0.875rem;
-  }
-</style>

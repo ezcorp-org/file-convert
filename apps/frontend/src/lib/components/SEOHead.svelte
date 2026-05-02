@@ -87,13 +87,10 @@
   <meta name="apple-mobile-web-app-title" content="File Convert" />
   <meta name="format-detection" content="telephone=no" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="theme-color" content="#2563eb" />
+  <meta name="theme-color" content="#0C0B0A" />
 
   <!-- Performance and Loading -->
   <meta name="referrer" content="origin-when-cross-origin" />
-
-  <!-- Preload critical resources -->
-  <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin="" />
 </svelte:head>
 
 <!-- Structured Data Components -->

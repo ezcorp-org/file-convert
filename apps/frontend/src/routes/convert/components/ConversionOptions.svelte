@@ -1,6 +1,6 @@
 <script lang="ts">
   import { getConversionOptions } from '$lib/conversion/config';
-  
+
   export let sourceFormat: string;
   export let targetFormat: string;
   export let options: Record<string, any> = {};
@@ -31,21 +31,22 @@
 </script>
 
 {#if conversionOptions.length > 0}
-  <div class="conversion-options">
-    <h4>Conversion Options</h4>
-    
-    <div class="options-grid">
+  <div class="conversion-options card card-body mt-6">
+    <div class="section-eyebrow">options</div>
+    <h4 class="text-lg text-ez-white m-0 mb-4">Conversion Options</h4>
+
+    <div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
       {#each conversionOptions as option}
-        <div class="option">
-          <label for={option.id}>{option.name}</label>
-          
+        <div class="flex flex-col gap-2">
+          <label for={option.id} class="text-ez-text font-medium text-sm">{option.name}</label>
+
           {#if option.type === 'number'}
             <input
               type="number"
               id={option.id}
               value={options[option.id] ?? option.default}
               on:input={(e) => handleNumberInput(option.id, e.currentTarget.value)}
-              class="input-number"
+              class="input"
             />
           {:else if option.type === 'boolean'}
             <input
@@ -53,14 +54,14 @@
               id={option.id}
               checked={options[option.id] ?? option.default}
               on:change={(e) => handleBooleanInput(option.id, e.currentTarget.checked)}
-              class="input-checkbox"
+              class="w-5 h-5 cursor-pointer accent-ez-yellow"
             />
           {:else if option.type === 'select' && option.options}
             <select
               id={option.id}
               value={String(options[option.id] ?? option.default)}
               on:change={(e) => handleSelectInput(option.id, e.currentTarget.value)}
-              class="input-select"
+              class="input"
             >
               {#each option.options as opt}
                 <option value={String(opt.value)}>{opt.label}</option>
@@ -72,75 +73,15 @@
               id={option.id}
               value={options[option.id] ?? option.default}
               on:input={(e) => options[option.id] = e.currentTarget.value}
-              class="input-text"
+              class="input"
             />
           {/if}
-          
+
           {#if option.description}
-            <span class="description">{option.description}</span>
+            <span class="font-mono text-xs text-ez-muted">{option.description}</span>
           {/if}
         </div>
       {/each}
     </div>
   </div>
 {/if}
-
-<style>
-  .conversion-options {
-    margin-top: 1.5rem;
-    padding: 1.5rem;
-    background: #f9fafb;
-    border-radius: 0.5rem;
-  }
-  
-  .conversion-options h4 {
-    margin: 0 0 1rem 0;
-    font-size: 1.125rem;
-  }
-  
-  .options-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-  }
-  
-  .option {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .option label {
-    font-weight: 500;
-    color: #374151;
-  }
-  
-  .input-number,
-  .input-text,
-  .input-select {
-    padding: 0.5rem 0.75rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    font-size: 0.875rem;
-    background: white;
-  }
-  
-  .input-number:focus,
-  .input-text:focus,
-  .input-select:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  }
-  
-  .input-checkbox {
-    width: 1.25rem;
-    height: 1.25rem;
-    cursor: pointer;
-  }
-  
-  .description {
-    font-size: 0.75rem;
-    color: #6b7280;
-  }
-</style>

@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount, onDestroy } from 'svelte';
 	import type { ConversionResult } from '$lib/workers/worker-manager';
-	
+
 	export let results: ConversionResult[] = [];
 	export let autoDownload = false;
-	
+
 	const dispatch = createEventDispatcher();
-	
+
 	interface DownloadItem {
 		id: string;
 		filename: string;
@@ -18,16 +18,15 @@
 		timestamp: Date;
 		selected: boolean;
 	}
-	
+
 	let downloads: Map<string, DownloadItem> = new Map();
 	let selectAll = false;
 	let sortBy: 'name' | 'size' | 'date' = 'date';
 	let sortAscending = false;
 	let filterText = '';
-	
-	// Convert results to download items
+
 	$: {
-		results.forEach(result => {
+		results.forEach((result) => {
 			if (!downloads.has(result.id)) {
 				const item: DownloadItem = {
 					id: result.id,
@@ -41,7 +40,7 @@
 					selected: false
 				};
 				downloads.set(result.id, item);
-				
+
 				if (autoDownload) {
 					downloadFile(item);
 				}
@@ -49,20 +48,15 @@
 		});
 		downloads = new Map(downloads);
 	}
-	
-	// Filtered and sorted downloads
+
 	$: sortedDownloads = (() => {
 		let items = Array.from(downloads.values());
-		
-		// Filter
+
 		if (filterText) {
 			const search = filterText.toLowerCase();
-			items = items.filter(item => 
-				item.filename.toLowerCase().includes(search)
-			);
+			items = items.filter((item) => item.filename.toLowerCase().includes(search));
 		}
-		
-		// Sort
+
 		items.sort((a, b) => {
 			let comparison = 0;
 			switch (sortBy) {
@@ -78,16 +72,16 @@
 			}
 			return sortAscending ? comparison : -comparison;
 		});
-		
+
 		return items;
 	})();
-	
-	$: selectedCount = sortedDownloads.filter(d => d.selected).length;
+
+	$: selectedCount = sortedDownloads.filter((d) => d.selected).length;
 	$: totalSize = sortedDownloads.reduce((sum, d) => sum + d.size, 0);
 	$: selectedSize = sortedDownloads
-		.filter(d => d.selected)
+		.filter((d) => d.selected)
 		.reduce((sum, d) => sum + d.size, 0);
-	
+
 	function formatFileSize(bytes: number): string {
 		if (bytes === 0) return '0 B';
 		const k = 1024;
@@ -120,21 +114,18 @@
 
 		dispatch('download', { id: item.id });
 	}
-	
+
 	function downloadSelected() {
-		const selected = sortedDownloads.filter(d => d.selected);
-		
+		const selected = sortedDownloads.filter((d) => d.selected);
+
 		if (selected.length === 1) {
-			// Single file download
 			downloadFile(selected[0]);
 		} else if (selected.length > 1) {
-			// Multiple files - create ZIP
 			createAndDownloadZip(selected);
 		}
 	}
-	
+
 	async function createAndDownloadZip(items: DownloadItem[]) {
-		// Dynamically import fflate for ZIP creation
 		const { zipSync } = await import('fflate');
 
 		const files: Record<string, Uint8Array> = {};
@@ -143,24 +134,23 @@
 			const arrayBuffer = await item.blob.arrayBuffer();
 			files[item.filename] = new Uint8Array(arrayBuffer);
 		}
-		
+
 		const zipped = zipSync(files);
 		const blob = new Blob();
 		const url = URL.createObjectURL(blob);
-		
+
 		const a = document.createElement('a');
 		a.href = url;
 		a.download = `converted-files-${Date.now()}.zip`;
 		a.click();
-		
+
 		URL.revokeObjectURL(url);
-		
-		// Mark all as downloaded
-		items.forEach(item => {
+
+		items.forEach((item) => {
 			item.downloaded = true;
 		});
 		downloads = new Map(downloads);
-		
+
 		dispatch('download-zip');
 	}
 
@@ -171,15 +161,15 @@
 			downloads = new Map(downloads);
 		}
 	}
-	
+
 	function toggleSelectAll() {
 		selectAll = !selectAll;
-		downloads.forEach(item => {
+		downloads.forEach((item) => {
 			item.selected = selectAll;
 		});
 		downloads = new Map(downloads);
 	}
-	
+
 	function removeItem(id: string) {
 		const item = downloads.get(id);
 		if (item?.downloadUrl) {
@@ -187,49 +177,42 @@
 		}
 		downloads.delete(id);
 		downloads = new Map(downloads);
-		
+
 		dispatch('remove', { id });
 	}
-	
+
 	function removeSelected() {
-		const selected = sortedDownloads.filter(d => d.selected);
-		selected.forEach(item => {
+		const selected = sortedDownloads.filter((d) => d.selected);
+		selected.forEach((item) => {
 			if (item.downloadUrl) {
 				URL.revokeObjectURL(item.downloadUrl);
 			}
 			downloads.delete(item.id);
 		});
 		downloads = new Map(downloads);
-		
+
 		dispatch('remove-selected');
 	}
 
 	function clearAll() {
-		downloads.forEach(item => {
+		downloads.forEach((item) => {
 			if (item.downloadUrl) {
 				URL.revokeObjectURL(item.downloadUrl);
 			}
 		});
 		downloads.clear();
 		downloads = new Map(downloads);
-		
+
 		dispatch('clear');
 	}
-	
-	function getFileIcon(mimeType: string): string {
-		if (mimeType.startsWith('image/')) return '🖼️';
-		if (mimeType.startsWith('audio/')) return '🎵';
-		if (mimeType.startsWith('video/')) return '🎬';
-		if (mimeType.includes('pdf')) return '📄';
-		if (mimeType.includes('zip') || mimeType.includes('archive')) return '📦';
-		if (mimeType.includes('text')) return '📝';
-		if (mimeType.includes('json') || mimeType.includes('xml')) return '📊';
-		return '📁';
+
+	function getFileExt(filename: string): string {
+		const parts = filename.split('.');
+		return parts.length > 1 ? parts.pop()!.toLowerCase() : '';
 	}
-	
-	// Cleanup URLs on destroy
+
 	onDestroy(() => {
-		downloads.forEach(item => {
+		downloads.forEach((item) => {
 			if (item.downloadUrl) {
 				URL.revokeObjectURL(item.downloadUrl);
 			}
@@ -237,354 +220,143 @@
 	});
 </script>
 
-<div class="download-manager">
-	<div class="manager-header">
-		<div class="header-left">
-			<h3>📥 Download Manager</h3>
-			<div class="stats">
-				<span class="stat">{downloads.size} file{downloads.size !== 1 ? 's' : ''}</span>
-				<span class="stat">{formatFileSize(totalSize)}</span>
+<div class="card card-body space-y-5">
+	<div class="flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-ez-border">
+		<div>
+			<div class="font-mono text-xs text-ez-muted uppercase tracking-[0.1em]">
+				downloads
+			</div>
+			<h3 class="text-xl text-ez-white mt-1">Converted files</h3>
+			<div class="flex flex-wrap gap-2 mt-2">
+				<span class="badge badge-neutral">
+					{downloads.size} file{downloads.size !== 1 ? 's' : ''}
+				</span>
+				<span class="badge badge-neutral">{formatFileSize(totalSize)}</span>
 				{#if selectedCount > 0}
-					<span class="stat selected">
-						{selectedCount} selected ({formatFileSize(selectedSize)})
+					<span class="badge badge-yellow">
+						{selectedCount} selected · {formatFileSize(selectedSize)}
 					</span>
 				{/if}
 			</div>
 		</div>
-		<div class="header-right">
+
+		<div class="flex flex-wrap items-center gap-2">
 			<input
 				type="text"
-				placeholder="Filter files..."
+				placeholder="Filter..."
 				bind:value={filterText}
-				class="filter-input"
+				class="input max-w-[160px]"
 			/>
-			<select bind:value={sortBy} class="sort-select">
+			<select bind:value={sortBy} class="input max-w-[110px]">
 				<option value="date">Date</option>
 				<option value="name">Name</option>
 				<option value="size">Size</option>
 			</select>
 			<button
-				class="sort-direction"
-				on:click={() => sortAscending = !sortAscending}
+				type="button"
+				class="btn btn-ghost btn-sm"
+				on:click={() => (sortAscending = !sortAscending)}
+				aria-label={sortAscending ? 'Sort ascending' : 'Sort descending'}
 				title={sortAscending ? 'Ascending' : 'Descending'}
 			>
 				{sortAscending ? '↑' : '↓'}
 			</button>
 		</div>
 	</div>
-	
+
 	{#if downloads.size > 0}
-		<div class="manager-controls">
-			<button class="btn-control" on:click={toggleSelectAll}>
-				{selectAll ? 'Deselect All' : 'Select All'}
+		<div class="flex flex-wrap gap-2">
+			<button type="button" class="btn btn-ghost btn-sm" on:click={toggleSelectAll}>
+				{selectAll ? 'Deselect all' : 'Select all'}
 			</button>
 			{#if selectedCount > 0}
-				<button class="btn-control primary" on:click={downloadSelected}>
-					Download {selectedCount > 1 ? `${selectedCount} Files` : 'Selected'}
+				<button type="button" class="btn btn-primary btn-sm" on:click={downloadSelected}>
+					Download {selectedCount > 1 ? `${selectedCount} files` : 'selected'}
 				</button>
-				<button class="btn-control danger" on:click={removeSelected}>
-					Remove Selected
+				<button type="button" class="btn btn-danger btn-sm" on:click={removeSelected}>
+					Remove selected
 				</button>
 			{/if}
-			<button class="btn-control" on:click={clearAll}>
-				Clear All
+			<button type="button" class="btn btn-ghost btn-sm" on:click={clearAll}>
+				Clear all
 			</button>
 		</div>
-		
-		<div class="downloads-list">
+
+		<div class="max-h-[400px] overflow-y-auto space-y-2">
 			{#each sortedDownloads as item (item.id)}
-				<div class="download-item" class:selected={item.selected}>
+				<div
+					class="flex items-center gap-3 p-3 border rounded-md transition-colors duration-fast
+					{item.selected
+						? 'border-ez-yellow bg-ez-yellow/5'
+						: 'border-ez-border hover:bg-ez-s2'}"
+				>
 					<input
 						type="checkbox"
 						checked={item.selected}
 						on:change={() => toggleSelection(item.id)}
+						class="accent-ez-yellow"
 					/>
-					<span class="file-icon">{getFileIcon(item.mimeType)}</span>
-					<div class="file-info">
-						<div class="file-name" title={item.filename}>
+					<span
+						class="font-mono text-xs text-ez-yellow uppercase tracking-[0.1em] shrink-0 min-w-[40px]"
+					>
+						{getFileExt(item.filename) || 'file'}
+					</span>
+					<div class="flex-1 min-w-0">
+						<div class="text-ez-white font-semibold text-sm truncate" title={item.filename}>
 							{item.filename}
 						</div>
-						<div class="file-meta">
-							<span class="file-size">{formatFileSize(item.size)}</span>
-							<span class="file-date">{formatDate(item.timestamp)}</span>
+						<div class="font-mono text-xs text-ez-muted mt-1 flex flex-wrap gap-3">
+							<span>{formatFileSize(item.size)}</span>
+							<span>{formatDate(item.timestamp)}</span>
 							{#if item.downloaded}
-								<span class="downloaded-badge">✓ Downloaded</span>
+								<span class="text-ez-success">downloaded</span>
 							{/if}
 						</div>
 					</div>
-					<div class="item-actions">
+					<div class="flex gap-1 shrink-0">
 						<button
-							class="btn-action download"
+							type="button"
+							class="btn btn-ghost btn-sm"
 							on:click={() => downloadFile(item)}
 							title="Download"
 						>
-							⬇️
+							Download
 						</button>
 						<button
-							class="btn-action remove"
+							type="button"
+							class="btn btn-ghost btn-sm"
 							on:click={() => removeItem(item.id)}
 							title="Remove"
+							aria-label="Remove file"
 						>
-							❌
+							&times;
 						</button>
 					</div>
 				</div>
 			{/each}
 		</div>
-		
-		<div class="manager-footer">
-			<label class="auto-download">
+
+		<div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-ez-border">
+			<label class="flex items-center gap-2 text-ez-subtle text-sm cursor-pointer">
 				<input
 					type="checkbox"
 					bind:checked={autoDownload}
+					class="accent-ez-yellow"
 				/>
 				Auto-download converted files
 			</label>
-			<button class="btn-download-all" on:click={() => createAndDownloadZip(Array.from(downloads.values()))}>
-				📦 Download All as ZIP
+			<button
+				type="button"
+				class="btn btn-secondary btn-sm"
+				on:click={() => createAndDownloadZip(Array.from(downloads.values()))}
+			>
+				Download all as ZIP
 			</button>
 		</div>
 	{:else}
-		<div class="empty-state">
-			<span class="empty-icon">📭</span>
-			<p>No converted files yet</p>
-			<p class="empty-hint">Converted files will appear here</p>
+		<div class="text-center py-12">
+			<p class="text-ez-white font-semibold">No converted files yet</p>
+			<p class="text-ez-subtle text-sm mt-1">Converted files will show up here.</p>
 		</div>
 	{/if}
 </div>
-
-<style>
-	.download-manager {
-		background: white;
-		border-radius: 12px;
-		padding: 1.5rem;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-	}
-	
-	.manager-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 1.5rem;
-		padding-bottom: 1rem;
-		border-bottom: 2px solid var(--gray-200);
-	}
-	
-	.header-left h3 {
-		margin: 0 0 0.5rem 0;
-		color: var(--gray-800);
-	}
-	
-	.stats {
-		display: flex;
-		gap: 0.75rem;
-	}
-	
-	.stat {
-		padding: 0.25rem 0.5rem;
-		background: var(--gray-100);
-		border-radius: 12px;
-		font-size: 0.75rem;
-		color: var(--gray-600);
-	}
-	
-	.stat.selected {
-		background: var(--primary);
-		color: white;
-	}
-	
-	.header-right {
-		display: flex;
-		gap: 0.5rem;
-		align-items: center;
-	}
-	
-	.filter-input {
-		padding: 0.5rem;
-		border: 1px solid var(--gray-300);
-		border-radius: 6px;
-		font-size: 0.875rem;
-	}
-	
-	.sort-select {
-		padding: 0.5rem;
-		border: 1px solid var(--gray-300);
-		border-radius: 6px;
-		font-size: 0.875rem;
-		background: white;
-	}
-	
-	.sort-direction {
-		padding: 0.5rem 0.75rem;
-		background: var(--gray-100);
-		border: 1px solid var(--gray-300);
-		border-radius: 6px;
-		cursor: pointer;
-		font-size: 1rem;
-	}
-	
-	.manager-controls {
-		display: flex;
-		gap: 0.5rem;
-		margin-bottom: 1rem;
-	}
-	
-	.btn-control {
-		padding: 0.5rem 1rem;
-		background: white;
-		border: 1px solid var(--gray-300);
-		border-radius: 6px;
-		cursor: pointer;
-		font-size: 0.875rem;
-		font-weight: 500;
-		transition: all 0.2s;
-	}
-	
-	.btn-control:hover {
-		background: var(--gray-50);
-		border-color: var(--gray-400);
-	}
-	
-	.btn-control.primary {
-		background: var(--primary);
-		color: white;
-		border-color: var(--primary);
-	}
-	
-	.btn-control.primary:hover {
-		background: var(--primary-dark);
-	}
-	
-	.btn-control.danger {
-		background: var(--danger);
-		color: white;
-		border-color: var(--danger);
-	}
-	
-	.downloads-list {
-		max-height: 400px;
-		overflow-y: auto;
-		margin-bottom: 1rem;
-	}
-	
-	.download-item {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		padding: 0.75rem;
-		border: 1px solid var(--gray-200);
-		border-radius: 8px;
-		margin-bottom: 0.5rem;
-		transition: all 0.2s;
-	}
-	
-	.download-item:hover {
-		background: var(--gray-50);
-		border-color: var(--gray-300);
-	}
-	
-	.download-item.selected {
-		background: rgba(102, 126, 234, 0.05);
-		border-color: var(--primary);
-	}
-	
-	.file-icon {
-		font-size: 1.5rem;
-	}
-	
-	.file-info {
-		flex: 1;
-		min-width: 0;
-	}
-	
-	.file-name {
-		font-weight: 500;
-		color: var(--gray-800);
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-	
-	.file-meta {
-		display: flex;
-		gap: 1rem;
-		margin-top: 0.25rem;
-		font-size: 0.75rem;
-		color: var(--gray-500);
-	}
-	
-	.downloaded-badge {
-		color: var(--success);
-		font-weight: 500;
-	}
-	
-	.item-actions {
-		display: flex;
-		gap: 0.25rem;
-	}
-	
-	.btn-action {
-		padding: 0.25rem 0.5rem;
-		background: transparent;
-		border: none;
-		cursor: pointer;
-		font-size: 1rem;
-		transition: transform 0.2s;
-	}
-	
-	.btn-action:hover {
-		transform: scale(1.2);
-	}
-	
-	.manager-footer {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding-top: 1rem;
-		border-top: 1px solid var(--gray-200);
-	}
-	
-	.auto-download {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 0.875rem;
-		color: var(--gray-600);
-	}
-	
-	.btn-download-all {
-		padding: 0.5rem 1rem;
-		background: var(--info);
-		color: white;
-		border: none;
-		border-radius: 6px;
-		font-weight: 500;
-		cursor: pointer;
-		transition: background 0.2s;
-	}
-	
-	.btn-download-all:hover {
-		background: #2563eb;
-	}
-	
-	.empty-state {
-		text-align: center;
-		padding: 3rem;
-		color: var(--gray-500);
-	}
-	
-	.empty-icon {
-		font-size: 3rem;
-		display: block;
-		margin-bottom: 1rem;
-	}
-	
-	.empty-state p {
-		margin: 0.5rem 0;
-	}
-	
-	.empty-hint {
-		font-size: 0.875rem;
-		color: var(--gray-400);
-	}
-</style>
