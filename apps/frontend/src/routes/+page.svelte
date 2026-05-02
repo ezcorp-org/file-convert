@@ -75,19 +75,19 @@
 />
 
 <!-- Hero -->
-<section class="max-w-5xl mx-auto px-6 pt-20 pb-16">
+<section class="max-w-5xl mx-auto px-6 pt-20 pb-16 text-center">
   <div class="section-eyebrow">file convert · v1</div>
-  <h1 class="text-5xl md:text-[68px] font-bold tracking-[-0.03em] leading-[1.05] text-ez-white max-w-3xl">
+  <h1 class="text-5xl md:text-[68px] font-bold tracking-[-0.03em] leading-[1.05] text-ez-white max-w-3xl mx-auto">
     Convert files. <span class="text-ez-yellow">Locally.</span>
   </h1>
-  <p class="text-lg text-ez-subtle mt-6 max-w-xl leading-relaxed">
+  <p class="text-lg text-ez-subtle mt-6 max-w-xl mx-auto leading-relaxed">
     50+ formats. In your browser. Files never leave your device.
   </p>
-  <div class="flex flex-wrap items-center gap-3 mt-8">
+  <div class="flex flex-wrap items-center justify-center gap-3 mt-8">
     <a href="/convert" class="btn btn-primary btn-lg">Start converting →</a>
     <a href="#features" class="btn btn-ghost btn-lg">How it works</a>
   </div>
-  <div class="flex flex-wrap items-center gap-2 mt-8">
+  <div class="flex flex-wrap items-center justify-center gap-2 mt-8">
     <span class="badge badge-green badge-dot">Free</span>
     <span class="badge badge-neutral">Zero Upload</span>
     <span class="badge badge-neutral">100% Local</span>
