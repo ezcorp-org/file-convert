@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",
-    "@sveltejs/adapter-vercel": "^1.0.0",
+    "@sveltejs/adapter-cloudflare": "^2",
     "@sveltejs/kit": "^1.30.4",
     "@sveltejs/vite-plugin-svelte": "^2.5.3",
     "@testing-library/jest-dom": "^6.9.1",
@@ -53,7 +53,8 @@
     "typescript": "^5.9.2",
     "vite": "^4.5.3",
     "vitest": "^3.2.4",
-    "wavefile": "^11.0.0"
+    "wavefile": "^11.0.0",
+    "wrangler": "^4.88.0"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
